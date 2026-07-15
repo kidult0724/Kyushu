@@ -57,62 +57,9 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .addbtn{border:1px solid var(--clay);color:var(--clay-deep);background:#fff;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
 .addbtn:hover{background:var(--clay);color:#fff;}
 
-/* 新增景點表單樣式 */
 .form{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:24px;}
 .form.open{display:block;}
 .form h3{font-family:'Shippori Mincho',serif;font-size:18px;margin:0 0 14px;color:var(--clay-deep);}
-
-/* 智慧填入助手區塊 */
-.smart-helper {
-  background: #fdfbf7;
-  border: 1px dashed var(--clay);
-  border-radius: 8px;
-  padding: 14px;
-  margin-bottom: 20px;
-}
-.smart-helper-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--clay-deep);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.smart-helper-row {
-  display: flex;
-  gap: 8px;
-}
-.smart-helper input {
-  flex: 1;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 13.5px;
-  background: #fff;
-  color: var(--ink);
-}
-.smart-helper button {
-  background: var(--clay);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.smart-helper button:hover {
-  background: var(--clay-deep);
-}
-.smart-helper .hint-text {
-  font-size: 11.5px;
-  color: var(--ink-soft);
-  margin-top: 6px;
-  line-height: 1.4;
-}
-
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .form label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
 .form input,.form select,.form textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:14px;font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--ink);}
@@ -123,20 +70,31 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .btn-ghost{background:transparent;color:var(--ink-soft);}
 .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
-.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;display:flex;flex-direction:column;gap:8px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform 0.2s, box-shadow 0.2s;}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(38,34,27,0.08);}
+
+/* 景點相片排版區 */
+.card-img-wrapper{position:relative;width:100%;height:160px;background:#E8E1CC;overflow:hidden;}
+.card-img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
+.card:hover .card-img{transform:scale(1.06);}
+
+.card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1;}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
 .card-pref{font-size:11px;letter-spacing:.06em;color:var(--steam-deep);font-weight:700;}
-.card h3{font-family:'Shippori Mincho',serif;font-size:19px;margin:2px 0 0;color:var(--ink);}
+.card h3{font-family:'Shippori Mincho',serif;font-size:19px;margin:2px 0 0;color:var(--ink);line-height:1.35;}
 .fav{border:none;background:none;cursor:pointer;font-size:18px;color:var(--line);line-height:1;padding:2px;}
 .fav.on{color:var(--gold-deep);}
-.card p{font-size:13.5px;line-height:1.75;color:var(--ink-soft);margin:0;flex:1;}
+.card p{font-size:13px;line-height:1.75;color:var(--ink-soft);margin:0;flex:1;}
 .card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
 .tag{font-size:11px;padding:3px 9px;border-radius:999px;font-weight:700;}
 .tag.cat{background:#EFE7D6;color:var(--clay-deep);}
 .tag.season{background:#E4EAE1;color:var(--pine-deep);}
 .tag.user{background:#E6EDF1;color:var(--steam-deep);}
-.card-actions{display:flex;gap:8px;margin-top:6px;}
+/* 🎫 門票標籤樣式 */
+.tag.ticket{background:#FCF4E2;color:var(--gold-deep);border:1px solid rgba(199,154,68,0.35);}
+
+.card-actions{display:flex;gap:8px;margin-top:8px;}
 .maplink{flex:1;text-align:center;border:1px solid var(--line);border-radius:6px;padding:7px 8px;font-size:12px;color:var(--steam-deep);text-decoration:none;font-weight:700;}
 .maplink:hover{border-color:var(--steam);background:#F4F7F8;}
 .maplink.route{color:var(--clay-deep);}
@@ -170,7 +128,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="toolbar">
     <div class="search">
       <span aria-hidden="true">🔎</span>
-      <input id="searchInput" type="text" placeholder="搜尋景點名稱或關鍵字，例如：溫泉、楓葉、金鱗湖">
+      <input id="searchInput" type="text" placeholder="搜尋景點名稱或關鍵字，例如：溫泉、免費、門票、金鱗湖">
     </div>
     <div class="chiprow" id="prefRow"><span class="chiprow-label">縣市</span></div>
     <div class="chiprow" id="catRow"><span class="chiprow-label">類型</span></div>
@@ -183,18 +141,6 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 
   <div class="form" id="addForm">
     <h3>新增一個景點</h3>
-
-    <div class="smart-helper">
-      <div class="smart-helper-title">🪄 快速智慧填入助手</div>
-      <div class="smart-helper-row">
-        <input id="helper-input" type="text" placeholder="貼上 Google 地圖分享連結，或直接輸入景點/地址（如：由布院金鱗湖）">
-        <button type="button" id="helper-btn">一鍵填入</button>
-      </div>
-      <div class="hint-text">
-        💡 <b>貼心提示：</b>您可以直接複製 Google Maps 上的店家網址貼進去，或是直接打「福岡 櫛田神社」，系統會透過雲端定位自動抓取名稱、所屬縣市與地址並幫您寫好表格！
-      </div>
-    </div>
-
     <div class="row">
       <div>
         <label for="f-name">景點名稱</label>
@@ -214,6 +160,13 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
         <label for="f-season">最佳季節（選填）</label>
         <input id="f-season" type="text" placeholder="例如：11月賞楓">
       </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="f-ticket">門票費用資訊</label>
+        <input id="f-ticket" type="text" placeholder="例如：免費參觀、或約 500 日圓">
+      </div>
+      <div style="visibility: hidden;"> </div>
     </div>
     <div>
       <label for="f-desc">簡介</label>
@@ -258,52 +211,62 @@ const WEATHER_CODE_MAP = {
   95:"雷雨",96:"雷雨挾冰雹",99:"雷雨挾冰雹"
 };
 
+// 45個經典景點：更新導入 Unsplash 照片(img)與真實門票(ticket)資訊
 const CURATED = [
-  {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",desc:"創建逾千年的學問之神總本社，參道兩旁有伴手禮與名物梅枝餅，是福岡最具代表性的神社。"},
-  {id:"c2",name:"柳川遊船",pref:"福岡",cat:"城市漫遊",season:"全年",desc:"搭乘搖櫓船穿梭九州水鄉柳川，沿岸古色古香，上岸後可品嘗當地招牌蒸籠鰻魚飯。"},
-  {id:"c3",name:"博多運河城",pref:"福岡",cat:"城市漫遊",season:"全年",desc:"結合購物、美食與光影水舞表演的大型商場，鄰近博多屋台街，是福岡市區的人氣去處。"},
-  {id:"c4",name:"門司港懷舊",pref:"福岡",cat:"歷史文化",season:"全年",desc:"保留大正時期異國風情建築的港町，適合悠閒散步，欣賞海港與復古洋樓景致。"},
-  {id:"c5",name:"福岡塔",pref:"福岡",cat:"城市漫遊",season:"全年",desc:"福岡地標展望塔，可俯瞰博多灣與市區夜景。"},
-  {id:"c6",name:"大濠公園",pref:"福岡",cat:"自然景觀",season:"春季賞櫻",desc:"以大池為中心的市區公園，環湖步道適合散步慢跑，鄰近福岡城跡與美術館。"},
-  {id:"c7",name:"海之中道海濱公園",pref:"福岡",cat:"親子樂園",season:"春季花海、夏季戲水",desc:"結合花海、動物園與水上樂園的濱海公園，鄰近海洋世界水族館，適合親子出遊。"},
-  {id:"c8",name:"小倉城",pref:"福岡",cat:"歷史文化",season:"春季賞櫻",desc:"北九州地標古城，天守閣可眺望市區，周邊庭園與美食街值得順遊。"},
-  {id:"c9",name:"櫛田神社",pref:"福岡",cat:"歷史文化",season:"7月博多祇園山笠祭典",desc:"博多總鎮守神社，是博多祇園山笠祭典的中心，展示華麗的裝飾山笠。"},
-  {id:"c10",name:"唐津城",pref:"佐賀",cat:"歷史文化",season:"3-4月賞櫻",desc:"矗立於海岸邊的古城，天守閣可眺望唐津灣與虹之松原的景色。"},
-  {id:"c11",name:"有田陶瓷之鄉",pref:"佐賀",cat:"歷史文化",season:"全年",desc:"日本瓷器發源地，街區保留窯元老鋪，適合喜愛工藝與陶瓷文化的旅人。"},
-  {id:"c12",name:"嬉野溫泉",pref:"佐賀",cat:"溫泉",season:"全年",desc:"以滑順美肌之湯聞名的溫泉鄉，泉質溫和，是佐賀著名的療癒景點。"},
-  {id:"c13",name:"虹之松原",pref:"佐賀",cat:"自然景觀",season:"全年",desc:"日本三大松原之一，沿海岸線綿延的黑松林，適合騎單車或散步。"},
-  {id:"c14",name:"吉野里遺跡",pref:"佐賀",cat:"歷史文化",season:"全年",desc:"日本規模最大的彌生時代聚落遺跡公園，重現古代環壕聚落樣貌。"},
-  {id:"c15",name:"豪斯登堡",pref:"長崎",cat:"親子樂園",season:"全年，冬季有燈光祭",desc:"歐風主題樂園，四季花卉祭典與夜間燈光秀為一大亮點，適合親子與情侶同遊。"},
-  {id:"c16",name:"九十九島",pref:"長崎",cat:"自然景觀",season:"全年",desc:"佐世保外海約208座島嶼群，搭乘遊覽船可俯瞰群島交織的海景。"},
-  {id:"c17",name:"稻佐山夜景",pref:"長崎",cat:"自然景觀",season:"全年，冬季空氣清澈",desc:"與函館、神戶並列日本三大夜景之一，纜車或公路皆可登頂欣賞長崎港夜色。"},
-  {id:"c18",name:"出島",pref:"長崎",cat:"歷史文化",season:"全年",desc:"江戶鎖國時期日本對外唯一貿易窗口的復原園區，見證長崎的異國交流史。"},
-  {id:"c19",name:"眼鏡橋",pref:"長崎",cat:"歷史文化",season:"全年",desc:"日本現存最古老的石造拱橋之一，倒映水面時形似眼鏡而得名。"},
-  {id:"c20",name:"哥拉巴園",pref:"長崎",cat:"歷史文化",season:"全年",desc:"保留明治時期洋樓建築群的山丘公園，可俯瞰長崎港與造船廠景色。"},
-  {id:"c21",name:"熊本城",pref:"熊本",cat:"歷史文化",season:"春季賞櫻、秋季賞銀杏",desc:"日本三大名城之一，以陡峭的「武者返」石牆聞名，目前部分區域仍在震後修復中。"},
-  {id:"c22",name:"阿蘇火山",pref:"熊本",cat:"自然景觀",season:"全年（依火山狀況開放）",desc:"擁有世界規模數一數二的破火山口地形，可搭車或纜車接近火山口一帶。"},
-  {id:"c23",name:"草千里之濱",pref:"熊本",cat:"自然景觀",season:"全年",desc:"阿蘇火山口旁遼闊草原，可體驗騎馬，周邊設有咖啡廳與商店。"},
-  {id:"c24",name:"黑川溫泉",pref:"熊本",cat:"溫泉",season:"全年，秋季楓紅",desc:"素有日本最美溫泉鄉之稱，古樸街道與繚繞溪谷煙霧營造懷舊氛圍。"},
-  {id:"c25",name:"上色見熊野座神社",pref:"熊本",cat:"歷史文化",season:"全年",desc:"長滿青苔的鳥居與神秘岩壁大風穴，被稱為奧阿蘇的能量景點。"},
-  {id:"c26",name:"通潤橋",pref:"熊本",cat:"歷史文化",season:"放水期夏季週末",desc:"江戶時代建造的石造水路橋，定期放水演出是山都町的著名景觀。"},
-  {id:"c27",name:"熊本熊部長辦公室",pref:"熊本",cat:"親子樂園",season:"全年",desc:"熊本熊的官方辦公室，不定期可見熊本熊出勤與互動表演，親子必訪。"},
-  {id:"c28",name:"由布院金鱗湖",pref:"大分",cat:"溫泉",season:"秋冬清晨易起晨霧",desc:"溫泉小鎮由布院的象裝，湖水因溫泉與清水交會，清晨常籠罩薄霧，宛如仙境。"},
-  {id:"c29",name:"別府地獄溫泉",pref:"大分",cat:"溫泉",season:"全年",desc:"共有八處色彩與型態各異的地獄溫泉景觀，可購買套票一次巡遊。"},
-  {id:"c30",name:"九重夢大吊橋",pref:"大分",cat:"自然景觀",season:"11月上旬賞楓最佳",desc:"日本數一數二高的人行吊橋，橋上可遠眺「震動之瀑」與滿山楓紅。"},
-  {id:"c31",name:"九州自然動物公園",pref:"大分",cat:"親子樂園",season:"全年",desc:"日本最大級野生動物園之一，可搭乘叢林巴士近距離餵食獅子、長頸鹿等動物。"},
-  {id:"c32",name:"由布岳",pref:"大分",cat:"自然景觀",season:"春夏適合登山",desc:"有「豐後富士」之稱的秀麗山峰，登山口鄰近由布院，山頂可俯瞰盆地全景。"},
-  {id:"c33",name:"杉乃井溫泉棚湯",pref:"大分",cat:"溫泉",season:"全年",desc:"別府知名大型露天梯田浴場，可一邊泡湯一邊眺望別府灣景色。"},
-  {id:"c34",name:"高千穗峽",pref:"宮崎",cat:"自然景觀",season:"春季山櫻、秋季紅葉",desc:"熔岩侵蝕形成的V字峽谷，真名井瀑布飛瀉而下，是日本神話的重要舞台。"},
-  {id:"c35",name:"日南太陽花園",pref:"宮崎",cat:"自然景觀",season:"全年",desc:"面向日南海岸的丘陵公園，園內矗立世界唯一獲官方認可的復活節島摩艾石像複製品。"},
-  {id:"c36",name:"鵜戶神宮",pref:"宮崎",cat:"歷史文化",season:"全年",desc:"建於海蝕洞窟內的朱紅色神社，面向太平洋，景色壯麗且氣氛神秘。"},
-  {id:"c37",name:"青島神社",pref:"宮崎",cat:"歷史文化",season:"全年",desc:"周邊環繞奇特的「鬼之洗衣板」波狀岩層，神社與自然景觀相映成趣。"},
-  {id:"c38",name:"生駒高原",pref:"宮崎",cat:"花卉庭園",season:"春季油菜花、秋季波斯菊與掃帚草",desc:"季節花海高原，秋天成片轉紅的掃帚草與波斯菊是熱門拍照景點。"},
-  {id:"c39",name:"仙巖園",pref:"鹿兒島",cat:"歷史文化",season:"全年",desc:"江戶時期島津家別墅庭園，以櫻島火山為借景，園內尚古集成館列為世界文化遺產。"},
-  {id:"c40",name:"櫻島活火山",pref:"鹿兒島",cat:"自然景觀",season:"全年",desc:"至今仍活躍的火山島，半山腰展望台可散步於熔岩遊步道，眺望鹿兒島灣。"},
-  {id:"c41",name:"屋久島",pref:"鹿兒島",cat:"自然景觀",season:"全年，春夏較宜健行",desc:"擁有千年杉原始林的世界自然遺產島嶼，適合健行與深度自然體驗。"},
-  {id:"c42",name:"指宿溫泉砂浴",pref:"鹿兒島",cat:"溫泉",season:"全年",desc:"世界少見的天然溫泉砂浴體驗，將身體埋入溫熱砂中促進血液循環。"},
-  {id:"c43",name:"霧島神宮",pref:"鹿兒島",cat:"歷史文化",season:"全年",desc:"朱紅色社殿座落於霧島群山之間，是日本神話中天孫降臨傳說地之一。"},
-  {id:"c44",name:"知覽武家屋敷",pref:"鹿兒島",cat:"歷史文化",season:"全年",desc:"保留江戶時代武士宅邸與庭園的老街區，被稱為「薩摩小京都」。"},
-  {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年，夏季適合浮潛",desc:"擁有亞熱帶原始林與珊瑚礁海域的世界自然遺產島嶼，生態豐富。"}
+  {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"創建逾千年的學問之神總本社，參道兩旁有伴手禮與名物梅枝餅，是福岡最具代表性的神社。"},
+  {id:"c2",name:"柳川遊船",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需購船票 (約1800日圓)",img:"https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",desc:"搭乘搖櫓船穿梭九州水鄉柳川，沿岸古色古香，上岸後可品嘗當地招牌蒸籠鰻魚飯。"},
+  {id:"c3",name:"博多運河城",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",desc:"結合購物、美食與光影水舞表演的大型商場，鄰近博多屋台街，是福岡市區的人氣去處。"},
+  {id:"c4",name:"門司港懷舊",pref:"福岡",cat:"歷史文化",season:"全年",ticket:"免費參觀 (部分場館收費)",img:"https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=600&q=80",desc:"保留大正時期異國風情建築的港町，適合悠閒散步，欣賞海港與復古洋樓景致。"},
+  {id:"c5",name:"福岡塔",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需展望台門票 (約800日圓)",img:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",desc:"福岡地標展望塔，可俯瞰博多灣與市區夜景。"},
+  {id:"c6",name:"大濠公園",pref:"福岡",cat:"自然景觀",season:"春季賞櫻",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?auto=format&fit=crop&w=600&q=80",desc:"以大池為中心的市區公園，環湖步道適合散步慢跑，鄰近福岡城跡與美術館。"},
+  {id:"c7",name:"海之中道海濱公園",pref:"福岡",cat:"親子樂園",season:"春季花海、夏季戲水",ticket:"需入園費 (約450日圓)",img:"https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",desc:"結合花海、動物園與水上樂園的濱海公園，鄰近海洋世界水族館，適合親子出遊。"},
+  {id:"c8",name:"小倉城",pref:"福岡",cat:"歷史文化",season:"春季賞櫻",ticket:"天守閣需門票 (約350日圓)",img:"https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=600&q=80",desc:"北九州地標古城，天守閣可眺望市區，周邊庭園與美食街值得順遊。"},
+  {id:"c9",name:"櫛田神社",pref:"福岡",cat:"歷史文化",season:"7月博多祇園山笠祭典",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",desc:"博多總鎮守神社，是博多祇園山笠祭典的中心，展示華麗的裝飾山笠。"},
+  {id:"c10",name:"唐津城",pref:"佐賀",cat:"歷史文化",season:"3-4月賞櫻",ticket:"天守閣需門票 (約500日圓)",img:"https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?auto=format&fit=crop&w=600&q=80",desc:"矗立於海岸邊的古城，天守閣可眺望唐津灣與虹之松原的景色。"},
+  {id:"c11",name:"有田陶瓷之鄉",pref:"佐賀",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=600&q=80",desc:"日本瓷器發源地，街區保留窯元老鋪，適合喜愛工藝與陶瓷文化的旅人。"},
+  {id:"c12",name:"嬉野溫泉",pref:"佐賀",cat:"溫泉",season:"全年",ticket:"免費參觀 (泡湯另計)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"以滑順美肌之湯聞名的溫泉鄉，泉質溫和，是佐賀著名的療癒景點。"},
+  {id:"c13",name:"虹之松原",pref:"佐賀",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80",desc:"日本三大松原之一，沿海岸線綿延的黑松林，適合騎單車或散步。"},
+  {id:"c14",name:"吉野里遺跡",pref:"佐賀",cat:"歷史文化",season:"全年",ticket:"需入園費 (約460日圓)",img:"https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?auto=format&fit=crop&w=600&q=80",desc:"日本規模最大的彌生時代聚落遺跡公園，重現古代環壕聚落樣貌。"},
+  {id:"c15",name:"豪斯登堡",pref:"長崎",cat:"親子樂園",season:"全年，冬季有燈光祭",ticket:"需一日通票 (約7400日圓)",img:"https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",desc:"歐風主題樂園，四季花卉祭典與夜間燈光秀為一大亮點，適合親子與情侶同遊。"},
+  {id:"c16",name:"九十九島",pref:"長崎",cat:"自然景觀",season:"全年",ticket:"免費參觀 (觀光船另計)",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"佐世保外海約208座島嶼群，搭乘遊覽船可俯瞰群島交織的海景。"},
+  {id:"c17",name:"稻佐山夜景",pref:"長崎",cat:"自然景觀",season:"全年，冬季空氣清澈",ticket:"免費參觀 (纜車另計)",img:"https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?auto=format&fit=crop&w=600&q=80",desc:"與函館、神戶並列日本三大夜景之一，纜車或公路皆可登頂欣賞長崎港夜色。"},
+  {id:"c18",name:"出島",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"需入場費 (約520日圓)",img:"https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80",desc:"江戶鎖國時期日本對外唯一貿易窗口的復原園區，見證長崎的異國交流史。"},
+  {id:"c19",name:"眼鏡橋",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",desc:"日本現存最古老的石造拱橋之一，倒映水面時形似眼鏡而得名。"},
+  {id:"c20",name:"哥拉巴園",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"需入場費 (約620日圓)",img:"https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",desc:"保留明治時期洋樓建築群的山丘公園，可俯瞰長崎港與造船廠景色。"},
+  {id:"c21",name:"熊本城",pref:"熊本",cat:"歷史文化",season:"春季賞櫻、秋季賞銀杏",ticket:"需入城費 (約800日圓)",img:"https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?auto=format&fit=crop&w=600&q=80",desc:"日本三大名城之一，以陡峭的「武者返」石牆聞名，目前部分區域仍在震後修復中。"},
+  {id:"c22",name:"阿蘇火山",pref:"熊本",cat:"自然景觀",season:"全年（依火山狀況開放）",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"擁有世界規模數一數二的破火山口地形，可搭車或纜車接近火山口一帶。"},
+  {id:"c23",name:"草千里之濱",pref:"熊本",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",desc:"阿蘇火山口旁遼闊草原，可體驗騎馬，周邊設有咖啡廳與商店。"},
+  {id:"c24",name:"黑川溫泉",pref:"熊本",cat:"溫泉",season:"全年，秋季楓紅",ticket:"免費參觀 (泡湯另計)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"素有日本最美溫泉鄉之稱，古樸街道與繚繞溪谷煙霧營造懷舊氛圍。"},
+  {id:"c25",name:"上色見熊野座神社",pref:"熊本",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80",desc:"長滿青苔的鳥居與神秘岩壁大風穴，被稱為奧阿蘇的能量景點。"},
+  {id:"c26",name:"通潤橋",pref:"熊本",cat:"歷史文化",season:"放水期夏季週末",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1472214222541-d510753a4907?auto=format&fit=crop&w=600&q=80",desc:"江戶時代建造的石造水路橋，定期放水演出是山都町的著名景觀。"},
+  {id:"c27",name:"熊本熊部長辦公室",pref:"熊本",cat:"親子樂園",season:"全年",ticket:"免費入場",img:"https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?auto=format&fit=crop&w=600&q=80",desc:"熊本熊的官方辦公室，不定期可見熊本熊出勤與互動表演，親子必訪。"},
+  {id:"c28",name:"由布院金鱗湖",pref:"大分",cat:"溫泉",season:"秋冬清晨易起晨霧",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?auto=format&fit=crop&w=600&q=80",desc:"溫泉小鎮由布院的象徵，湖水因溫泉與清水交會，清晨常籠罩薄霧，宛如仙境。"},
+  {id:"c29",name:"別府地獄溫泉",pref:"大分",cat:"溫泉",season:"全年",ticket:"通票需購票 (約2200日圓)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"共有八處色彩與型態各異的地獄溫泉景觀，可購買套票一次巡遊。"},
+  {id:"c30",name:"九重夢大吊橋",pref:"大分",cat:"自然景觀",season:"11月上旬賞楓最佳",ticket:"需過橋費 (約500日圓)",img:"https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=600&q=80",desc:"日本數一數二高的人行吊橋，橋上可遠眺「震動之瀑」與滿山楓紅。"},
+  {id:"c31",name:"九州自然動物公園",pref:"大分",cat:"親子樂園",season:"全年",ticket:"需入園與巴士費 (約2600日圓)",img:"https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=600&q=80",desc:"日本最大級野生動物園之一，可搭乘叢林巴士近距離餵食獅子、長頸鹿等動物。"},
+  {id:"c32",name:"由布岳",pref:"大分",cat:"自然景觀",season:"春夏適合登山",ticket:"免費攀登",img:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",desc:"有「豐後富士」之稱的秀麗山峰，登山口鄰近由布院，山頂可俯瞰盆地全景。"},
+  {id:"c33",name:"杉乃井溫泉棚湯",pref:"大分",cat:"溫泉",season:"全年",ticket:"泡湯需門票 (約1200日圓起)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"別府知名大型露天梯田浴場，可一邊泡湯一邊眺望別府灣景色。"},
+  {id:"c34",name:"高千穗峽",pref:"宮崎",cat:"自然景觀",season:"春季山櫻、秋季紅葉",ticket:"免費參觀 (划船另計)",img:"https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=600&q=80",desc:"熔岩侵蝕形成的V字峽谷，真名井瀑布飛瀉而下，是日本神話的重要舞台。"},
+  {id:"c35",name:"日南太陽花園",pref:"宮崎",cat:"自然景觀",season:"全年",ticket:"需入園費 (約800日圓)",img:"https://images.unsplash.com/photo-1447690700603-cd113f674261?auto=format&fit=crop&w=600&q=80",desc:"面向日南海岸的丘陵公園，園內矗立世界唯一獲官方認可的復活節島摩艾石像複製品。"},
+  {id:"c36",name:"鵜戶神宮",pref:"宮崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"建於海蝕洞窟內的朱紅色神社，面向太平洋，景色壯麗且氣氛神秘。"},
+  {id:"c37",name:"青島神社",pref:"宮崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"周邊環繞奇特的「鬼之洗衣板」波狀岩層，神社與自然景觀相映成趣。"},
+  {id:"c38",name:"生駒高原",pref:"宮崎",cat:"花卉庭園",season:"春季油菜花、秋季波斯菊與掃帚草",ticket:"需入園費 (約600日圓)",img:"https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",desc:"季節花海高原，秋天成片轉紅的掃帚草與波斯菊是熱門拍照景點。"},
+  {id:"c39",name:"仙巖園",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"需入園費 (約1000日圓)",img:"https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=600&q=80",desc:"江戶時期島津家別墅庭園，以櫻島火山為借景，園內尚古集成館列為世界文化遺產。"},
+  {id:"c40",name:"櫻島活火山",pref:"鹿兒島",cat:"自然景觀",season:"全年",ticket:"免費參觀 (渡輪另計)",img:"https://images.unsplash.com/photo-1536152470836-b943b246224c?auto=format&fit=crop&w=600&q=80",desc:"至今仍活躍的火山島，半山腰展望台可散步於熔岩遊步道，眺望鹿兒島灣。"},
+  {id:"c41",name:"屋久島",pref:"鹿兒島",cat:"自然景觀",season:"全年，春夏較宜健行",ticket:"環境協力金 (約1000日圓)",img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80",desc:"擁有千年杉原始林的世界自然遺產島嶼，適合健行與深度自然體驗。"},
+  {id:"c42",name:"指宿溫泉砂浴",pref:"鹿兒島",cat:"溫泉",season:"全年",ticket:"需體驗票 (約1100日圓)",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"世界少見的天然溫泉砂浴體驗，將身體埋入溫熱砂中促進血液循環。"},
+  {id:"c43",name:"霧島神宮",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"朱紅色社殿座落於霧島群山之間，是日本神話中天孫降臨傳說地之一。"},
+  {id:"c44",name:"知覽武家屋敷",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"需庭園門票 (約530日圓)",img:"https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80",desc:"保留江戶時代武士宅邸與庭園的老街區，被稱為「薩摩小京都」。"},
+  {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年，夏季適合浮潛",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"擁有亞熱帶原始林與珊瑚礁海域的世界自然遺產島嶼，生態豐富。"}
+];
+
+// 高品質的日本風景風景預備圖，用於自訂新增景點的隨機配圖
+const FALLBACK_PICS = [
+  "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80"
 ];
 
 let userSpots = [];
@@ -367,7 +330,7 @@ function render(){
   const spots = allSpots().filter(s => {
     if(activePref && s.pref !== activePref) return false;
     if(activeCat && s.cat !== activeCat) return false;
-    if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q))) return false;
+    if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q))) return false;
     return true;
   });
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
@@ -375,6 +338,18 @@ function render(){
 
   spots.forEach(s => {
     const card = el('div','card');
+    
+    // 📸 1. 載入景點圖片區塊
+    const imgWrapper = el('div', 'card-img-wrapper');
+    const img = el('img', 'card-img');
+    img.src = s.img || FALLBACK_PICS[Math.floor(Math.random() * FALLBACK_PICS.length)];
+    img.alt = s.name;
+    img.loading = "lazy"; // 提高載入效能
+    imgWrapper.appendChild(img);
+    card.appendChild(imgWrapper);
+
+    const body = el('div', 'card-body');
+
     const top = el('div','card-top');
     const left = el('div');
     left.appendChild(el('div','card-pref',s.pref));
@@ -385,13 +360,21 @@ function render(){
     fav.setAttribute('aria-label','收藏此景點');
     fav.addEventListener('click', () => toggleFavorite(s.id, fav));
     top.appendChild(fav);
-    card.appendChild(top);
-    card.appendChild(el('p',null,s.desc));
+    body.appendChild(top);
+
+    body.appendChild(el('p',null,s.desc));
+    
+    // 🏷️ 2. 分類與門票等 Tags 標籤列
     const tags = el('div','card-tags');
     tags.appendChild(el('span','tag cat',s.cat));
+    
+    // 顯示門票資訊 (預設為免費參觀)
+    const ticketText = s.ticket || "免費參觀";
+    tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
+
     if(s.season) tags.appendChild(el('span','tag season',s.season));
     if(s.userAdded) tags.appendChild(el('span','tag user','使用者新增'));
-    card.appendChild(tags);
+    body.appendChild(tags);
 
     const actions = el('div','card-actions');
     const viewLink = document.createElement('a');
@@ -408,8 +391,9 @@ function render(){
     routeLink.textContent = '🚗 規劃路線';
     actions.appendChild(viewLink);
     actions.appendChild(routeLink);
-    card.appendChild(actions);
+    body.appendChild(actions);
 
+    card.appendChild(body);
     grid.appendChild(card);
   });
 }
@@ -453,95 +437,10 @@ document.getElementById('cancelSpot').addEventListener('click', () => {
   formEl.classList.remove('open');
 });
 
-// 🪄 實作「智慧填入助手」解析與線上搜尋
-document.getElementById('helper-btn').addEventListener('click', async () => {
-  const inputVal = document.getElementById('helper-input').value.trim();
-  if (!inputVal) {
-    alert("請先輸入名稱、地址，或貼上 Google 地圖連結。");
-    return;
-  }
-
-  const btn = document.getElementById('helper-btn');
-  const originalText = btn.textContent;
-  btn.textContent = "🔍 處理中...";
-  btn.disabled = true;
-
-  try {
-    let queryText = inputVal;
-    let extractedName = "";
-
-    // 1. 判斷是否為 Google 地圖連結並嘗試解析景點名稱
-    if (inputVal.includes("google.com/maps") || inputVal.includes("maps.app.goo.gl")) {
-      try {
-        const decoded = decodeURIComponent(inputVal);
-        // 解析常見的 /place/名稱 格式
-        const placeMatch = decoded.match(/\/place\/([^/]+)/);
-        if (placeMatch && placeMatch[1]) {
-          // 將連結中的 '+' 取代成空格
-          extractedName = placeMatch[1].replace(/\+/g, " ");
-          queryText = extractedName;
-        } else {
-          // 如果是短網址，提醒使用者，並進入一般搜尋
-          queryText = "九州"; 
-        }
-      } catch (e) {
-        console.warn("解析網址失敗，改用文字搜尋", e);
-      }
-    }
-
-    // 2. 使用免費 Nominatim API 線上定位取得詳細地址與對應縣市
-    const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryText)}&accept-language=zh-TW&limit=1`;
-    const res = await fetch(searchUrl, {
-      headers: { "Accept-Language": "zh-TW,zh;q=0.9,ja;q=0.8" }
-    });
-    
-    if (!res.ok) throw new Error("API 請求失敗");
-    const data = await res.json();
-
-    if (data && data.length > 0) {
-      const result = data[0];
-      const fullName = result.display_name;
-      
-      // 擷取簡短的地名作為景點名稱
-      const parts = result.name ? result.name : fullName.split(',')[0];
-      document.getElementById('f-name').value = extractedName || parts;
-      
-      // 自動填入地址至簡介
-      document.getElementById('f-desc').value = `地址：${fullName}\n（經由智慧填入自動定位）`;
-
-      // 智慧辨識九州七縣
-      let matchedPref = "福岡"; // 預設
-      for (const p of PREFS) {
-        if (fullName.includes(p)) {
-          matchedPref = p;
-          break;
-        }
-      }
-      fPref.value = matchedPref;
-      
-      alert(`✨ 已成功辨識並帶入：\n📍 名稱：${extractedName || parts}\n🗺️ 縣市：${matchedPref}\n🏠 地址：${fullName}`);
-    } else {
-      // 若查無此處，但使用者是貼上 Google 連結，則至少把解析出的名字帶進去
-      if (extractedName) {
-        document.getElementById('f-name').value = extractedName;
-        document.getElementById('f-desc').value = "（已從 Google Maps 連結中解析出景點名稱，但無法獲取精確地址，建議手動補充說明）";
-        alert(`⚠️ 已從網址解析出地名「${extractedName}」，但線上找不到該具體地址，已自動幫您填入地名。`);
-      } else {
-        alert("🔍 線上定位查無此地點，請嘗試輸入更具體的關鍵字（例如加上「日本 九州」）。");
-      }
-    }
-  } catch (error) {
-    console.error(error);
-    alert("❌ 智慧填入連線失敗，請檢查網路連線或改用手動輸入。");
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
-  }
-});
-
 document.getElementById('submitSpot').addEventListener('click', () => {
   const name = document.getElementById('f-name').value.trim();
   const desc = document.getElementById('f-desc').value.trim();
+  const ticketInput = document.getElementById('f-ticket').value.trim();
   if(!name || !desc){
     alert('請至少填寫景點名稱與簡介');
     return;
@@ -552,6 +451,7 @@ document.getElementById('submitSpot').addEventListener('click', () => {
     pref: fPref.value,
     cat: fCat.value,
     season: document.getElementById('f-season').value.trim(),
+    ticket: ticketInput || '免費參觀',
     desc,
     userAdded: true
   };
@@ -560,7 +460,7 @@ document.getElementById('submitSpot').addEventListener('click', () => {
   document.getElementById('f-name').value = '';
   document.getElementById('f-desc').value = '';
   document.getElementById('f-season').value = '';
-  document.getElementById('helper-input').value = '';
+  document.getElementById('f-ticket').value = '';
   formEl.classList.remove('open');
   render();
 });
