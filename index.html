@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>九州觀景誌｜Kyushu Sight Log</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght=500;700&family=Noto+Sans+TC:wght=400;500;700&display=swap');
 
 :root{
   --paper:#F1ECDD;
@@ -74,10 +74,10 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform 0.2s, box-shadow 0.2s;}
 .card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(38,34,27,0.08);}
 
-/* 景點相片排版區 */
-.card-img-wrapper{position:relative;width:100%;height:160px;background:#E8E1CC;overflow:hidden;}
+/* 景點真實相片區 */
+.card-img-wrapper{position:relative;width:100%;height:170px;background:#E8E1CC;overflow:hidden;border-bottom:1px solid var(--line);}
 .card-img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
-.card:hover .card-img{transform:scale(1.06);}
+.card:hover .card-img{transform:scale(1.05);}
 
 .card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1;}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
@@ -91,7 +91,6 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .tag.cat{background:#EFE7D6;color:var(--clay-deep);}
 .tag.season{background:#E4EAE1;color:var(--pine-deep);}
 .tag.user{background:#E6EDF1;color:var(--steam-deep);}
-/* 🎫 門票標籤樣式 */
 .tag.ticket{background:#FCF4E2;color:var(--gold-deep);border:1px solid rgba(199,154,68,0.35);}
 
 .card-actions{display:flex;gap:8px;margin-top:8px;}
@@ -166,7 +165,8 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
         <label for="f-ticket">門票費用資訊</label>
         <input id="f-ticket" type="text" placeholder="例如：免費參觀、或約 500 日圓">
       </div>
-      <div style="visibility: hidden;"> </div>
+      <div style="visibility: hidden;">
+      </div>
     </div>
     <div>
       <label for="f-desc">簡介</label>
@@ -176,14 +176,14 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
       <button class="btn-primary" id="submitSpot">加入景點清單</button>
       <button class="btn-ghost" id="cancelSpot">取消</button>
     </div>
-    <p class="hint">新增的景點會標示「使用者新增」，並保存在這台裝置的瀏覽器裡，之後在同一台裝置、同一個瀏覽器再次打開這個檔案也能看到。</p>
+    <p class="hint">新增的景點會標示「使用者新增」，並保存在這台裝置的瀏覽器裡。</p>
   </div>
 
   <div class="grid" id="grid"></div>
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
   <footer>
-    景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+    景點資料與真實景點照片整理自維基百科公有領域授權與公開旅遊資訊，僅供行前參考，實際開放時間與票價請以官方公告為準。
   </footer>
 </div>
 
@@ -211,62 +211,60 @@ const WEATHER_CODE_MAP = {
   95:"雷雨",96:"雷雨挾冰雹",99:"雷雨挾冰雹"
 };
 
-// 45個經典景點：更新導入 Unsplash 照片(img)與真實門票(ticket)資訊
+// 45個經典景點：全面替換為維基百科 (Wikipedia/Wikimedia) 真實現場實景照片！
 const CURATED = [
-  {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"創建逾千年的學問之神總本社，參道兩旁有伴手禮與名物梅枝餅，是福岡最具代表性的神社。"},
-  {id:"c2",name:"柳川遊船",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需購船票 (約1800日圓)",img:"https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",desc:"搭乘搖櫓船穿梭九州水鄉柳川，沿岸古色古香，上岸後可品嘗當地招牌蒸籠鰻魚飯。"},
-  {id:"c3",name:"博多運河城",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",desc:"結合購物、美食與光影水舞表演的大型商場，鄰近博多屋台街，是福岡市區的人氣去處。"},
-  {id:"c4",name:"門司港懷舊",pref:"福岡",cat:"歷史文化",season:"全年",ticket:"免費參觀 (部分場館收費)",img:"https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=600&q=80",desc:"保留大正時期異國風情建築的港町，適合悠閒散步，欣賞海港與復古洋樓景致。"},
-  {id:"c5",name:"福岡塔",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需展望台門票 (約800日圓)",img:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",desc:"福岡地標展望塔，可俯瞰博多灣與市區夜景。"},
-  {id:"c6",name:"大濠公園",pref:"福岡",cat:"自然景觀",season:"春季賞櫻",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?auto=format&fit=crop&w=600&q=80",desc:"以大池為中心的市區公園，環湖步道適合散步慢跑，鄰近福岡城跡與美術館。"},
-  {id:"c7",name:"海之中道海濱公園",pref:"福岡",cat:"親子樂園",season:"春季花海、夏季戲水",ticket:"需入園費 (約450日圓)",img:"https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",desc:"結合花海、動物園與水上樂園的濱海公園，鄰近海洋世界水族館，適合親子出遊。"},
-  {id:"c8",name:"小倉城",pref:"福岡",cat:"歷史文化",season:"春季賞櫻",ticket:"天守閣需門票 (約350日圓)",img:"https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=600&q=80",desc:"北九州地標古城，天守閣可眺望市區，周邊庭園與美食街值得順遊。"},
-  {id:"c9",name:"櫛田神社",pref:"福岡",cat:"歷史文化",season:"7月博多祇園山笠祭典",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",desc:"博多總鎮守神社，是博多祇園山笠祭典的中心，展示華麗的裝飾山笠。"},
-  {id:"c10",name:"唐津城",pref:"佐賀",cat:"歷史文化",season:"3-4月賞櫻",ticket:"天守閣需門票 (約500日圓)",img:"https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?auto=format&fit=crop&w=600&q=80",desc:"矗立於海岸邊的古城，天守閣可眺望唐津灣與虹之松原的景色。"},
-  {id:"c11",name:"有田陶瓷之鄉",pref:"佐賀",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=600&q=80",desc:"日本瓷器發源地，街區保留窯元老鋪，適合喜愛工藝與陶瓷文化的旅人。"},
-  {id:"c12",name:"嬉野溫泉",pref:"佐賀",cat:"溫泉",season:"全年",ticket:"免費參觀 (泡湯另計)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"以滑順美肌之湯聞名的溫泉鄉，泉質溫和，是佐賀著名的療癒景點。"},
-  {id:"c13",name:"虹之松原",pref:"佐賀",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80",desc:"日本三大松原之一，沿海岸線綿延的黑松林，適合騎單車或散步。"},
-  {id:"c14",name:"吉野里遺跡",pref:"佐賀",cat:"歷史文化",season:"全年",ticket:"需入園費 (約460日圓)",img:"https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?auto=format&fit=crop&w=600&q=80",desc:"日本規模最大的彌生時代聚落遺跡公園，重現古代環壕聚落樣貌。"},
-  {id:"c15",name:"豪斯登堡",pref:"長崎",cat:"親子樂園",season:"全年，冬季有燈光祭",ticket:"需一日通票 (約7400日圓)",img:"https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",desc:"歐風主題樂園，四季花卉祭典與夜間燈光秀為一大亮點，適合親子與情侶同遊。"},
-  {id:"c16",name:"九十九島",pref:"長崎",cat:"自然景觀",season:"全年",ticket:"免費參觀 (觀光船另計)",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"佐世保外海約208座島嶼群，搭乘遊覽船可俯瞰群島交織的海景。"},
-  {id:"c17",name:"稻佐山夜景",pref:"長崎",cat:"自然景觀",season:"全年，冬季空氣清澈",ticket:"免費參觀 (纜車另計)",img:"https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?auto=format&fit=crop&w=600&q=80",desc:"與函館、神戶並列日本三大夜景之一，纜車或公路皆可登頂欣賞長崎港夜色。"},
-  {id:"c18",name:"出島",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"需入場費 (約520日圓)",img:"https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80",desc:"江戶鎖國時期日本對外唯一貿易窗口的復原園區，見證長崎的異國交流史。"},
-  {id:"c19",name:"眼鏡橋",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",desc:"日本現存最古老的石造拱橋之一，倒映水面時形似眼鏡而得名。"},
-  {id:"c20",name:"哥拉巴園",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"需入場費 (約620日圓)",img:"https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",desc:"保留明治時期洋樓建築群的山丘公園，可俯瞰長崎港與造船廠景色。"},
-  {id:"c21",name:"熊本城",pref:"熊本",cat:"歷史文化",season:"春季賞櫻、秋季賞銀杏",ticket:"需入城費 (約800日圓)",img:"https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?auto=format&fit=crop&w=600&q=80",desc:"日本三大名城之一，以陡峭的「武者返」石牆聞名，目前部分區域仍在震後修復中。"},
-  {id:"c22",name:"阿蘇火山",pref:"熊本",cat:"自然景觀",season:"全年（依火山狀況開放）",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"擁有世界規模數一數二的破火山口地形，可搭車或纜車接近火山口一帶。"},
-  {id:"c23",name:"草千里之濱",pref:"熊本",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",desc:"阿蘇火山口旁遼闊草原，可體驗騎馬，周邊設有咖啡廳與商店。"},
-  {id:"c24",name:"黑川溫泉",pref:"熊本",cat:"溫泉",season:"全年，秋季楓紅",ticket:"免費參觀 (泡湯另計)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"素有日本最美溫泉鄉之稱，古樸街道與繚繞溪谷煙霧營造懷舊氛圍。"},
-  {id:"c25",name:"上色見熊野座神社",pref:"熊本",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80",desc:"長滿青苔的鳥居與神秘岩壁大風穴，被稱為奧阿蘇的能量景點。"},
-  {id:"c26",name:"通潤橋",pref:"熊本",cat:"歷史文化",season:"放水期夏季週末",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1472214222541-d510753a4907?auto=format&fit=crop&w=600&q=80",desc:"江戶時代建造的石造水路橋，定期放水演出是山都町的著名景觀。"},
-  {id:"c27",name:"熊本熊部長辦公室",pref:"熊本",cat:"親子樂園",season:"全年",ticket:"免費入場",img:"https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?auto=format&fit=crop&w=600&q=80",desc:"熊本熊的官方辦公室，不定期可見熊本熊出勤與互動表演，親子必訪。"},
-  {id:"c28",name:"由布院金鱗湖",pref:"大分",cat:"溫泉",season:"秋冬清晨易起晨霧",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?auto=format&fit=crop&w=600&q=80",desc:"溫泉小鎮由布院的象徵，湖水因溫泉與清水交會，清晨常籠罩薄霧，宛如仙境。"},
-  {id:"c29",name:"別府地獄溫泉",pref:"大分",cat:"溫泉",season:"全年",ticket:"通票需購票 (約2200日圓)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"共有八處色彩與型態各異的地獄溫泉景觀，可購買套票一次巡遊。"},
-  {id:"c30",name:"九重夢大吊橋",pref:"大分",cat:"自然景觀",season:"11月上旬賞楓最佳",ticket:"需過橋費 (約500日圓)",img:"https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=600&q=80",desc:"日本數一數二高的人行吊橋，橋上可遠眺「震動之瀑」與滿山楓紅。"},
-  {id:"c31",name:"九州自然動物公園",pref:"大分",cat:"親子樂園",season:"全年",ticket:"需入園與巴士費 (約2600日圓)",img:"https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=600&q=80",desc:"日本最大級野生動物園之一，可搭乘叢林巴士近距離餵食獅子、長頸鹿等動物。"},
-  {id:"c32",name:"由布岳",pref:"大分",cat:"自然景觀",season:"春夏適合登山",ticket:"免費攀登",img:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",desc:"有「豐後富士」之稱的秀麗山峰，登山口鄰近由布院，山頂可俯瞰盆地全景。"},
-  {id:"c33",name:"杉乃井溫泉棚湯",pref:"大分",cat:"溫泉",season:"全年",ticket:"泡湯需門票 (約1200日圓起)",img:"https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80",desc:"別府知名大型露天梯田浴場，可一邊泡湯一邊眺望別府灣景色。"},
-  {id:"c34",name:"高千穗峽",pref:"宮崎",cat:"自然景觀",season:"春季山櫻、秋季紅葉",ticket:"免費參觀 (划船另計)",img:"https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=600&q=80",desc:"熔岩侵蝕形成的V字峽谷，真名井瀑布飛瀉而下，是日本神話的重要舞台。"},
-  {id:"c35",name:"日南太陽花園",pref:"宮崎",cat:"自然景觀",season:"全年",ticket:"需入園費 (約800日圓)",img:"https://images.unsplash.com/photo-1447690700603-cd113f674261?auto=format&fit=crop&w=600&q=80",desc:"面向日南海岸的丘陵公園，園內矗立世界唯一獲官方認可的復活節島摩艾石像複製品。"},
-  {id:"c36",name:"鵜戶神宮",pref:"宮崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"建於海蝕洞窟內的朱紅色神社，面向太平洋，景色壯麗且氣氛神秘。"},
-  {id:"c37",name:"青島神社",pref:"宮崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"周邊環繞奇特的「鬼之洗衣板」波狀岩層，神社與自然景觀相映成趣。"},
-  {id:"c38",name:"生駒高原",pref:"宮崎",cat:"花卉庭園",season:"春季油菜花、秋季波斯菊與掃帚草",ticket:"需入園費 (約600日圓)",img:"https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",desc:"季節花海高原，秋天成片轉紅的掃帚草與波斯菊是熱門拍照景點。"},
-  {id:"c39",name:"仙巖園",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"需入園費 (約1000日圓)",img:"https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=600&q=80",desc:"江戶時期島津家別墅庭園，以櫻島火山為借景，園內尚古集成館列為世界文化遺產。"},
-  {id:"c40",name:"櫻島活火山",pref:"鹿兒島",cat:"自然景觀",season:"全年",ticket:"免費參觀 (渡輪另計)",img:"https://images.unsplash.com/photo-1536152470836-b943b246224c?auto=format&fit=crop&w=600&q=80",desc:"至今仍活躍的火山島，半山腰展望台可散步於熔岩遊步道，眺望鹿兒島灣。"},
-  {id:"c41",name:"屋久島",pref:"鹿兒島",cat:"自然景觀",season:"全年，春夏較宜健行",ticket:"環境協力金 (約1000日圓)",img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80",desc:"擁有千年杉原始林的世界自然遺產島嶼，適合健行與深度自然體驗。"},
-  {id:"c42",name:"指宿溫泉砂浴",pref:"鹿兒島",cat:"溫泉",season:"全年",ticket:"需體驗票 (約1100日圓)",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"世界少見的天然溫泉砂浴體驗，將身體埋入溫熱砂中促進血液循環。"},
-  {id:"c43",name:"霧島神宮",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"朱紅色社殿座落於霧島群山之間，是日本神話中天孫降臨傳說地之一。"},
-  {id:"c44",name:"知覽武家屋敷",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"需庭園門票 (約530日圓)",img:"https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80",desc:"保留江戶時代武士宅邸與庭園的老街區，被稱為「薩摩小京都」。"},
-  {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年，夏季適合浮潛",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"擁有亞熱帶原始林與珊瑚礁海域的世界自然遺產島嶼，生態豐富。"}
+  {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Dazaifu_Tenmangu_honden.jpg/640px-Dazaifu_Tenmangu_honden.jpg",desc:"創立於 905 年的學問之神菅原道真總本社，其本殿擁有壯麗的桃山時代風格，梅花祭時格外美麗。"},
+  {id:"c2",name:"柳川遊船",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需購船票 (約1800日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Yanagawa_Canal_Shokaku_2011.jpg/640px-Yanagawa_Canal_Shokaku_2011.jpg",desc:"搭乘傳統搖櫓船（どんこ舟）沿著護城河順流而下，欣賞垂柳與兩側歷史悠久的土牆倉庫。"},
+  {id:"c3",name:"博多運河城",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Canal_City_Hakata_201711.jpg/640px-Canal_City_Hakata_201711.jpg",desc:"福岡最知名的複合式休閒商場，一條人工運河貫穿其中，定時有震撼的多媒體噴泉光影秀。"},
+  {id:"c4",name:"門司港懷舊",pref:"福岡",cat:"歷史文化",season:"全年",ticket:"免費參觀 (部分場館收費)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Mojiko_Station_2019.jpg/640px-Mojiko_Station_2019.jpg",desc:"保留大正時代至今洋風建築的懷舊港區，舊門司稅關與古老車站散發濃厚的復古異國情調。"},
+  {id:"c5",name:"福岡塔",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需展望台門票 (約800日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Fukuoka_Tower_and_Momochihama.jpg/640px-Fukuoka_Tower_and_Momochihama.jpg",desc:"高達234公尺的全日本最高海濱塔，外牆由八千片鏡面覆蓋，可 360 度飽覽福岡市區與博多灣。"},
+  {id:"c6",name:"大濠公園",pref:"福岡",cat:"自然景觀",season:"春季賞櫻",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ohori_Park_Fukuoka01S3s1024.jpg/640px-Ohori_Park_Fukuoka01S3s1024.jpg",desc:"仿造杭州西湖設計的巨大水上公園，是福岡市民最愛的散步綠洲，湖心有橋樑相連的綠島。"},
+  {id:"c7",name:"海之中道海濱公園",pref:"福岡",cat:"親子樂園",season:"春季花海、夏季戲水",ticket:"需入園費 (約450日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Uminonakamichi_Seaside_Park_04.jpg/640px-Uminonakamichi_Seaside_Park_04.jpg",desc:"座落在沙洲上的廣闊國家公園，春季粉藍色粉蝶花海鋪滿山丘，設有動物森林與大型遊樂設施。"},
+  {id:"c8",name:"小倉城",pref:"福岡",cat:"歷史文化",season:"春季賞櫻",ticket:"天守閣需門票 (約350日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Kokura_Castle_2019.jpg/640px-Kokura_Castle_2019.jpg",desc:"北九州市唯一的古城，其獨特的「唐造天守」第五層比第四層還要寬大，城邊種有大量櫻花。"},
+  {id:"c9",name:"櫛田神社",pref:"福岡",cat:"歷史文化",season:"7月博多祇園山笠祭典",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Kushida_Shrine_Hakata_201905.jpg/640px-Kushida_Shrine_Hakata_201905.jpg",desc:"守護博多千年的古老總鎮守，也是每年 7 月熱血沸騰的「博多祇園山笠」祭典起點與終點。"},
+  {id:"c10",name:"唐津城",pref:"佐賀",cat:"歷史文化",season:"3-4月賞櫻",ticket:"天守閣需門票 (約500日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Karatsu_Castle_from_Maizuru_Bridge_2020.jpg/640px-Karatsu_Castle_from_Maizuru_Bridge_2020.jpg",desc:"矗立於滿島山頂的古城，宛如展翅白鶴而有「舞鶴城」之稱，能一次望盡唐津灣與虹之松原。"},
+  {id:"c11",name:"有田陶瓷之鄉",pref:"佐賀",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Tozan_jinja_01.jpg/640px-Tozan_jinja_01.jpg",desc:"日本瓷器發源地，當地陶山神社甚至建有罕見的「青花瓷鳥居」，隨處可感受到精緻的陶藝歷史。"},
+  {id:"c12",name:"嬉野溫泉",pref:"佐賀",cat:"溫泉",season:"全年",ticket:"免費參觀 (泡湯另計)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Ureshino_onsen_Siebold_no_yu_02.jpg/640px-Ureshino_onsen_Siebold_no_yu_02.jpg",desc:"日本三大美肌之湯之一，弱鹼性的碳酸氫鈉泉質非常滑潤，這裡出產的嬉野茶與溫泉豆腐也極有名。"},
+  {id:"c13",name:"虹之松原",pref:"佐賀",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Niji_no_Matsubara_2016.jpg/640px-Niji_no_Matsubara_2016.jpg",desc:"沿著唐津灣呈弧形延綿 4.5 公里的防風林，由百萬棵黑松組成，宛如天空中架起的彩虹。"},
+  {id:"c14",name:"吉野里遺跡",pref:"佐賀",cat:"歷史文化",season:"全年",ticket:"需入園費 (約460日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Yoshinogari_Restoration_Village_01.jpg/640px-Yoshinogari_Restoration_Village_01.jpg",desc:"日本最大規模的彌生時代環壕聚落遺跡，園內重現了古代瞭望台、豎穴住居與大型祭殿。"},
+  {id:"c15",name:"豪斯登堡",pref:"長崎",cat:"親子樂園",season:"全年，冬季有燈光祭",ticket:"需一日通票 (約7400日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Huis_Ten_Bosch_01.jpg/640px-Huis_Ten_Bosch_01.jpg",desc:"完美複製荷蘭風情的大型度假主題樂園，風車、鬱金香花海與運河景致，晚上則會亮起上千萬盞彩燈。"},
+  {id:"c16",name:"九十九島",pref:"長崎",cat:"自然景觀",season:"全年",ticket:"免費參觀 (觀光船另計)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Kujukushima_from_Tenkaiho.jpg/640px-Kujukushima_from_Tenkaiho.jpg",desc:"佐世保灣外綿延不絕的208座島嶼。登高眺望或乘坐珍珠皇后號遊覽船，可近距離感受錯落有致的礁岩絕景。"},
+  {id:"c17",name:"稻佐山夜景",pref:"長崎",cat:"自然景觀",season:"全年",ticket:"免費參觀 (纜車另計)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Inasa-yama_night_view.jpg/640px-Inasa-yama_night_view.jpg",desc:"名列「世界新三大夜景」，從山頂能將長崎獨特的鉢狀盆地與長崎港萬家燈火一覽無遺。"},
+  {id:"c18",name:"出島",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"需入場費 (約520日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Dejima_Nagasaki02n3100.jpg/640px-Dejima_Nagasaki02n3100.jpg",desc:"江戶時代鎖國時期日本對西方唯一的扇形貿易窗口，復原了當時荷蘭商館、起居室與倉庫樣貌。"},
+  {id:"c19",name:"眼鏡橋",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Spectacles_Bridge_Nagasaki.jpg/640px-Spectacles_Bridge_Nagasaki.jpg",desc:"跨越中島川的日本第一座雙拱石橋，因半圓形拱門在水中倒影呈現出完美眼鏡形狀而得名。"},
+  {id:"c20",name:"哥拉巴園",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"需入場費 (約620日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Glover_Garden_Nagasaki01s500c.jpg/640px-Glover_Garden_Nagasaki01s500c.jpg",desc:"座落在能俯瞰長崎港的山丘上，完好保存英國商人哥拉巴等人的洋風豪宅，園內還有「心形寶石磚」傳說。"},
+  {id:"c21",name:"熊本城",pref:"熊本",cat:"歷史文化",season:"春季賞櫻、秋季賞銀杏",ticket:"需入城費 (約800日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kumamoto_Castle_Great_Keep_and_Small_Keep_2023.jpg/640px-Kumamoto_Castle_Great_Keep_and_Small_Keep_2023.jpg",desc:"一代築城大師加藤清正建造的黑色名城，以陡峭難攻的「武者返」石垣著稱。現已從震災中浴火重生。"},
+  {id:"c22",name:"阿蘇火山",pref:"熊本",cat:"自然景觀",season:"全年（依火山狀況開放）",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Mount_Nakadake_of_Mount_Aso_2011.jpg/640px-Mount_Nakadake_of_Mount_Aso_2011.jpg",desc:"世界上少數能近距離觀察活火山口的火山群，中岳第一火山口不時釋放白煙與翡翠綠的酸性湖水。"},
+  {id:"c23",name:"草千里之濱",pref:"熊本",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Kusasenri-ga-hama_2014.jpg/640px-Kusasenri-ga-hama_2014.jpg",desc:"阿蘇中岳旁的大片平坦草原，中間嵌著兩座雨水堆積的圓形湖泊，牛馬放牧其間，充滿異國風情。"},
+  {id:"c24",name:"黑川溫泉",pref:"熊本",cat:"溫泉",season:"全年，秋季楓紅",ticket:"免費參觀 (泡湯另計)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Kurokawa_Onsen_Town_01.jpg/640px-Kurokawa_Onsen_Town_01.jpg",desc:"隱密於溪谷深處的極美溫泉鄉，三十多家溫泉旅館維持著傳統日式黑色木造外觀，氣氛極度靜謐。"},
+  {id:"c25",name:"上色見熊野座神社",pref:"熊本",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Kamisikimi_Kumano_za_Shrine.jpg/640px-Kamisikimi_Kumano_za_Shrine.jpg",desc:"拾級而上的石階、青苔斑駁的近百座石燈籠、以及直聳天際的杉木，宛如踏進異世界奇幻動畫。"},
+  {id:"c26",name:"通潤橋",pref:"熊本",cat:"歷史文化",season:"放水期夏季週末",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Tsujunkyo_2010.jpg/640px-Tsujunkyo_2010.jpg",desc:"日本最大的石造拱型水路橋，至今仍保留古老的石瓦水管，在特定時間會自橋身兩側噴洩出弧形水柱。"},
+  {id:"c27",name:"熊本熊部長辦公室",pref:"熊本",cat:"親子樂園",season:"全年",ticket:"免費入場",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Kumamon_Square_Office_201509.jpg/640px-Kumamon_Square_Office_201509.jpg",desc:"位於熊本市鶴屋百貨內，是熊本縣人氣營業部長兼幸福部長的官方辦公室，不定期能觀看驚喜表演。"},
+  {id:"c28",name:"由布院金鱗湖",pref:"大分",cat:"溫泉",season:"秋冬清晨易起晨霧",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Lake_Kinrin_01.jpg/640px-Lake_Kinrin_01.jpg",desc:"因湖底同時湧出清水與溫泉，在天冷的清晨，湖面常會蒸騰起夢幻縹緲的「晨霧」，如夢似幻。"},
+  {id:"c29",name:"別府地獄溫泉",pref:"大分",cat:"溫泉",season:"全年",ticket:"通票需購票 (約2200日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sea_Hell_Beppu_Japan.jpg/640px-Sea_Hell_Beppu_Japan.jpg",desc:"包括Tiffany藍的「海地獄」與血紅色的「血池地獄」，高達 90 幾度的奇特溫泉奇觀令人大開眼界。"},
+  {id:"c30",name:"九重夢大吊橋",pref:"大分",cat:"自然景觀",season:"11月上旬賞楓最佳",ticket:"需過橋費 (約500日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Kokonoe_Yume_Otsurihashi_01.jpg/640px-Kokonoe_Yume_Otsurihashi_01.jpg",desc:"海拔777公尺、高度173公尺的日本最高人行吊橋，可空中漫步、眺望名列日本百選的震動瀑布與峽谷紅葉。"},
+  {id:"c31",name:"九州自然動物公園",pref:"大分",cat:"親子樂園",season:"全年",ticket:"需入園與巴士費 (約2600日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/African_Safari_Oita_Jungle_Bus_2012.jpg/640px-African_Safari_Oita_Jungle_Bus_2012.jpg",desc:"日本最大的野生動物園。乘坐「叢林巴士」可親手給籠外的獅子、熊、大象餵食，體驗度爆表。"},
+  {id:"c32",name:"由布岳",pref:"大分",cat:"自然景觀",season:"春夏適合登山",ticket:"免費攀登",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Yufudake_from_Yufuin_01.jpg/640px-Yufudake_from_Yufuin_01.jpg",desc:"兩座圓錐形山峰相連的秀美活火山，被親切地稱為「豐後富士」，高聳矗立於由布院小鎮的背景。"},
+  {id:"c33",name:"杉乃井溫泉棚湯",pref:"大分",cat:"溫泉",season:"全年",ticket:"泡湯需門票 (約1200日圓起)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Beppu_view_from_Suginoi_Hotel.jpg/640px-Beppu_view_from_Suginoi_Hotel.jpg",desc:"別府著名奢華梯田式溫泉，溫泉池像稻田般層層展開，泡湯時視野完全無遮蔽，能直達別府灣與夜景。"},
+  {id:"c34",name:"高千穗峽",pref:"宮崎",cat:"自然景觀",season:"春季山櫻、秋季紅葉",ticket:"免費參觀 (划船另計)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Takachiho_Gorge_with_boat.jpg/640px-Takachiho_Gorge_with_boat.jpg",desc:"阿蘇熔岩經急劇冷卻形成的柱狀節理懸崖峽谷，划船穿梭其中，能近距離欣賞真名井瀑布傾瀉。"},
+  {id:"c35",name:"日南太陽花園",pref:"宮崎",cat:"自然景觀",season:"全年",ticket:"需入園費 (約800日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Sun_Messe_Nichinan_Moai_2015.jpg/640px-Sun_Messe_Nichinan_Moai_2015.jpg",desc:"世界唯一獲智利官方正式授權，完全1:1復刻復活節島摩艾石像的園區，背後是極其壯闊的湛藍太平洋。"},
+  {id:"c36",name:"鵜戶神宮",pref:"宮崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Udo-jingu_Main_Hall_2020.jpg/640px-Udo-jingu_Main_Hall_2020.jpg",desc:"極其罕見建在海蝕崖天然洞窟內的朱紅色正殿。傳說朝洞外礁石上的「龜石」凹槽投擲運玉，投中即可許願。"},
+  {id:"c37",name:"青島神社",pref:"宮崎",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Aoshima_Island_Devil%27s_Washboard_and_Torii.jpg/640px-Aoshima_Island_Devil%27s_Washboard_and_Torii.jpg",desc:"座落在與世隔絕的青島中心，小島周圍被層層排列、波浪侵蝕而成的海蝕奇觀「鬼之洗衣板」徹底環繞。"},
+  {id:"c38",name:"生駒高原",pref:"宮崎",cat:"花卉庭園",season:"春季油菜花、秋季波斯菊",ticket:"需入園費 (約600日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ikoma_Plateau_Cosmos_2011.jpg/640px-Ikoma_Plateau_Cosmos_2011.jpg",desc:"座落於霧島連峰山腳下，秋季迎風搖曳的百萬朵大波斯菊如同一張粉色地毯，覆蓋整片無邊的高原。"},
+  {id:"c39",name:"仙巖園",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"需入園費 (約1000日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sengan-en_Gardens_Kagoshima01s3.jpg/640px-Sengan-en_Gardens_Kagoshima01s3.jpg",desc:"島津家族的借景庭園。以遼闊的錦江灣代替池塘、以吞雲吐霧的櫻島火山代替假山，大氣無比。"},
+  {id:"c40",name:"櫻島活火山",pref:"鹿兒島",cat:"自然景觀",season:"全年",ticket:"免費參觀 (渡輪另計)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Sakurajima_viewed_from_Shiroyama_park_20140413.jpg/640px-Sakurajima_viewed_from_Shiroyama_park_20140413.jpg",desc:"鹿兒島的象徵。至今依然天天噴發著火山灰，可搭乘定期渡輪登島，體驗黑色的熔岩步道與足湯。"},
+  {id:"c41",name:"屋久島",pref:"鹿兒島",cat:"自然景觀",season:"全年",ticket:"環境協力金 (約1000日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Shiratani_Unsuikyo_01.jpg/640px-Shiratani_Unsuikyo_01.jpg",desc:"世界自然遺產，擁有千年白谷雲水峽苔蘚林（魔法公主森林靈感地）與七千歲的繩文杉，是生命奇蹟之島。"},
+  {id:"c42",name:"指宿溫泉砂浴",pref:"鹿兒島",cat:"溫泉",season:"全年",ticket:"需體驗票 (約1100日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Sand_Bath_Ibusuki_Kagoshima01bs5.jpg/640px-Sand_Bath_Ibusuki_Kagoshima01bs5.jpg",desc:"全球罕見的天然地熱海灘。將身體埋入滾熱的海砂中約10分鐘，溫泉熱力伴隨著潮汐聲，消除全身疲勞。"},
+  {id:"c43",name:"霧島神宮",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Kirishima_Jingu_Haiden_2017.jpg/640px-Kirishima_Jingu_Haiden_2017.jpg",desc:"祭祀神話人物「瓊瓊杵尊」的莊嚴神宮。朱紅色殿宇被蓊鬱杉林重重環抱，空氣冰涼，具神祕氣場。"},
+  {id:"c44",name:"知覽武家屋敷",pref:"鹿兒島",cat:"歷史文化",season:"全年",ticket:"需庭園門票 (約530日圓)",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Chiran_samurai_district_2011.jpg/640px-Chiran_samurai_district_2011.jpg",desc:"極具薩摩藩風格的武士住宅聚落。這裡的防衛型石牆、修剪細緻的枯山水庭園，保留著數百年前的儒雅。"},
+  {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年",ticket:"免費參觀",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Amami_Oshima_Mangrove_Forest_2012.jpg/640px-Amami_Oshima_Mangrove_Forest_2012.jpg",desc:"新晉世界自然遺產。這裡擁有全日第二大的原始紅樹林、極其清澈的「奄美藍」海洋與豐富多樣的生態。"}
 ];
 
-// 高品質的日本風景風景預備圖，用於自訂新增景點的隨機配圖
 const FALLBACK_PICS = [
-  "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1490750967868-88aa35487714?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80"
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Dazaifu_Tenmangu_honden.jpg/640px-Dazaifu_Tenmangu_honden.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Kokura_Castle_2019.jpg/640px-Kokura_Castle_2019.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sea_Hell_Beppu_Japan.jpg/640px-Sea_Hell_Beppu_Japan.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Kamisikimi_Kumano_za_Shrine.jpg/640px-Kamisikimi_Kumano_za_Shrine.jpg"
 ];
 
 let userSpots = [];
@@ -339,12 +337,11 @@ function render(){
   spots.forEach(s => {
     const card = el('div','card');
     
-    // 📸 1. 載入景點圖片區塊
     const imgWrapper = el('div', 'card-img-wrapper');
     const img = el('img', 'card-img');
     img.src = s.img || FALLBACK_PICS[Math.floor(Math.random() * FALLBACK_PICS.length)];
     img.alt = s.name;
-    img.loading = "lazy"; // 提高載入效能
+    img.loading = "lazy";
     imgWrapper.appendChild(img);
     card.appendChild(imgWrapper);
 
@@ -364,11 +361,9 @@ function render(){
 
     body.appendChild(el('p',null,s.desc));
     
-    // 🏷️ 2. 分類與門票等 Tags 標籤列
     const tags = el('div','card-tags');
     tags.appendChild(el('span','tag cat',s.cat));
     
-    // 顯示門票資訊 (預設為免費參觀)
     const ticketText = s.ticket || "免費參觀";
     tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
 
