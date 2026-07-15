@@ -70,14 +70,9 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .btn-ghost{background:transparent;color:var(--ink-soft);}
 .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform 0.2s, box-shadow 0.2s;}
 .card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(38,34,27,0.08);}
-
-/* 景點相片排版區 */
-.card-img-wrapper{position:relative;width:100%;height:160px;background:#E8E1CC;overflow:hidden;}
-.card-img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
-.card:hover .card-img{transform:scale(1.06);}
 
 .card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1;}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
@@ -101,7 +96,71 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .maplink.route:hover{border-color:var(--clay);background:#FBF0EC;}
 .empty{padding:40px 0;text-align:center;color:var(--ink-soft);font-size:14px;}
 
-footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.7;}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.7;}/* ---------- RWD ---------- */
+
+/* 平板 */
+@media (max-width:1024px){
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+/* 手機 */
+@media (max-width:768px){
+
+  .wrap{
+    padding:0 14px 40px;
+  }
+
+  .hero{
+    padding:36px 16px 28px;
+  }
+
+  .hero h1{
+    font-size:30px;
+  }
+
+  .hero p{
+    font-size:14px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    border-radius:14px;
+  }
+
+  .card h3{
+    font-size:20px;
+  }
+
+  .card-actions{
+    flex-direction:column;
+  }
+
+  .maplink{
+    width:100%;
+  }
+
+  .form .row{
+    grid-template-columns:1fr;
+  }
+
+  .count-row{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .weather-row{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
 </style>
 </head>
 <body>
@@ -339,15 +398,6 @@ function render(){
   spots.forEach(s => {
     const card = el('div','card');
     
-    // 📸 1. 載入景點圖片區塊
-    const imgWrapper = el('div', 'card-img-wrapper');
-    const img = el('img', 'card-img');
-    img.src = s.img || FALLBACK_PICS[Math.floor(Math.random() * FALLBACK_PICS.length)];
-    img.alt = s.name;
-    img.loading = "lazy"; // 提高載入效能
-    imgWrapper.appendChild(img);
-    card.appendChild(imgWrapper);
-
     const body = el('div', 'card-body');
 
     const top = el('div','card-top');
