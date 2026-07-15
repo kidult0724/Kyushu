@@ -99,6 +99,54 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 
 footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.7;}
 
+/* =======================
+   縣市代表圖 Banner
+   ======================= */
+
+.pref-banner{
+  width:100%;
+  height:180px;
+  border-radius:18px 18px 0 0;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  position:relative;
+}
+
+.pref-banner::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05),
+    rgba(0,0,0,0.35)
+  );
+}
+
+.pref-banner-label{
+  position:absolute;
+  left:16px;
+  bottom:12px;
+  z-index:2;
+  color:white;
+  font-size:22px;
+  font-weight:700;
+  text-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+
+@media screen and (max-width:768px){
+
+  .pref-banner{
+    height:220px;
+  }
+
+  .pref-banner-label{
+    font-size:28px;
+  }
+
+}
+
 /* =========================
    App Card Style
    ========================= */
@@ -502,6 +550,23 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 const PREFS = ["福岡","佐賀","長崎","熊本","大分","宮崎","鹿兒島"];
 const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園"];
 
+const PREF_IMAGES = {
+
+  "福岡":"fukuoka.jpg",
+
+  "佐賀":"saga.jpg",
+
+  "長崎":"nagasaki.jpg",
+
+  "熊本":"kumamoto.jpg",
+
+  "大分":"oita.jpg",
+
+  "宮崎":"miyazaki.jpg",
+
+  "鹿兒島":"kagoshima.jpg"
+
+};
 const PREF_COORDS = {
   "福岡":[33.5904,130.4017],
   "佐賀":[33.2494,130.2988],
@@ -523,7 +588,17 @@ const WEATHER_CODE_MAP = {
 };
 
 // 45個經典景點：更新導入 Unsplash 照片(img)與真實門票(ticket)資訊
-const CURATED = [
+const PREF_IMAGES = {
+
+  "福岡":"fukuoka.jpg",
+  "佐賀":"saga.jpg",
+  "長崎":"nagasaki.jpg",
+  "熊本":"kumamoto.jpg",
+  "大分":"oita.jpg",
+  "宮崎":"miyazaki.jpg",
+  "鹿兒島":"kagoshima.jpg"
+
+};CURATED = [
   {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"創建逾千年的學問之神總本社，參道兩旁有伴手禮與名物梅枝餅，是福岡最具代表性的神社。"},
   {id:"c2",name:"柳川遊船",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"需購船票 (約1800日圓)",img:"https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",desc:"搭乘搖櫓船穿梭九州水鄉柳川，沿岸古色古香，上岸後可品嘗當地招牌蒸籠鰻魚飯。"},
   {id:"c3",name:"博多運河城",pref:"福岡",cat:"城市漫遊",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",desc:"結合購物、美食與光影水舞表演的大型商場，鄰近博多屋台街，是福岡市區的人氣去處。"},
@@ -649,6 +724,21 @@ function render(){
 
 spots.forEach(s => {
   const card = el('div','card');
+
+const banner = el('div','pref-banner');
+
+banner.style.backgroundImage =
+  `url(${PREF_IMAGES[s.pref]})`;
+
+const label = el(
+  'div',
+  'pref-banner-label',
+  s.pref
+);
+
+banner.appendChild(label);
+
+card.appendChild(banner);
 
   const body = el('div', 'card-body');
 
