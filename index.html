@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>九州觀景誌｜Kyushu Sight Log</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -96,10 +97,160 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .maplink.route:hover{border-color:var(--clay);background:#FBF0EC;}
 .empty{padding:40px 0;text-align:center;color:var(--ink-soft);font-size:14px;}
 
-footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.7;}/* ---------- RWD ---------- */
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.7;}
 
-/* 平板 */
-@media (max-width:1024px){
+/* =========================
+   App Card Style
+   ========================= */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  transition:transform 0.2s, box-shadow 0.2s;
+  box-shadow:0 3px 12px rgba(38,34,27,0.06);
+}
+
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 22px rgba(38,34,27,0.10);
+}
+
+.card-body{
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  flex:1;
+}
+
+.app-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.app-location{
+  font-size:15px;
+  font-weight:700;
+  color:var(--steam-deep);
+  letter-spacing:.04em;
+  margin-bottom:4px;
+}
+
+.app-title{
+  font-family:'Shippori Mincho',serif;
+  font-size:24px;
+  line-height:1.35;
+  margin:0;
+  color:var(--ink);
+}
+
+.app-desc{
+  font-size:15px;
+  line-height:1.85;
+  color:var(--ink-soft);
+  margin:0;
+}
+
+.card-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:2px;
+}
+
+.tag{
+  font-size:12px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.tag.cat{
+  background:#EFE7D6;
+  color:var(--clay-deep);
+}
+
+.tag.season{
+  background:#E4EAE1;
+  color:var(--pine-deep);
+}
+
+.tag.user{
+  background:#E6EDF1;
+  color:var(--steam-deep);
+}
+
+.tag.ticket{
+  background:#FCF4E2;
+  color:var(--gold-deep);
+  border:1px solid rgba(199,154,68,0.35);
+}
+
+.fav{
+  border:none;
+  background:#F8F4EA;
+  cursor:pointer;
+  font-size:20px;
+  color:var(--line);
+  line-height:1;
+  padding:8px 10px;
+  border-radius:999px;
+}
+
+.fav.on{
+  color:var(--gold-deep);
+  background:#FFF3D8;
+}
+
+.card-actions{
+  display:flex;
+  gap:10px;
+  margin-top:auto;
+  padding-top:8px;
+}
+
+.maplink{
+  flex:1;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 8px;
+  font-size:13px;
+  color:var(--steam-deep);
+  text-decoration:none;
+  font-weight:700;
+  background:#fff;
+}
+
+.maplink:hover{
+  border-color:var(--steam);
+  background:#F4F7F8;
+}
+
+.maplink.route{
+  color:var(--clay-deep);
+}
+
+.maplink.route:hover{
+  border-color:var(--clay);
+  background:#FBF0EC;
+}
+
+/* 平板：一列兩個 */
+@media screen and (max-width:1024px){
 
   .grid{
     grid-template-columns:repeat(2,1fr);
@@ -107,60 +258,161 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 }
 
-/* 手機 */
-@media (max-width:768px){
+/* 手機：App 單欄卡片 */
+@media screen and (max-width:768px){
 
   .wrap{
     padding:0 14px 40px;
   }
 
   .hero{
-    padding:36px 16px 28px;
+    padding:32px 16px 28px;
+  }
+
+  .hero svg{
+    width:300px;
+    height:300px;
+    right:-100px;
+    top:-40px;
   }
 
   .hero h1{
-    font-size:30px;
+    font-size:38px;
+    line-height:1.2;
   }
 
   .hero p{
-    font-size:14px;
+    font-size:17px;
+    line-height:1.85;
   }
 
-  .grid{
+  .weather-row{
     grid-template-columns:1fr;
   }
 
-  .card{
+  .wcard{
+    padding:16px;
     border-radius:14px;
   }
 
-  .card h3{
-    font-size:20px;
+  .wcard .wp{
+    font-size:14px;
+  }
+
+  .wcard .wt{
+    font-size:32px;
+  }
+
+  .wcard .wd{
+    font-size:15px;
+  }
+
+  .search{
+    padding:14px;
+    border-radius:14px;
+  }
+
+  .search input{
+    font-size:17px;
+  }
+
+  .chip{
+    font-size:15px;
+    padding:8px 14px;
+  }
+
+  .count-row{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .count-row span{
+    font-size:15px;
+  }
+
+  .addbtn{
+    width:100%;
+    padding:14px;
+    font-size:17px;
+    border-radius:12px;
+  }
+
+  .grid{
+    grid-template-columns:1fr !important;
+    gap:18px;
+  }
+
+  .card{
+    width:100%;
+    border-radius:22px;
+    box-shadow:0 5px 18px rgba(38,34,27,0.10);
+  }
+
+  .card-body{
+    padding:24px;
+    gap:14px;
+  }
+
+  .app-location{
+    font-size:16px;
+  }
+
+  .app-title{
+    font-size:30px;
+    line-height:1.35;
+  }
+
+  .app-desc{
+    font-size:18px;
+    line-height:1.9;
+  }
+
+  .tag{
+    font-size:15px;
+    padding:8px 12px;
+  }
+
+  .fav{
+    font-size:24px;
+    padding:10px 12px;
   }
 
   .card-actions{
     flex-direction:column;
+    gap:12px;
+    margin-top:8px;
   }
 
   .maplink{
     width:100%;
+    padding:15px;
+    font-size:17px;
+    border-radius:14px;
+  }
+
+  .form{
+    padding:18px;
+    border-radius:16px;
   }
 
   .form .row{
     grid-template-columns:1fr;
   }
 
-  .count-row{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:10px;
+  .form input,
+  .form select,
+  .form textarea{
+    font-size:16px;
+    padding:11px 12px;
   }
 
-  .weather-row{
-    grid-template-columns:repeat(2,1fr);
+  footer{
+    font-size:13px;
   }
 
 }
+
 </style>
 </head>
 <body>
@@ -395,57 +647,82 @@ function render(){
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
-  spots.forEach(s => {
-    const card = el('div','card');
-    
-    const body = el('div', 'card-body');
+spots.forEach(s => {
+  const card = el('div','card');
 
-    const top = el('div','card-top');
-    const left = el('div');
-    left.appendChild(el('div','card-pref',s.pref));
-    left.appendChild(el('h3',null,s.name));
-    top.appendChild(left);
-    const fav = el('button','fav' + (favorites[s.id] ? ' on' : ''), favorites[s.id] ? '♥' : '♡');
-    fav.type = 'button';
-    fav.setAttribute('aria-label','收藏此景點');
-    fav.addEventListener('click', () => toggleFavorite(s.id, fav));
-    top.appendChild(fav);
-    body.appendChild(top);
+  const body = el('div', 'card-body');
 
-    body.appendChild(el('p',null,s.desc));
-    
-    // 🏷️ 2. 分類與門票等 Tags 標籤列
-    const tags = el('div','card-tags');
-    tags.appendChild(el('span','tag cat',s.cat));
-    
-    // 顯示門票資訊 (預設為免費參觀)
-    const ticketText = s.ticket || "免費參觀";
-    tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
+  // App 卡片上方：地點、標題、收藏
+  const head = el('div', 'app-card-head');
 
-    if(s.season) tags.appendChild(el('span','tag season',s.season));
-    if(s.userAdded) tags.appendChild(el('span','tag user','使用者新增'));
-    body.appendChild(tags);
+  const titleBlock = el('div');
 
-    const actions = el('div','card-actions');
-    const viewLink = document.createElement('a');
-    viewLink.className = 'maplink';
-    viewLink.href = mapSearchUrl(s);
-    viewLink.target = '_blank';
-    viewLink.rel = 'noopener';
-    viewLink.textContent = '📍 查看地圖';
-    const routeLink = document.createElement('a');
-    routeLink.className = 'maplink route';
-    routeLink.href = mapDirectionsUrl(s);
-    routeLink.target = '_blank';
-    routeLink.rel = 'noopener';
-    routeLink.textContent = '🚗 規劃路線';
-    actions.appendChild(viewLink);
-    actions.appendChild(routeLink);
-    body.appendChild(actions);
+  const location = el('div', 'app-location', '📍 ' + s.pref);
+  titleBlock.appendChild(location);
 
-    card.appendChild(body);
-    grid.appendChild(card);
-  });
+  const title = el('h3', 'app-title', s.name);
+  titleBlock.appendChild(title);
+
+  head.appendChild(titleBlock);
+
+  const fav = el(
+    'button',
+    'fav' + (favorites[s.id] ? ' on' : ''),
+    favorites[s.id] ? '♥' : '♡'
+  );
+  fav.type = 'button';
+  fav.setAttribute('aria-label','收藏此景點');
+  fav.addEventListener('click', () => toggleFavorite(s.id, fav));
+  head.appendChild(fav);
+
+  body.appendChild(head);
+
+  // 標籤列
+  const tags = el('div','card-tags');
+
+  tags.appendChild(el('span','tag cat',s.cat));
+
+  const ticketText = s.ticket || "免費參觀";
+  tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
+
+  if(s.season){
+    tags.appendChild(el('span','tag season','🌿 ' + s.season));
+  }
+
+  if(s.userAdded){
+    tags.appendChild(el('span','tag user','使用者新增'));
+  }
+
+  body.appendChild(tags);
+
+  // 景點介紹
+  body.appendChild(el('p','app-desc',s.desc));
+
+  // 地圖按鈕
+  const actions = el('div','card-actions');
+
+  const viewLink = document.createElement('a');
+  viewLink.className = 'maplink';
+  viewLink.href = mapSearchUrl(s);
+  viewLink.target = '_blank';
+  viewLink.rel = 'noopener';
+  viewLink.textContent = '📍 查看地圖';
+
+  const routeLink = document.createElement('a');
+  routeLink.className = 'maplink route';
+  routeLink.href = mapDirectionsUrl(s);
+  routeLink.target = '_blank';
+  routeLink.rel = 'noopener';
+  routeLink.textContent = '🚗 規劃路線';
+
+  actions.appendChild(viewLink);
+  actions.appendChild(routeLink);
+
+  body.appendChild(actions);
+
+  card.appendChild(body);
+  grid.appendChild(card);
+});
 }
 
 function toggleFavorite(id, btn){
