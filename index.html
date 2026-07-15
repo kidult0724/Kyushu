@@ -4,107 +4,457 @@
 <meta charset="UTF-8">
 <title>九州觀景誌｜Kyushu Sight Log</title>
 <style>
-  /* --- 您的原始 CSS --- */
-  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
-  :root{ --paper:#F1ECDD; --ink:#26221B; --ink-soft:#5B5548; --clay:#B5482F; --clay-deep:#7C2F1D; --line:#D8CFB5; }
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC',sans-serif;}
-  .wrap{max-width:1000px;margin:0 auto;padding:20px;}
-  .form{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:24px;}
-  .form.open{display:block;}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
-  .card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
-  .card-img-wrapper{width:100%;height:160px;background:#E8E1CC;overflow:hidden;}
-  .card-img{width:100%;height:100%;object-fit:cover;}
-  .card-body{padding:16px;}
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+:root{
+  --paper:#F1ECDD;
+  --paper-2:#E8E1CC;
+  --ink:#26221B;
+  --ink-soft:#5B5548;
+  --clay:#B5482F;
+  --clay-deep:#7C2F1D;
+  --pine:#3F6B54;
+  --pine-deep:#254537;
+  --steam:#5E7C93;
+  --steam-deep:#39505F;
+  --gold:#C79A44;
+  --gold-deep:#8A6620;
+  --line:#D8CFB5;
+}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC',sans-serif;}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px 60px;}
+
+.hero{position:relative;padding:56px 20px 40px;overflow:hidden;border-bottom:1px solid var(--line);}
+.hero svg{position:absolute;top:-40px;right:-60px;width:420px;height:420px;opacity:0.55;pointer-events:none;}
+.eyebrow{font-size:13px;letter-spacing:.12em;color:var(--clay-deep);font-weight:700;margin:0 0 10px;}
+.hero h1{font-family:'Shippori Mincho',serif;font-weight:700;font-size:40px;margin:0 0 12px;line-height:1.25;color:var(--ink);position:relative;}
+.hero p{max-width:560px;font-size:15px;line-height:1.8;color:var(--ink-soft);margin:0;position:relative;}
+
+.weather-panel{margin-top:30px;position:relative;}
+.weather-title{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.weather-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+.wcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.wcard .wp{font-size:12px;font-weight:700;color:var(--steam-deep);}
+.wcard .wt{font-family:'Shippori Mincho',serif;font-size:22px;margin:4px 0 2px;}
+.wcard .wd{font-size:11.5px;color:var(--ink-soft);}
+.wcard.loading{color:var(--ink-soft);font-size:12px;}
+
+.toolbar{margin-top:30px;display:flex;flex-direction:column;gap:14px;}
+.search{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;}
+.search input{flex:1;border:none;outline:none;background:transparent;font-size:15px;font-family:'Noto Sans TC',sans-serif;color:var(--ink);}
+.search input::placeholder{color:#a39c86;}
+
+.chiprow{display:flex;flex-wrap:wrap;gap:8px;}
+.chiprow-label{font-size:12px;color:var(--ink-soft);width:100%;letter-spacing:.05em;margin-bottom:-2px;}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:background .15s,color .15s,border-color .15s;}
+.chip:hover{border-color:var(--clay);}
+.chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+.count-row{display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px;}
+.count-row span{font-size:13px;color:var(--ink-soft);}
+.addbtn{border:1px solid var(--clay);color:var(--clay-deep);background:#fff;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+.addbtn:hover{background:var(--clay);color:#fff;}
+
+.form{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:24px;}
+.form.open{display:block;}
+.form h3{font-family:'Shippori Mincho',serif;font-size:18px;margin:0 0 14px;color:var(--clay-deep);}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.form label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
+.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:14px;font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--ink);}
+.form textarea{resize:vertical;min-height:60px;}
+.form-actions{display:flex;gap:10px;margin-top:8px;}
+.form-actions button{border-radius:6px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;border:1px solid var(--line);}
+.btn-primary{background:var(--clay);color:#fff;border-color:var(--clay);}
+.btn-ghost{background:transparent;color:var(--ink-soft);}
+.hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;display:flex;flex-direction:column;gap:8px;}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.card-pref{font-size:11px;letter-spacing:.06em;color:var(--steam-deep);font-weight:700;}
+.card h3{font-family:'Shippori Mincho',serif;font-size:19px;margin:2px 0 0;color:var(--ink);}
+.fav{border:none;background:none;cursor:pointer;font-size:18px;color:var(--line);line-height:1;padding:2px;}
+.fav.on{color:var(--gold-deep);}
+.card p{font-size:13.5px;line-height:1.75;color:var(--ink-soft);margin:0;flex:1;}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.tag{font-size:11px;padding:3px 9px;border-radius:999px;font-weight:700;}
+.tag.cat{background:#EFE7D6;color:var(--clay-deep);}
+.tag.season{background:#E4EAE1;color:var(--pine-deep);}
+.tag.user{background:#E6EDF1;color:var(--steam-deep);}
+.card-actions{display:flex;gap:8px;margin-top:6px;}
+.maplink{flex:1;text-align:center;border:1px solid var(--line);border-radius:6px;padding:7px 8px;font-size:12px;color:var(--steam-deep);text-decoration:none;font-weight:700;}
+.maplink:hover{border-color:var(--steam);background:#F4F7F8;}
+.maplink.route{color:var(--clay-deep);}
+.maplink.route:hover{border-color:var(--clay);background:#FBF0EC;}
+.empty{padding:40px 0;text-align:center;color:var(--ink-soft);font-size:14px;}
+
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.7;}
 </style>
 </head>
 <body>
+<div class="hero">
+  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="200" cy="200" r="170" fill="none" stroke="#B5482F" stroke-width="1"/>
+    <circle cx="200" cy="200" r="135" fill="none" stroke="#3F6B54" stroke-width="1"/>
+    <circle cx="200" cy="200" r="100" fill="none" stroke="#C79A44" stroke-width="1"/>
+    <circle cx="200" cy="200" r="65" fill="none" stroke="#5E7C93" stroke-width="1"/>
+    <circle cx="200" cy="200" r="30" fill="none" stroke="#26221B" stroke-width="1.4"/>
+  </svg>
+  <div class="wrap" style="padding:0;">
+    <p class="eyebrow">九州七縣 · 景點蒐集誌</p>
+    <h1>九州觀景誌</h1>
+    <p>整理福岡、佐賀、長崎、熊本、大分、宮崎、鹿兒島七縣的精選景點，即時查看各縣天氣，並可一鍵開啟 Google 地圖路線，隨時新增你發現的最新景點。</p>
+    <div class="weather-panel">
+      <div class="weather-title">七縣即時天氣（資料來源：Open-Meteo）</div>
+      <div class="weather-row" id="weatherRow"></div>
+    </div>
+  </div>
+</div>
 
 <div class="wrap">
-  <h1>九州觀景誌</h1>
-  
   <div class="toolbar">
-    <input id="searchInput" type="text" placeholder="搜尋景點名稱...">
-    <button id="toggleForm">+ 新增景點</button>
+    <div class="search">
+      <span aria-hidden="true">🔎</span>
+      <input id="searchInput" type="text" placeholder="搜尋景點名稱或關鍵字，例如：溫泉、楓葉、金鱗湖">
+    </div>
+    <div class="chiprow" id="prefRow"><span class="chiprow-label">縣市</span></div>
+    <div class="chiprow" id="catRow"><span class="chiprow-label">類型</span></div>
+  </div>
+
+  <div class="count-row">
+    <span id="countLabel">共 0 個景點</span>
+    <button class="addbtn" id="toggleForm">+ 新增景點</button>
   </div>
 
   <div class="form" id="addForm">
     <h3>新增一個景點</h3>
-    <input id="f-name" type="text" placeholder="景點名稱"><br>
-    <select id="f-pref"></select>
-    <select id="f-cat"></select><br>
-    <input id="f-img" type="text" placeholder="圖片網址 (選填，直接貼上網址即可)"><br>
-    <textarea id="f-desc" placeholder="景點簡介"></textarea><br>
-    <button id="submitSpot">加入景點清單</button>
-    <button id="cancelSpot">取消</button>
+    <div class="row">
+      <div>
+        <label for="f-name">景點名稱</label>
+        <input id="f-name" type="text" placeholder="例如：由布院花卉村">
+      </div>
+      <div>
+        <label for="f-pref">縣市</label>
+        <select id="f-pref"></select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="f-cat">類型</label>
+        <select id="f-cat"></select>
+      </div>
+      <div>
+        <label for="f-season">最佳季節（選填）</label>
+        <input id="f-season" type="text" placeholder="例如：11月賞楓">
+      </div>
+    </div>
+    <div>
+      <label for="f-desc">簡介</label>
+      <textarea id="f-desc" placeholder="這個景點的特色是什麼？"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="submitSpot">加入景點清單</button>
+      <button class="btn-ghost" id="cancelSpot">取消</button>
+    </div>
+    <p class="hint">新增的景點會標示「使用者新增」，並保存在此頁面的共用資料中，之後再次打開這個頁面也能看到。</p>
   </div>
 
   <div class="grid" id="grid"></div>
+  <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
+
+  <footer>
+    景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。點選愛心可將景點加入個人收藏（僅儲存在此瀏覽器）；新增的景點會存入此頁面共用的清單中。
+  </footer>
 </div>
 
 <script>
-  // 1. 資料庫
-  const PREFS = ["福岡","佐賀","長崎","熊本","大分","宮崎","鹿兒島"];
-  const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園"];
-  const FALLBACK_PICS = [
-    "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80"
-  ];
-  
-  // 假設您原本的 CURATED 資料也在這裡，若沒有請保留空陣列
-  const CURATED = []; 
-  let userSpots = JSON.parse(localStorage.getItem('kyushu-user-spots') || '[]');
+const PREFS = ["福岡","佐賀","長崎","熊本","大分","宮崎","鹿兒島"];
+const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園"];
 
-  // 2. 渲染函式
-  function render(){
-    const q = document.getElementById('searchInput').value.trim().toLowerCase();
-    const grid = document.getElementById('grid');
-    grid.innerHTML = '';
-    
-    const allSpots = [...CURATED, ...userSpots];
-    const filtered = allSpots.filter(s => s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q));
+const PREF_COORDS = {
+  "福岡":[33.5904,130.4017],
+  "佐賀":[33.2494,130.2988],
+  "長崎":[32.7503,129.8779],
+  "熊本":[32.8032,130.7079],
+  "大分":[33.2382,131.6126],
+  "宮崎":[31.9111,131.4239],
+  "鹿兒島":[31.5602,130.5581]
+};
 
-    filtered.forEach(s => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      // 邏輯：優先使用使用者輸入的 s.img，沒有則隨機選 fallback
-      const imgSrc = s.img || FALLBACK_PICS[Math.floor(Math.random() * FALLBACK_PICS.length)];
-      
-      card.innerHTML = `
-        <div class="card-img-wrapper"><img src="${imgSrc}" class="card-img"></div>
-        <div class="card-body">
-          <h3>${s.name}</h3>
-          <p>${s.desc}</p>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-  }
+const WEATHER_CODE_MAP = {
+  0:"晴朗",1:"晴時多雲",2:"多雲",3:"陰天",
+  45:"起霧",48:"霧淞",
+  51:"毛毛雨",53:"毛毛雨",55:"毛毛雨",
+  61:"小雨",63:"中雨",65:"大雨",
+  71:"小雪",73:"中雪",75:"大雪",
+  80:"陣雨",81:"陣雨",82:"強陣雨",
+  95:"雷雨",96:"雷雨挾冰雹",99:"雷雨挾冰雹"
+};
 
-  // 3. 事件連結
-  document.getElementById('toggleForm').onclick = () => document.getElementById('addForm').classList.toggle('open');
-  document.getElementById('cancelSpot').onclick = () => document.getElementById('addForm').classList.remove('open');
-  document.getElementById('searchInput').oninput = render;
+const CURATED = [
+  {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",desc:"創建逾千年的學問之神總本社，參道兩旁有伴手禮與名物梅枝餅，是福岡最具代表性的神社。"},
+  {id:"c2",name:"柳川遊船",pref:"福岡",cat:"城市漫遊",season:"全年",desc:"搭乘搖櫓船穿梭九州水鄉柳川，沿岸古色古香，上岸後可品嘗當地招牌蒸籠鰻魚飯。"},
+  {id:"c3",name:"博多運河城",pref:"福岡",cat:"城市漫遊",season:"全年",desc:"結合購物、美食與光影水舞表演的大型商場，鄰近博多屋台街，是福岡市區的人氣去處。"},
+  {id:"c4",name:"門司港懷舊",pref:"福岡",cat:"歷史文化",season:"全年",desc:"保留大正時期異國風情建築的港町，適合悠閒散步，欣賞海港與復古洋樓景致。"},
+  {id:"c5",name:"福岡塔",pref:"福岡",cat:"城市漫遊",season:"全年",desc:"福岡地標展望塔，可俯瞰博多灣與市區夜景。"},
+  {id:"c6",name:"大濠公園",pref:"福岡",cat:"自然景觀",season:"春季賞櫻",desc:"以大池為中心的市區公園，環湖步道適合散步慢跑，鄰近福岡城跡與美術館。"},
+  {id:"c7",name:"海之中道海濱公園",pref:"福岡",cat:"親子樂園",season:"春季花海、夏季戲水",desc:"結合花海、動物園與水上樂園的濱海公園，鄰近海洋世界水族館，適合親子出遊。"},
+  {id:"c8",name:"小倉城",pref:"福岡",cat:"歷史文化",season:"春季賞櫻",desc:"北九州地標古城，天守閣可眺望市區，周邊庭園與美食街值得順遊。"},
+  {id:"c9",name:"櫛田神社",pref:"福岡",cat:"歷史文化",season:"7月博多祇園山笠祭典",desc:"博多總鎮守神社，是博多祇園山笠祭典的中心，展示華麗的裝飾山笠。"},
+  {id:"c10",name:"唐津城",pref:"佐賀",cat:"歷史文化",season:"3-4月賞櫻",desc:"矗立於海岸邊的古城，天守閣可眺望唐津灣與虹之松原的景色。"},
+  {id:"c11",name:"有田陶瓷之鄉",pref:"佐賀",cat:"歷史文化",season:"全年",desc:"日本瓷器發源地，街區保留窯元老鋪，適合喜愛工藝與陶瓷文化的旅人。"},
+  {id:"c12",name:"嬉野溫泉",pref:"佐賀",cat:"溫泉",season:"全年",desc:"以滑順美肌之湯聞名的溫泉鄉，泉質溫和，是佐賀著名的療癒景點。"},
+  {id:"c13",name:"虹之松原",pref:"佐賀",cat:"自然景觀",season:"全年",desc:"日本三大松原之一，沿海岸線綿延的黑松林，適合騎單車或散步。"},
+  {id:"c14",name:"吉野里遺跡",pref:"佐賀",cat:"歷史文化",season:"全年",desc:"日本規模最大的彌生時代聚落遺跡公園，重現古代環壕聚落樣貌。"},
+  {id:"c15",name:"豪斯登堡",pref:"長崎",cat:"親子樂園",season:"全年，冬季有燈光祭",desc:"歐風主題樂園，四季花卉祭典與夜間燈光秀為一大亮點，適合親子與情侶同遊。"},
+  {id:"c16",name:"九十九島",pref:"長崎",cat:"自然景觀",season:"全年",desc:"佐世保外海約208座島嶼群，搭乘遊覽船可俯瞰群島交織的海景。"},
+  {id:"c17",name:"稻佐山夜景",pref:"長崎",cat:"自然景觀",season:"全年，冬季空氣清澈",desc:"與函館、神戶並列日本三大夜景之一，纜車或公路皆可登頂欣賞長崎港夜色。"},
+  {id:"c18",name:"出島",pref:"長崎",cat:"歷史文化",season:"全年",desc:"江戶鎖國時期日本對外唯一貿易窗口的復原園區，見證長崎的異國交流史。"},
+  {id:"c19",name:"眼鏡橋",pref:"長崎",cat:"歷史文化",season:"全年",desc:"日本現存最古老的石造拱橋之一，倒映水面時形似眼鏡而得名。"},
+  {id:"c20",name:"哥拉巴園",pref:"長崎",cat:"歷史文化",season:"全年",desc:"保留明治時期洋樓建築群的山丘公園，可俯瞰長崎港與造船廠景色。"},
+  {id:"c21",name:"熊本城",pref:"熊本",cat:"歷史文化",season:"春季賞櫻、秋季賞銀杏",desc:"日本三大名城之一，以陡峭的「武者返」石牆聞名，目前部分區域仍在震後修復中。"},
+  {id:"c22",name:"阿蘇火山",pref:"熊本",cat:"自然景觀",season:"全年（依火山狀況開放）",desc:"擁有世界規模數一數二的破火山口地形，可搭車或纜車接近火山口一帶。"},
+  {id:"c23",name:"草千里之濱",pref:"熊本",cat:"自然景觀",season:"全年",desc:"阿蘇火山口旁遼闊草原，可體驗騎馬，周邊設有咖啡廳與商店。"},
+  {id:"c24",name:"黑川溫泉",pref:"熊本",cat:"溫泉",season:"全年，秋季楓紅",desc:"素有日本最美溫泉鄉之稱，古樸街道與繚繞溪谷煙霧營造懷舊氛圍。"},
+  {id:"c25",name:"上色見熊野座神社",pref:"熊本",cat:"歷史文化",season:"全年",desc:"長滿青苔的鳥居與神秘岩壁大風穴，被稱為奧阿蘇的能量景點。"},
+  {id:"c26",name:"通潤橋",pref:"熊本",cat:"歷史文化",season:"放水期夏季週末",desc:"江戶時代建造的石造水路橋，定期放水演出是山都町的著名景觀。"},
+  {id:"c27",name:"熊本熊部長辦公室",pref:"熊本",cat:"親子樂園",season:"全年",desc:"熊本熊的官方辦公室，不定期可見熊本熊出勤與互動表演，親子必訪。"},
+  {id:"c28",name:"由布院金鱗湖",pref:"大分",cat:"溫泉",season:"秋冬清晨易起晨霧",desc:"溫泉小鎮由布院的象徵，湖水因溫泉與清水交會，清晨常籠罩薄霧，宛如仙境。"},
+  {id:"c29",name:"別府地獄溫泉",pref:"大分",cat:"溫泉",season:"全年",desc:"共有八處色彩與型態各異的地獄溫泉景觀，可購買套票一次巡遊。"},
+  {id:"c30",name:"九重夢大吊橋",pref:"大分",cat:"自然景觀",season:"11月上旬賞楓最佳",desc:"日本數一數二高的人行吊橋，橋上可遠眺「震動之瀑」與滿山楓紅。"},
+  {id:"c31",name:"九州自然動物公園",pref:"大分",cat:"親子樂園",season:"全年",desc:"日本最大級野生動物園之一，可搭乘叢林巴士近距離餵食獅子、長頸鹿等動物。"},
+  {id:"c32",name:"由布岳",pref:"大分",cat:"自然景觀",season:"春夏適合登山",desc:"有「豐後富士」之稱的秀麗山峰，登山口鄰近由布院，山頂可俯瞰盆地全景。"},
+  {id:"c33",name:"杉乃井溫泉棚湯",pref:"大分",cat:"溫泉",season:"全年",desc:"別府知名大型露天梯田浴場，可一邊泡湯一邊眺望別府灣景色。"},
+  {id:"c34",name:"高千穗峽",pref:"宮崎",cat:"自然景觀",season:"春季山櫻、秋季紅葉",desc:"熔岩侵蝕形成的V字峽谷，真名井瀑布飛瀉而下，是日本神話的重要舞台。"},
+  {id:"c35",name:"日南太陽花園",pref:"宮崎",cat:"自然景觀",season:"全年",desc:"面向日南海岸的丘陵公園，園內矗立世界唯一獲官方認可的復活節島摩艾石像複製品。"},
+  {id:"c36",name:"鵜戶神宮",pref:"宮崎",cat:"歷史文化",season:"全年",desc:"建於海蝕洞窟內的朱紅色神社，面向太平洋，景色壯麗且氣氛神秘。"},
+  {id:"c37",name:"青島神社",pref:"宮崎",cat:"歷史文化",season:"全年",desc:"周邊環繞奇特的「鬼之洗衣板」波狀岩層，神社與自然景觀相映成趣。"},
+  {id:"c38",name:"生駒高原",pref:"宮崎",cat:"花卉庭園",season:"春季油菜花、秋季波斯菊與掃帚草",desc:"季節花海高原，秋天成片轉紅的掃帚草與波斯菊是熱門拍照景點。"},
+  {id:"c39",name:"仙巖園",pref:"鹿兒島",cat:"歷史文化",season:"全年",desc:"江戶時期島津家別墅庭園，以櫻島火山為借景，園內尚古集成館列為世界文化遺產。"},
+  {id:"c40",name:"櫻島活火山",pref:"鹿兒島",cat:"自然景觀",season:"全年",desc:"至今仍活躍的火山島，半山腰展望台可散步於熔岩遊步道，眺望鹿兒島灣。"},
+  {id:"c41",name:"屋久島",pref:"鹿兒島",cat:"自然景觀",season:"全年，春夏較宜健行",desc:"擁有千年杉原始林的世界自然遺產島嶼，適合健行與深度自然體驗。"},
+  {id:"c42",name:"指宿溫泉砂浴",pref:"鹿兒島",cat:"溫泉",season:"全年",desc:"世界少見的天然溫泉砂浴體驗，將身體埋入溫熱砂中促進血液循環。"},
+  {id:"c43",name:"霧島神宮",pref:"鹿兒島",cat:"歷史文化",season:"全年",desc:"朱紅色社殿座落於霧島群山之間，是日本神話中天孫降臨傳說地之一。"},
+  {id:"c44",name:"知覽武家屋敷",pref:"鹿兒島",cat:"歷史文化",season:"全年",desc:"保留江戶時代武士宅邸與庭園的老街區，被稱為「薩摩小京都」。"},
+  {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年，夏季適合浮潛",desc:"擁有亞熱帶原始林與珊瑚礁海域的世界自然遺產島嶼，生態豐富。"}
+];
 
-  document.getElementById('submitSpot').onclick = () => {
-    const spot = {
-      name: document.getElementById('f-name').value,
-      pref: document.getElementById('f-pref').value,
-      cat: document.getElementById('f-cat').value,
-      img: document.getElementById('f-img').value, // 儲存自訂圖片
-      desc: document.getElementById('f-desc').value
-    };
-    userSpots.push(spot);
-    localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
-    document.getElementById('addForm').classList.remove('open');
-    render();
-  };
+let userSpots = [];
+let favorites = {};
+let activePref = null;
+let activeCat = null;
 
-  // 初始化選單
-  PREFS.forEach(p => { const o = document.createElement('option'); o.text = p; document.getElementById('f-pref').add(o); });
-  CATS.forEach(c => { const o = document.createElement('option'); o.text = c; document.getElementById('f-cat').add(o); });
-  
+function el(tag, cls, text){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(text !== undefined) e.textContent = text;
+  return e;
+}
+
+function buildChipRow(container, values, onPick){
+  values.forEach(v => {
+    const chip = el('button','chip',v);
+    chip.type = 'button';
+    chip.addEventListener('click', () => onPick(v));
+    container.appendChild(chip);
+  });
+}
+
+const prefRow = document.getElementById('prefRow');
+const catRow = document.getElementById('catRow');
+buildChipRow(prefRow, PREFS, (v) => {
+  activePref = (activePref === v) ? null : v;
   render();
+});
+buildChipRow(catRow, CATS, (v) => {
+  activeCat = (activeCat === v) ? null : v;
+  render();
+});
+
+function syncChips(){
+  [...prefRow.querySelectorAll('.chip')].forEach(c => c.classList.toggle('active', c.textContent === activePref));
+  [...catRow.querySelectorAll('.chip')].forEach(c => c.classList.toggle('active', c.textContent === activeCat));
+}
+
+const fPref = document.getElementById('f-pref');
+const fCat = document.getElementById('f-cat');
+PREFS.forEach(p => { const o = el('option', null, p); o.value = p; fPref.appendChild(o); });
+CATS.forEach(c => { const o = el('option', null, c); o.value = c; fCat.appendChild(o); });
+
+function allSpots(){
+  return [...CURATED, ...userSpots];
+}
+
+function mapSearchUrl(spot){
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.name + ' ' + spot.pref + ' 日本');
+}
+function mapDirectionsUrl(spot){
+  return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(spot.name + ' ' + spot.pref + ' 日本') + '&travelmode=driving';
+}
+
+function render(){
+  syncChips();
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const spots = allSpots().filter(s => {
+    if(activePref && s.pref !== activePref) return false;
+    if(activeCat && s.cat !== activeCat) return false;
+    if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+  document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
+  document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
+
+  spots.forEach(s => {
+    const card = el('div','card');
+    const top = el('div','card-top');
+    const left = el('div');
+    left.appendChild(el('div','card-pref',s.pref));
+    left.appendChild(el('h3',null,s.name));
+    top.appendChild(left);
+    const fav = el('button','fav' + (favorites[s.id] ? ' on' : ''), favorites[s.id] ? '♥' : '♡');
+    fav.type = 'button';
+    fav.setAttribute('aria-label','收藏此景點');
+    fav.addEventListener('click', () => toggleFavorite(s.id, fav));
+    top.appendChild(fav);
+    card.appendChild(top);
+    card.appendChild(el('p',null,s.desc));
+    const tags = el('div','card-tags');
+    tags.appendChild(el('span','tag cat',s.cat));
+    if(s.season) tags.appendChild(el('span','tag season',s.season));
+    if(s.userAdded) tags.appendChild(el('span','tag user','使用者新增'));
+    card.appendChild(tags);
+
+    const actions = el('div','card-actions');
+    const viewLink = document.createElement('a');
+    viewLink.className = 'maplink';
+    viewLink.href = mapSearchUrl(s);
+    viewLink.target = '_blank';
+    viewLink.rel = 'noopener';
+    viewLink.textContent = '📍 查看地圖';
+    const routeLink = document.createElement('a');
+    routeLink.className = 'maplink route';
+    routeLink.href = mapDirectionsUrl(s);
+    routeLink.target = '_blank';
+    routeLink.rel = 'noopener';
+    routeLink.textContent = '🚗 規劃路線';
+    actions.appendChild(viewLink);
+    actions.appendChild(routeLink);
+    card.appendChild(actions);
+
+    grid.appendChild(card);
+  });
+}
+
+async function toggleFavorite(id, btn){
+  favorites[id] = !favorites[id];
+  btn.classList.toggle('on', favorites[id]);
+  btn.textContent = favorites[id] ? '♥' : '♡';
+  try{
+    await window.storage.set('favorites', JSON.stringify(favorites), false);
+  }catch(e){}
+}
+
+async function loadFavorites(){
+  try{
+    const res = await window.storage.get('favorites', false);
+    if(res && res.value) favorites = JSON.parse(res.value);
+  }catch(e){ favorites = {}; }
+}
+
+async function loadUserSpots(){
+  try{
+    const res = await window.storage.get('user-spots', true);
+    if(res && res.value) userSpots = JSON.parse(res.value);
+  }catch(e){ userSpots = []; }
+}
+
+async function saveUserSpots(){
+  try{
+    await window.storage.set('user-spots', JSON.stringify(userSpots), true);
+  }catch(e){}
+}
+
+document.getElementById('searchInput').addEventListener('input', render);
+
+const formEl = document.getElementById('addForm');
+document.getElementById('toggleForm').addEventListener('click', () => {
+  formEl.classList.toggle('open');
+});
+document.getElementById('cancelSpot').addEventListener('click', () => {
+  formEl.classList.remove('open');
+});
+
+document.getElementById('submitSpot').addEventListener('click', async () => {
+  const name = document.getElementById('f-name').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  if(!name || !desc){
+    alert('請至少填寫景點名稱與簡介');
+    return;
+  }
+  const spot = {
+    id: 'u' + Date.now(),
+    name,
+    pref: fPref.value,
+    cat: fCat.value,
+    season: document.getElementById('f-season').value.trim(),
+    desc,
+    userAdded: true
+  };
+  userSpots.push(spot);
+  await saveUserSpots();
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-season').value = '';
+  formEl.classList.remove('open');
+  render();
+});
+
+async function loadWeather(){
+  const row = document.getElementById('weatherRow');
+  row.innerHTML = '';
+  PREFS.forEach(p => {
+    const c = el('div','wcard loading','讀取中…');
+    c.id = 'w-' + p;
+    row.appendChild(c);
+  });
+  await Promise.all(PREFS.map(async (p) => {
+    const [lat, lon] = PREF_COORDS[p];
+    const card = document.getElementById('w-' + p);
+    try{
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('weather fetch failed');
+      const data = await res.json();
+      const cw = data.current_weather;
+      const desc = WEATHER_CODE_MAP[cw.weathercode] || '天氣資料';
+      const tmax = data.daily && data.daily.temperature_2m_max ? Math.round(data.daily.temperature_2m_max[0]) : null;
+      const tmin = data.daily && data.daily.temperature_2m_min ? Math.round(data.daily.temperature_2m_min[0]) : null;
+      card.className = 'wcard';
+      card.innerHTML = '';
+      card.appendChild(el('div','wp',p));
+      card.appendChild(el('div','wt', Math.round(cw.temperature) + '°C'));
+      const range = (tmax !== null && tmin !== null) ? `${desc}・${tmin}° / ${tmax}°` : desc;
+      card.appendChild(el('div','wd',range));
+    }catch(e){
+      card.className = 'wcard';
+      card.innerHTML = '';
+      card.appendChild(el('div','wp',p));
+      card.appendChild(el('div','wd','天氣資料暫時無法取得'));
+    }
+  }));
+}
+
+(async function init(){
+  await Promise.all([loadFavorites(), loadUserSpots(), loadWeather()]);
+  render();
+})();
 </script>
+</body>
+</html>
+
 </body>
 </html>
