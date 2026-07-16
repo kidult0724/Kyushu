@@ -837,11 +837,12 @@ function render(){
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
-spots.forEach(spot => {
+spots.forEach(spot => { // 確保這裡統一使用 spot
     const card = el('div','card');
     const banner = el('div','pref-banner');
-    
-    // 【修改重點】這裡先預設顯示一個統一底色，等圖片抓到再換掉
+
+    // 修正：這裡要使用 spot.pref 而不是 s.pref
+// 【修改重點】這裡先預設顯示一個統一底色，等圖片抓到再換掉
     banner.style.backgroundColor = '#d8cfb5'; 
     banner.style.backgroundSize = 'cover';
     banner.style.backgroundPosition = 'center';
@@ -859,9 +860,6 @@ spots.forEach(spot => {
     const label = el('div', 'pref-banner-label', spot.pref);
     banner.appendChild(label);
     card.appendChild(banner);
-    
-    // ... 後面剩下的程式碼保持不變 ...
-  });
 
     const body = el('div', 'card-body');
     const head = el('div', 'app-card-head');
