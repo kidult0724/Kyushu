@@ -956,6 +956,25 @@ async function fetchWikiImage(spotName) {
   }
 }
 
+// 修改 loadPrefImages 函式
+async function loadPrefImages() {
+  await Promise.all(PREFS.map(async (p) => {
+    const title = PREF_LANDMARK[p];
+    try {
+      const url = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('wiki fetch failed');
+      const data = await res.json();
+      const src = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source);
+      
+      // 若成功抓到圖片則存入，失敗則給一個預設背景圖
+      PREF_IMAGES[p] = src || 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=600&q=80';
+    } catch (e) {
+      PREF_IMAGES[p] = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=600&q=80';
+    }
+  }));
+}
+  
 function toggleFavorite(id, btn){
   favorites[id] = !favorites[id];
   btn.classList.toggle('on', favorites[id]);
