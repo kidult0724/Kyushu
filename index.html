@@ -672,7 +672,7 @@ const CURATED = [
 
 // ===== 真實餐廳資料庫 =====
 // 每個景點對應 2-3 間「實際查證存在」的真實店家（非隨機產生）。
-// 目前已完成福岡7個景點（太宰府天満宮、柳川遊船、博多運河城、門司港懷舊、福岡塔、大濠公園、小倉城），其餘景點會在後續逐批補上；
+// 進度：已完成 14 / 45 個景點的真實餐廳查證，其餘景點持續分批補上；
 // 尚未補上真實資料的景點，暫時不會顯示餐廳卡片。
 // 訪客也可以用「餐廳」這個類型，自行新增自己去過、確認過的店家。
 const REAL_RESTAURANTS = {
@@ -736,6 +736,9 @@ const REAL_RESTAURANTS = {
   "c14": [ // 吉野里遺跡
     { name: "吉野ヶ里歴史公園レストラン", type: "彌生風定食", note: "園內唯一餐廳，招牌限定「古代貝汁御膳」與赤米飯。" }
   ],
+  "c16": [ // 九十九島
+    { name: "九十九島 海遊", type: "海鮮料理", note: "九十九島珍珠海洋渡假區內餐廳，主打九十九島新鮮活魚料理，可眺望海景。" }
+  ],
   // --- 長崎 ---
   "c15": [ // 豪斯登堡
 
@@ -745,6 +748,14 @@ const REAL_RESTAURANTS = {
   "c17": [ // 稻佐山
     { name: "展望台餐廳", type: "景觀料理", note: "飽覽百萬夜景。" },
     { name: "江山樓", type: "強棒麵", note: "必吃長崎經典名店。" }
+  ],
+  "c18": [ // 出島
+    { name: "出島內外倶樂部レストラン", type: "洋食・土耳其飯", note: "1903年洋館建築改建，出島園區內的懷舊餐廳，招牌長崎土耳其飯與鯨魚排。" },
+    { name: "Branch OTTO Dejima", type: "咖啡簡餐", note: "出島東側明治門旁的開放式咖啡餐廳，提供義大利麵與鬆餅。" }
+  ],
+  "c19": [ // 眼鏡橋
+    { name: "珈琲 冨士男", type: "老字號咖啡", note: "創業70餘年的純喫茶老店，就在眼鏡橋南邊，復古氛圍。" },
+    { name: "花ござ", type: "島原鄉土料理", note: "距眼鏡橋徒步約10秒的和食屋，二樓座位可邊眺望眼鏡橋邊用餐。" }
   ],
   "c20": [ // 哥拉巴園
     { name: "自由亭", type: "洋食", note: "園區內復古洋食館。" },
@@ -866,28 +877,34 @@ function estimateCrowd(spot){
 
   let score;
   if(!isFood){
-    // 景點時段曲線：白天上升，但午餐、晚餐時段明顯下降
-    if(jstHour >= 23 || jstHour < 6)      score = 4;   // 深夜
-    else if(jstHour < 9)                  score = 18;  // 清晨
-    else if(jstHour < 11)                 score = 58;  // 上午漸增
-    else if(jstHour < 13)                 score = 32;  // 午餐時段，遊客去吃飯 → 下降
-    else if(jstHour < 16)                 score = 82;  // 下午尖峰
-    else if(jstHour < 18)                 score = 55;  // 傍晚漸緩
-    else if(jstHour < 20)                 score = 22;  // 晚餐時段 → 下降
-    else                                  score = 15;  // 晚間收尾
+    // 景點時段曲線：白天上升，午餐、晚餐時段明顯下降；細分傍晚過渡期避免斷層
+    if(jstHour >= 23 || jstHour < 6)      score = 3;   // 深夜
+    else if(jstHour < 9)                  score = 14;  // 清晨
+    else if(jstHour < 11)                 score = 55;  // 上午漸增
+    else if(jstHour < 13)                 score = 26;  // 午餐時段，遊客去吃飯 → 下降
+    else if(jstHour < 16)                 score = 90;  // 下午尖峰
+    else if(jstHour < 17)                 score = 62;  // 傍晚漸緩（過渡）
+    else if(jstHour < 18)                 score = 40;  // 接近晚餐前 → 持續下降
+    else if(jstHour < 20)                 score = 16;  // 晚餐時段 → 最低
+    else if(jstHour < 22)                 score = 22;
+    else                                  score = 10;  // 晚間收尾
   } else {
-    // 餐廳時段曲線：午餐、晚餐時段明顯升高
-    if(jstHour >= 23 || jstHour < 6)      score = 4;
-    else if(jstHour < 11)                 score = 15;
-    else if(jstHour < 13)                 score = 88;  // 午餐尖峰
-    else if(jstHour < 17)                 score = 25;  // 下午空檔
-    else if(jstHour < 20)                 score = 92;  // 晚餐尖峰
-    else if(jstHour < 22)                 score = 40;
+    // 餐廳時段曲線：只有真正的用餐時段才會衝高，其餘時段明顯偏低
+    if(jstHour >= 23 || jstHour < 6)      score = 3;
+    else if(jstHour < 10)                 score = 8;   // 早餐前，非尖峰
+    else if(jstHour < 11)                 score = 20;  // 準備午餐
+    else if(jstHour < 13)                 score = 92;  // 午餐尖峰
+    else if(jstHour < 15)                 score = 26;  // 午後空檔
+    else if(jstHour < 17)                 score = 14;  // 下午最低（店休空檔）
+    else if(jstHour < 18)                 score = 36;  // 晚餐前，剛開始回升，尚未到高峰
+    else if(jstHour < 20)                 score = 94;  // 晚餐尖峰
+    else if(jstHour < 21)                 score = 55;  // 晚餐漸緩
+    else if(jstHour < 22)                 score = 32;
     else                                  score = 12;
   }
 
   // 週末加成（拉大差異：景點週末白天更多人，餐廳週末用餐時段更多人）
-  if(isWeekend) score += isFood ? 12 : 20;
+  if(isWeekend) score += isFood ? 14 : 22;
 
   // 即時天氣調整：下雨/下雪對戶外景點衝擊更大，對室內／美食類是加分
   const code = PREF_WEATHER[spot.pref];
