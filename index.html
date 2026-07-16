@@ -946,6 +946,12 @@ tags.appendChild(crowdTag);
     actions.appendChild(viewLink);
     actions.appendChild(routeLink);
     actions.appendChild(crowdLink); 
+// 用 innerHTML 直接寫入，避開複雜的 createElement 邏輯
+    actions.innerHTML = `
+      <a class="maplink" href="${mapSearchUrl(spot)}" target="_blank">${(spot.cat === "餐廳") ? '📍 餐廳地點' : '📍 查看地圖'}</a>
+      <a class="maplink route" href="${mapDirectionsUrl(spot)}" target="_blank">${(spot.cat === "餐廳") ? '🚗 前往餐廳' : '🚗 規劃路線'}</a>
+      <a class="maplink" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.pref)}" target="_blank">📊 即時人潮</a>
+    `;
     body.appendChild(actions);
   });
 }
