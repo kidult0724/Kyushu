@@ -837,6 +837,16 @@ function render(){
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
+// 新增：推估人潮函式 (可依照您的需求調整權重)
+function estimateCrowd(spot) {
+  // 假設包含這些關鍵字的景點通常人潮較多
+  const busyKeywords = ['神社', '城', '公園', '博物館', '車站'];
+  const isBusy = busyKeywords.some(kw => spot.name.includes(kw));
+  
+  // 依據條件回傳文字與標籤
+  return isBusy ? { text: '人潮較多', color: '#ff6b6b' } : { text: '悠閒舒適', color: '#4ecdc4' };
+}
+
 spots.forEach(spot => { // 確保這裡統一使用 spot
     const card = el('div','card');
     const banner = el('div','pref-banner');
@@ -847,15 +857,19 @@ spots.forEach(spot => { // 確保這裡統一使用 spot
     banner.style.backgroundSize = 'cover';
     banner.style.backgroundPosition = 'center';
 
+
+
+
     // 呼叫維基 API
-    getWikiImage(spot.name).then(imgUrl => {
-      if (imgUrl) {
-        banner.style.backgroundImage = `url(${imgUrl})`;
-      } else {
-        // 若抓不到維基圖，改用您原本的縣市預設圖
-        banner.style.backgroundImage = `url(${PREF_IMAGES[spot.pref]})`;
-      }
-    });
+getWikiImage(spot.name).then(imgUrl => {
+    if (imgUrl) {
+      banner.style.backgroundImage = `url(${imgUrl})`;
+    } else {
+      // 若抓不到維基圖，餐廳給食物圖，景點給縣市圖
+      const fallback = (spot.cat === "餐廳") ? 'https://example.com/food-default.jpg' : PREF_IMAGES[spot.pref];
+      banner.style.backgroundImage = `url(${fallback})`;
+    }
+  });
 
     const label = el('div', 'pref-banner-label', spot.pref);
     banner.appendChild(label);
@@ -870,6 +884,11 @@ spots.forEach(spot => { // 確保這裡統一使用 spot
     titleBlock.appendChild(title);
     head.appendChild(titleBlock);
 
+const crowdData = estimateCrowd(spot);
+  const crowdTag = el('span', 'tag crowd', crowdData.text);
+  crowdTag.style.backgroundColor = crowdData.color;
+  crowdTag.style.color = '#fff';
+
     // 修正：收藏按鈕的 id 引用
     const fav = el('button', 'fav' + (favorites[spot.id] ? ' on' : ''), favorites[spot.id] ? '♥' : '♡');
     fav.type = 'button';
@@ -880,6 +899,7 @@ spots.forEach(spot => { // 確保這裡統一使用 spot
     // 標籤列
     const tags = el('div','card-tags');
     tags.appendChild(el('span','tag cat',spot.cat));
+tags.appendChild(crowdTag);
 
     if(spot.cat === "餐廳"){
       tags.appendChild(el('span','tag ticket','🍴 ' + spot.ticket));
