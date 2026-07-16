@@ -875,7 +875,9 @@ function estimateCrowd(spot){
   const isWeekend = (jstDay === 0 || jstDay === 6);
   const isFood = (spot.cat === "餐廳");
 
-  let score;
+const baseHeat = spot.popularity || 50;
+
+  let score = baseHeat; // 起始點加入熱度判斷
   if(!isFood){
     // 景點時段曲線：白天上升，午餐、晚餐時段明顯下降；細分傍晚過渡期避免斷層
     if(jstHour >= 23 || jstHour < 6)      score = 3;   // 深夜
@@ -926,7 +928,7 @@ function estimateCrowd(spot){
   else if(score <= 80){ text = '人潮較多'; color = '#f2994a'; }
   else { text = '人潮擁擠'; color = '#e2483a'; }
 
-  return { text: `${text} ${score}%`, color, score };
+  return { text: `${text} ${score}%`, color, score }; // 移除數值百分比
 }
 
 
