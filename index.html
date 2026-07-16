@@ -918,44 +918,25 @@ tags.appendChild(crowdTag);
     body.appendChild(tags);
     body.appendChild(el('p','app-desc',spot.desc));
 
-// 地圖按鈕
-    const actions = el('div', 'card-actions');
-    
-    // 1. 查看地圖按鈕
+    // 地圖按鈕
+    const actions = el('div','card-actions');
     const viewLink = document.createElement('a');
     viewLink.className = 'maplink';
-    viewLink.href = mapSearchUrl(spot);
+    viewLink.href = mapSearchUrl(spot); // 使用 spot
     viewLink.target = '_blank';
     viewLink.textContent = (spot.cat === "餐廳") ? '📍 餐廳地點' : '📍 查看地圖';
-    actions.appendChild(viewLink);
 
-    // 2. 導航按鈕
     const routeLink = document.createElement('a');
     routeLink.className = 'maplink route';
-    routeLink.href = mapDirectionsUrl(spot);
+    routeLink.href = mapDirectionsUrl(spot); // 使用 spot
     routeLink.target = '_blank';
-    routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往餐廳' : '🚗 規劃路線';
+    routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往景點' : '🚗 規劃路線';
+
+    actions.appendChild(viewLink);
     actions.appendChild(routeLink);
-
-    // 3. 人潮按鈕 (這是 Google 地圖的通用搜尋入口，點擊後會顯示該地的人潮資訊)
-    const crowdLink = document.createElement('a');
-    crowdLink.className = 'maplink';
-    // 這裡我們直接導向 Google 地圖的搜尋結果頁
-    crowdLink.href = 'https://www.google.com/maps/search/' + encodeURIComponent(spot.name + ' ' + spot.pref);
-    crowdLink.target = '_blank';
-    crowdLink.textContent = '📊 即時人潮';
-    actions.appendChild(crowdLink);
-
     body.appendChild(actions);
     card.appendChild(body);
     grid.appendChild(card);
-// 用 innerHTML 直接寫入，避開複雜的 createElement 邏輯
-    actions.innerHTML = `
-      <a class="maplink" href="${mapSearchUrl(spot)}" target="_blank">${(spot.cat === "餐廳") ? '📍 餐廳地點' : '📍 查看地圖'}</a>
-      <a class="maplink route" href="${mapDirectionsUrl(spot)}" target="_blank">${(spot.cat === "餐廳") ? '🚗 前往餐廳' : '🚗 規劃路線'}</a>
-      <a class="maplink" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.pref)}" target="_blank">📊 即時人潮</a>
-    `;
-    body.appendChild(actions);
   });
 }
 
