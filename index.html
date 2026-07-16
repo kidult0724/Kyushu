@@ -918,8 +918,8 @@ tags.appendChild(crowdTag);
     body.appendChild(tags);
     body.appendChild(el('p','app-desc',spot.desc));
 
-    // 地圖按鈕
-const actions = document.createElement('div');
+// 地圖按鈕
+    const actions = document.createElement('div');
     actions.className = 'card-actions';
 
     // 1. 原有的「查看地圖」按鈕
@@ -936,18 +936,16 @@ const actions = document.createElement('div');
     routeLink.target = '_blank';
     routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往餐廳' : '🚗 規劃路線';
 
-// 3. 【新增】查看即時人潮按鈕
+    // 3. 【新增】查看即時人潮按鈕 (使用字串拼接，避免語法錯誤)
     const crowdLink = document.createElement('a');
     crowdLink.className = 'maplink';
-    
-    // 修正重點：使用 ${} 包裹變數，並使用正確的 Google Maps 搜尋網址
-    crowdLink.href = `https://www.google.com/maps/search/${encodeURIComponent(spot.name + ' ' + spot.pref)}`;
+    crowdLink.href = 'https://www.google.com/maps/search/' + encodeURIComponent(spot.name + ' ' + spot.pref);
     crowdLink.target = '_blank';
     crowdLink.textContent = '📊 即時人潮';
 
     actions.appendChild(viewLink);
     actions.appendChild(routeLink);
-    actions.appendChild(crowdLink); // 將新按鈕加入
+    actions.appendChild(crowdLink); 
     body.appendChild(actions);
   });
 }
