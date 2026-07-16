@@ -279,8 +279,57 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 }
 
+.card-spot{
+  border-left: 4px solid var(--pine);
+}
+
+.card-food{
+  border-left: 4px solid var(--clay);
+}
+
+.card-food .app-location{
+  color: var(--clay-deep);
+}
+
+.viewmode-row{
+  display:flex;
+  gap:8px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:5px;
+  width:fit-content;
+}
+
+.viewmode-btn{
+  border:none;
+  background:transparent;
+  color:var(--ink-soft);
+  font-size:13px;
+  font-weight:700;
+  padding:8px 16px;
+  border-radius:7px;
+  cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+.viewmode-btn.active{
+  background:var(--ink);
+  color:var(--paper);
+}
+
 /* 手機：App 單欄卡片 */
 @media screen and (max-width:768px){
+
+  .viewmode-row{
+    width:100%;
+  }
+
+  .viewmode-btn{
+    flex:1;
+    padding:12px;
+    font-size:15px;
+  }
 
   .wrap{
     padding:0 14px 40px;
@@ -471,6 +520,11 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
       <span aria-hidden="true">🔎</span>
       <input id="searchInput" type="text" placeholder="搜尋景點名稱或關鍵字，例如：溫泉、免費、門票、金鱗湖">
     </div>
+    <div class="viewmode-row" id="viewModeRow">
+      <button type="button" class="viewmode-btn" data-mode="spot">景點</button>
+      <button type="button" class="viewmode-btn" data-mode="food">餐廳</button>
+      <button type="button" class="viewmode-btn active" data-mode="all">全部</button>
+    </div>
     <div class="chiprow" id="prefRow"><span class="chiprow-label">縣市</span></div>
     <div class="chiprow" id="catRow"><span class="chiprow-label">類型</span></div>
   </div>
@@ -524,7 +578,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
 <footer>
-  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準；也歡迎自行新增你去過、確認過的餐廳。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／全部」可切換只看景點或只看餐廳；餐廳卡片左側為橘色色條並標示「鄰近景點」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家（部分景點仍陸續查證補齊中），營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準；也歡迎自行新增你去過、確認過的餐廳。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是根據當下的星期幾、時段、以及該縣即時天氣（Open-Meteo）綜合推估的參考百分比，數字會隨你打開頁面的當下時間變動，僅供概略參考。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
 </footer>
 </div>
 
@@ -649,6 +703,19 @@ const REAL_RESTAURANTS = {
     { name: "資さんうどん", type: "烏龍麵", note: "北九州靈魂美食，必吃牛蒡天婦羅。" },
     { name: "田舎庵", type: "鰻魚料理", note: "小倉知名鰻魚老舗，香氣十足。" }
   ],
+  // --- 福岡（新查證補完） ---
+  "c4": [ // 門司港懷舊
+    { name: "伽哩本舗 門司港レトロ店", type: "門司港燒咖哩", note: "門司港燒咖哩風潮的元祖店之一，可眺望關門海峽。" },
+    { name: "ミツバチカレー 門司港本店", type: "門司港燒咖哩", note: "門司港燒咖哩代表店家之一。" }
+  ],
+  "c7": [ // 海之中道海濱公園
+    { name: "ワンダーシャトル", type: "拉麵・義大利麵", note: "公園內Wonder World區的官方餐廳，提供豚骨拉麵與義大利麵等定番餐點。" },
+    { name: "mako's café", type: "咖啡輕食", note: "西戶崎海邊的懷舊咖啡廳，可邊眺望海景邊用餐。" }
+  ],
+  "c9": [ // 櫛田神社
+    { name: "博多一天門", type: "豚骨拉麵", note: "櫛田神社前駅附近的人氣拉麵店，招牌半熟煮玉子拉麵。" },
+    { name: "めし魚処 わさび", type: "海鮮定食", note: "使用當日鮮魚的定食與壽司店，就在川端商店街附近。" }
+  ],
   // --- 佐賀 ---
   "c10": [ // 唐津城
     { name: "唐津 飴源", type: "茶泡飯", note: "老字號漁獲料理。" },
@@ -662,8 +729,16 @@ const REAL_RESTAURANTS = {
     { name: "佐賀牛 志場", type: "佐賀牛", note: "頂級佐賀牛燒肉。" },
     { name: "嬉野温泉 公衆浴場", type: "湯豆腐", note: "滑嫩溫泉豆腐。" }
   ],
+  "c13": [ // 虹之松原
+    { name: "からつバーガー 虹ノ松原本店", type: "唐津漢堡", note: "1961年創業，唐津代表B級美食，可邊眺望松原邊享用。" },
+    { name: "海浜館", type: "歐風料理", note: "1984年開業的洋館餐廳，位於虹之松原中間，提供唐津食材料理。" }
+  ],
+  "c14": [ // 吉野里遺跡
+    { name: "吉野ヶ里歴史公園レストラン", type: "彌生風定食", note: "園內唯一餐廳，招牌限定「古代貝汁御膳」與赤米飯。" }
+  ],
   // --- 長崎 ---
   "c15": [ // 豪斯登堡
+
     { name: "ロード・レーウ", type: "土耳其飯", note: "經典長崎洋食。" },
     { name: "悟空", type: "佐世保漢堡", note: "份量扎實的在地漢堡。" }
   ],
@@ -771,6 +846,72 @@ let userSpots = [];
 let favorites = {};
 let activePref = null;
 let activeCat = null;
+let viewMode = 'all'; // 'spot' | 'food' | 'all'
+
+// 各縣目前的天氣代碼（由 loadWeather 即時寫入），供人潮估算使用
+const PREF_WEATHER = {};
+
+// ===== 即時人潮推估 =====
+// 不使用關鍵字猜測，改以「現在的星期幾、現在幾點、當地即時天氣」這三個
+// 會隨時間變動的公開/預設資料來推估人潮。
+// 景點與餐廳用不同的時段曲線：景點在午餐、晚餐時段人潮會下降（遊客去吃飯了），
+// 餐廳則正好相反，在那兩個時段人潮會上升。
+function estimateCrowd(spot){
+  const now = new Date();
+  // 轉換成日本時間（Asia/Tokyo, UTC+9）
+  const jstHour = (now.getUTCHours() + 9) % 24;
+  const jstDay = new Date(now.getTime() + 9 * 3600 * 1000).getUTCDay(); // 0=日 6=六
+  const isWeekend = (jstDay === 0 || jstDay === 6);
+  const isFood = (spot.cat === "餐廳");
+
+  let score;
+  if(!isFood){
+    // 景點時段曲線：白天上升，但午餐、晚餐時段明顯下降
+    if(jstHour >= 23 || jstHour < 6)      score = 4;   // 深夜
+    else if(jstHour < 9)                  score = 18;  // 清晨
+    else if(jstHour < 11)                 score = 58;  // 上午漸增
+    else if(jstHour < 13)                 score = 32;  // 午餐時段，遊客去吃飯 → 下降
+    else if(jstHour < 16)                 score = 82;  // 下午尖峰
+    else if(jstHour < 18)                 score = 55;  // 傍晚漸緩
+    else if(jstHour < 20)                 score = 22;  // 晚餐時段 → 下降
+    else                                  score = 15;  // 晚間收尾
+  } else {
+    // 餐廳時段曲線：午餐、晚餐時段明顯升高
+    if(jstHour >= 23 || jstHour < 6)      score = 4;
+    else if(jstHour < 11)                 score = 15;
+    else if(jstHour < 13)                 score = 88;  // 午餐尖峰
+    else if(jstHour < 17)                 score = 25;  // 下午空檔
+    else if(jstHour < 20)                 score = 92;  // 晚餐尖峰
+    else if(jstHour < 22)                 score = 40;
+    else                                  score = 12;
+  }
+
+  // 週末加成（拉大差異：景點週末白天更多人，餐廳週末用餐時段更多人）
+  if(isWeekend) score += isFood ? 12 : 20;
+
+  // 即時天氣調整：下雨/下雪對戶外景點衝擊更大，對室內／美食類是加分
+  const code = PREF_WEATHER[spot.pref];
+  if(code !== undefined){
+    const isWet = [51,53,55,61,63,65,71,73,75,80,81,82,95,96,99].includes(code);
+    if(isWet){
+      if(spot.cat === "自然景觀" || spot.cat === "花卉庭園") score -= 30;
+      else if(spot.cat === "城市漫遊" || spot.cat === "親子樂園") score -= 10;
+      else if(isFood) score += 15;
+    }
+  }
+
+  score = Math.max(3, Math.min(100, Math.round(score)));
+
+  // 四級距：較無人潮 ≤40% / 稍有人潮 ≤60% / 人潮較多 ≤80% / 人潮擁擠 >80%
+  let text, color;
+  if(score <= 40){ text = '較無人潮'; color = '#4ecdc4'; }
+  else if(score <= 60){ text = '稍有人潮'; color = '#c7a83e'; }
+  else if(score <= 80){ text = '人潮較多'; color = '#f2994a'; }
+  else { text = '人潮擁擠'; color = '#e2483a'; }
+
+  return { text: `${text} ${score}%`, color, score };
+}
+
 
 function el(tag, cls, text){
   const e = document.createElement(tag);
@@ -790,6 +931,7 @@ function buildChipRow(container, values, onPick){
 
 const prefRow = document.getElementById('prefRow');
 const catRow = document.getElementById('catRow');
+const viewModeRow = document.getElementById('viewModeRow');
 buildChipRow(prefRow, PREFS, (v) => {
   activePref = (activePref === v) ? null : v;
   render();
@@ -799,9 +941,17 @@ buildChipRow(catRow, CATS, (v) => {
   render();
 });
 
+viewModeRow.querySelectorAll('.viewmode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    viewMode = btn.dataset.mode;
+    render();
+  });
+});
+
 function syncChips(){
   [...prefRow.querySelectorAll('.chip')].forEach(c => c.classList.toggle('active', c.textContent === activePref));
   [...catRow.querySelectorAll('.chip')].forEach(c => c.classList.toggle('active', c.textContent === activeCat));
+  [...viewModeRow.querySelectorAll('.viewmode-btn')].forEach(b => b.classList.toggle('active', b.dataset.mode === viewMode));
 }
 
 const fPref = document.getElementById('f-pref');
@@ -834,26 +984,18 @@ function render(){
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
   const spots = allSpots().filter(s => {
+    if(viewMode === 'spot' && s.cat === "餐廳") return false;
+    if(viewMode === 'food' && s.cat !== "餐廳") return false;
     if(activePref && s.pref !== activePref) return false;
     if(activeCat && s.cat !== activeCat) return false;
     if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q))) return false;
     return true;
   });
-  document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
+  document.getElementById('countLabel').textContent = `共 ${spots.length} 個項目`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
-// 新增：推估人潮函式 (可依照您的需求調整權重)
-function estimateCrowd(spot) {
-  // 假設包含這些關鍵字的景點通常人潮較多
-  const busyKeywords = ['神社', '城', '公園', '博物館', '車站'];
-  const isBusy = busyKeywords.some(kw => spot.name.includes(kw));
-  
-  // 依據條件回傳文字與標籤
-  return isBusy ? { text: '人潮較多', color: '#ff6b6b' } : { text: '悠閒舒適', color: '#4ecdc4' };
-}
-
-spots.forEach(spot => { // 確保這裡統一使用 spot
-    const card = el('div','card');
+  spots.forEach(spot => { // 確保這裡統一使用 spot
+    const card = el('div', spot.cat === "餐廳" ? 'card card-food' : 'card card-spot');
     const banner = el('div','pref-banner');
 
     // 修正：這裡要使用 spot.pref 而不是 s.pref
@@ -870,20 +1012,24 @@ getWikiImage(spot.name).then(imgUrl => {
     if (imgUrl) {
       banner.style.backgroundImage = `url(${imgUrl})`;
     } else {
-      // 若抓不到維基圖，餐廳給食物圖，景點給縣市圖
-      const fallback = (spot.cat === "餐廳") ? 'https://example.com/food-default.jpg' : PREF_IMAGES[spot.pref];
+      // 若抓不到維基圖，餐廳給食物示意圖，景點給縣市代表圖
+      const fallback = (spot.cat === "餐廳")
+        ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'
+        : PREF_IMAGES[spot.pref];
       banner.style.backgroundImage = `url(${fallback})`;
     }
   });
 
-    const label = el('div', 'pref-banner-label', spot.pref);
+    const bannerLabelText = (spot.cat === "餐廳") ? ('🍴 ' + spot.pref) : ('📍 ' + spot.pref);
+    const label = el('div', 'pref-banner-label', bannerLabelText);
     banner.appendChild(label);
     card.appendChild(banner);
 
     const body = el('div', 'card-body');
     const head = el('div', 'app-card-head');
     const titleBlock = el('div');
-    const location = el('div', 'app-location', '📍 ' + spot.pref);
+    const location = el('div', 'app-location',
+      (spot.cat === "餐廳" && spot.nearSpotName) ? ('🍴 鄰近景點：' + spot.nearSpotName) : ('📍 ' + spot.pref));
     titleBlock.appendChild(location);
     const title = el('h3', 'app-title', spot.name);
     titleBlock.appendChild(title);
@@ -1052,6 +1198,7 @@ async function loadWeather(){
       if(!res.ok) throw new Error('weather fetch failed');
       const data = await res.json();
       const cw = data.current_weather;
+      PREF_WEATHER[p] = cw.weathercode;
       const desc = WEATHER_CODE_MAP[cw.weathercode] || '天氣資料';
       const tmax = data.daily && data.daily.temperature_2m_max ? Math.round(data.daily.temperature_2m_max[0]) : null;
       const tmin = data.daily && data.daily.temperature_2m_min ? Math.round(data.daily.temperature_2m_min[0]) : null;
