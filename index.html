@@ -907,17 +907,6 @@ const crowdData = estimateCrowd(spot);
 tags.appendChild(crowdTag);
 
     if(spot.cat === "餐廳"){
-const crowdLink = document.createElement('a');
-    crowdLink.className = 'crowd-link';
-    // 直接連結到 Google Maps 的該地點資訊頁，使用者點擊即可看到該點的即時人潮長條圖
-    crowdLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.pref)}`;
-    crowdLink.target = '_blank';
-    crowdLink.textContent = '📊 查看實時人潮';
-    crowdLink.style.display = 'block';
-    crowdLink.style.fontSize = '0.8em';
-    crowdLink.style.marginTop = '5px';
-    body.appendChild(crowdLink);
-}
       tags.appendChild(el('span','tag ticket','🍴 ' + spot.ticket));
     } else {
       tags.appendChild(el('span','tag ticket','🎟️ ' + (spot.ticket || "免費參觀")));
