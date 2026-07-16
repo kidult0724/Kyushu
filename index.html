@@ -837,16 +837,31 @@ function render(){
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
-spots.forEach(spot => { // 確保這裡統一使用 spot
+spots.forEach(spot => {
     const card = el('div','card');
     const banner = el('div','pref-banner');
+    
+    // 【修改重點】這裡先預設顯示一個統一底色，等圖片抓到再換掉
+    banner.style.backgroundColor = '#d8cfb5'; 
+    banner.style.backgroundSize = 'cover';
+    banner.style.backgroundPosition = 'center';
 
-    // 修正：這裡要使用 spot.pref 而不是 s.pref
-    banner.style.backgroundImage = `url(${PREF_IMAGES[spot.pref]})`;
+    // 呼叫維基 API
+    getWikiImage(spot.name).then(imgUrl => {
+      if (imgUrl) {
+        banner.style.backgroundImage = `url(${imgUrl})`;
+      } else {
+        // 若抓不到維基圖，改用您原本的縣市預設圖
+        banner.style.backgroundImage = `url(${PREF_IMAGES[spot.pref]})`;
+      }
+    });
 
     const label = el('div', 'pref-banner-label', spot.pref);
     banner.appendChild(label);
     card.appendChild(banner);
+    
+    // ... 後面剩下的程式碼保持不變 ...
+  });
 
     const body = el('div', 'card-body');
     const head = el('div', 'app-card-head');
@@ -900,6 +915,18 @@ spots.forEach(spot => { // 確保這裡統一使用 spot
     card.appendChild(body);
     grid.appendChild(card);
   });
+}
+
+async function getWikiImage(title) {
+  try {
+    const url = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.thumbnail && data.thumbnail.source) ? data.thumbnail.source : null;
+  } catch (e) {
+    return null; // 失敗回傳 null，讓後面接手處理
+  }
 }
 
 async function loadPrefImages(){
