@@ -837,102 +837,69 @@ function render(){
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個景點`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
-spots.forEach(spot => {
-   
- const card = el('div','card');
+spots.forEach(spot => { // 確保這裡統一使用 spot
+    const card = el('div','card');
+    const banner = el('div','pref-banner');
 
-const banner = el('div','pref-banner');
+    // 修正：這裡要使用 spot.pref 而不是 s.pref
+    banner.style.backgroundImage = `url(${PREF_IMAGES[spot.pref]})`;
 
-banner.style.backgroundImage =
-  `url(${PREF_IMAGES[s.pref]})`;
+    const label = el('div', 'pref-banner-label', spot.pref);
+    banner.appendChild(label);
+    card.appendChild(banner);
 
-const label = el(
-  'div',
-  'pref-banner-label',
-  s.pref
-);
+    const body = el('div', 'card-body');
+    const head = el('div', 'app-card-head');
+    const titleBlock = el('div');
+    const location = el('div', 'app-location', '📍 ' + spot.pref);
+    titleBlock.appendChild(location);
+    const title = el('h3', 'app-title', spot.name);
+    titleBlock.appendChild(title);
+    head.appendChild(titleBlock);
 
-banner.appendChild(label);
+    // 修正：收藏按鈕的 id 引用
+    const fav = el('button', 'fav' + (favorites[spot.id] ? ' on' : ''), favorites[spot.id] ? '♥' : '♡');
+    fav.type = 'button';
+    fav.addEventListener('click', () => toggleFavorite(spot.id, fav));
+    head.appendChild(fav);
+    body.appendChild(head);
 
-card.appendChild(banner);
+    // 標籤列
+    const tags = el('div','card-tags');
+    tags.appendChild(el('span','tag cat',spot.cat));
 
-  const body = el('div', 'card-body');
+    if(spot.cat === "餐廳"){
+      tags.appendChild(el('span','tag ticket','🍴 ' + spot.ticket));
+    } else {
+      tags.appendChild(el('span','tag ticket','🎟️ ' + (spot.ticket || "免費參觀")));
+    }
 
-  // App 卡片上方：地點、標題、收藏
-  const head = el('div', 'app-card-head');
+    if(spot.season) tags.appendChild(el('span','tag season','🌿 ' + spot.season));
+    if(spot.userAdded) tags.appendChild(el('span','tag user','使用者新增'));
 
-  const titleBlock = el('div');
+    body.appendChild(tags);
+    body.appendChild(el('p','app-desc',spot.desc));
 
-  const location = el('div', 'app-location', '📍 ' + s.pref);
-  titleBlock.appendChild(location);
+    // 地圖按鈕
+    const actions = el('div','card-actions');
+    const viewLink = document.createElement('a');
+    viewLink.className = 'maplink';
+    viewLink.href = mapSearchUrl(spot); // 使用 spot
+    viewLink.target = '_blank';
+    viewLink.textContent = (spot.cat === "餐廳") ? '📍 餐廳地點' : '📍 查看地圖';
 
-  const title = el('h3', 'app-title', s.name);
-  titleBlock.appendChild(title);
+    const routeLink = document.createElement('a');
+    routeLink.className = 'maplink route';
+    routeLink.href = mapDirectionsUrl(spot); // 使用 spot
+    routeLink.target = '_blank';
+    routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往景點' : '🚗 規劃路線';
 
-  head.appendChild(titleBlock);
-
-  const fav = el(
-    'button',
-    'fav' + (favorites[s.id] ? ' on' : ''),
-    favorites[s.id] ? '♥' : '♡'
-  );
-  fav.type = 'button';
-  fav.setAttribute('aria-label','收藏此景點');
-  fav.addEventListener('click', () => toggleFavorite(s.id, fav));
-  head.appendChild(fav);
-
-  body.appendChild(head);
-
-  // 標籤列
-  const tags = el('div','card-tags');
-
-  tags.appendChild(el('span','tag cat',s.cat));
-
-  if(s.cat === "餐廳"){
-    tags.appendChild(el('span','tag ticket','🍴 ' + s.ticket));
-  } else {
-    const ticketText = s.ticket || "免費參觀";
-    tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
-  }
-
-  if(s.season){
-    tags.appendChild(el('span','tag season','🌿 ' + s.season));
-  }
-
-  if(s.userAdded){
-    tags.appendChild(el('span','tag user','使用者新增'));
-  }
-
-  body.appendChild(tags);
-
-  // 景點介紹
-  body.appendChild(el('p','app-desc',s.desc));
-
-  // 地圖按鈕
-  const actions = el('div','card-actions');
-
-  const viewLink = document.createElement('a');
-  viewLink.className = 'maplink';
-  viewLink.href = mapSearchUrl(s);
-  viewLink.target = '_blank';
-  viewLink.rel = 'noopener';
-  viewLink.textContent = (s.cat === "餐廳") ? '📍 餐廳地點' : '📍 查看地圖';
-
-  const routeLink = document.createElement('a');
-  routeLink.className = 'maplink route';
-  routeLink.href = mapDirectionsUrl(s);
-  routeLink.target = '_blank';
-  routeLink.rel = 'noopener';
-  routeLink.textContent = (s.cat === "餐廳") ? '🚗 前往景點' : '🚗 規劃路線';
-
-  actions.appendChild(viewLink);
-  actions.appendChild(routeLink);
-
-  body.appendChild(actions);
-
-  card.appendChild(body);
-  grid.appendChild(card);
-});
+    actions.appendChild(viewLink);
+    actions.appendChild(routeLink);
+    body.appendChild(actions);
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
 }
 
 async function loadPrefImages(){
