@@ -838,29 +838,8 @@ function render(){
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
 spots.forEach(spot => {
-    // 1. 建立卡片外層 (例如 div)
+   
     const card = document.createElement('div');
-    card.className = 'spot-card';
-
-    // 2. 建立圖片元素 (這裡就是您要塞的地方)
-    const spotImg = document.createElement('img');
-    spotImg.src = 'loading.gif'; // 初始圖，可以改用透明圖片或轉圈動畫
-    spotImg.alt = spot.name;     // 為了無障礙與SEO
-    spotImg.style.width = "100%"; // 設定適當寬度
-
-    // 3. 呼叫 API 抓圖 (直接放在這裡)
-    fetchWikiImage(spot.name).then(imageUrl => {
-        spotImg.src = imageUrl;
-    });
-
-    // 4. 將圖片加入卡片
-    card.appendChild(spotImg);
-
-    // ... 後面接著加入景點名稱、介紹等其他資訊 ...
-    
-    // 5. 最後把 card 加入到網頁的容器中
-    document.getElementById('container').appendChild(card);
-});
 
 const banner = el('div','pref-banner');
 
@@ -1090,4 +1069,3 @@ async function loadWeather(){
 })();
 </script>
 </body>
-</html>
