@@ -524,13 +524,13 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
   <footer>
-    景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+    景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。各景點下方標示「餐廳」類型的項目為實際查證存在的店家（目前已完成福岡7個景點，其餘景點陸續補上中），但營業時間、公休日仍可能異動，正式資訊請以「周邊餐廳搜尋」按鈕查詢或現場確認為準；也歡迎自行新增你去過、確認過的餐廳。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
   </footer>
 </div>
 
 <script>
 const PREFS = ["福岡","佐賀","長崎","熊本","大分","宮崎","鹿兒島"];
-const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園"];
+const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園","餐廳"];
 
 const PREF_COORDS = {
   "福岡":[33.5904,130.4017],
@@ -616,7 +616,67 @@ const CURATED = [
   {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年，夏季適合浮潛",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"擁有亞熱帶原始林與珊瑚礁海域的世界自然遺產島嶼，生態豐富。"}
 ];
 
-// 高品質的日本風景風景預備圖，用於自訂新增景點的隨機配圖
+// ===== 真實餐廳資料庫 =====
+// 每個景點對應 2-3 間「實際查證存在」的真實店家（非隨機產生）。
+// 目前已完成福岡7個景點（太宰府天満宮、柳川遊船、博多運河城、門司港懷舊、福岡塔、大濠公園、小倉城），其餘景點會在後續逐批補上；
+// 尚未補上真實資料的景點，暫時不會顯示餐廳卡片。
+// 訪客也可以用「餐廳」這個類型，自行新增自己去過、確認過的店家。
+const REAL_RESTAURANTS = {
+  "c1": [ // 太宰府天満宮
+    { name: "かさの家", type: "梅ヶ枝餅・甜點", note: "大正11年（1922）創業的梅ヶ枝餅老舗，位於天滿宮參道上。" },
+    { name: "一蘭 太宰府参道店", type: "豚骨拉麵", note: "參道店限定「合格拉麵」，五角形碗與59公分長麵條諧音祈求金榜題名。" },
+    { name: "筑紫庵本店", type: "唐揚げ漢堡", note: "招牌「太宰府バーガー」以唐揚げ配特製梅子塔塔醬，本店限定商品。" }
+  ],
+  "c2": [ // 柳川遊船
+    { name: "若松屋", type: "鰻魚せいろ蒸し", note: "江戶末期安政年間創業的鰻魚料理老舗，就位在遊船乘船處附近的水堀旁。" },
+    { name: "元祖本吉屋 本店", type: "鰻魚せいろ蒸し", note: "1681年創業，招牌「せいろ蒸し」以獨門蒸烤製法聞名。" },
+    { name: "皿屋 福柳", type: "鰻魚せいろ蒸し", note: "江戶時代中期創業、傳承約250年的老舗，鄰近川下り觀光通り。" }
+  ],
+  "c3": [ // 博多運河城
+    { name: "ラーメンスタジアム", type: "拉麵美食街", note: "位於Canal City內5樓，集結全國多間人氣拉麵名店的主題美食街。" },
+    { name: "博多一双", type: "豚骨拉麵", note: "以濃厚泡系豚骨拉麵聞名的博多人氣連鎖名店。" }
+  ],
+  "c4": [ // 門司港懷舊
+    { name: "伽哩本舗 門司港レトロ店", type: "門司港燒咖哩", note: "門司港燒咖哩風潮的元祖店之一，可眺望關門海峽。" },
+    { name: "ミツバチカレー 門司港本店", type: "門司港燒咖哩", note: "門司港燒咖哩代表店家之一，也提供宅配與伴手禮包裝。" },
+    { name: "門司港茶寮", type: "懷舊喫茶・燒咖哩", note: "大正浪漫氛圍的復古喫茶店，位於門司港車站步行1分鐘處。" }
+  ],
+  "c5": [ // 福岡塔
+    { name: "煉瓦倶楽部", type: "洋食自助餐", note: "位於福岡塔1樓的洋食餐廳，提供多道式午間套餐與惣菜吃到飽。" },
+    { name: "こんぶりお", type: "野菜料理", note: "距福岡塔步行約8分鐘，使用糸島產新鮮蔬菜的餐廳，氣氛開放明亮。" }
+  ],
+  "c6": [ // 大濠公園
+    { name: "ロイヤルガーデンカフェ大濠公園", type: "義式料理・湖景餐廳", note: "位於大濠公園Boat House內，可一邊眺望湖景一邊用餐。" },
+    { name: "カフェ アクアム", type: "咖啡輕食", note: "緊鄰福岡市美術館，面對大濠公園的休閒咖啡廳，適合散步後小憩。" }
+  ],
+  "c8": [ // 小倉城
+    { name: "資さんうどん", type: "烏龍麵", note: "北九州在地靈魂美食的烏龍麵連鎖名店，招牌牛蒡天婦羅烏龍麵。" },
+    { name: "田舎庵", type: "鰻魚料理", note: "小倉當地知名的鰻魚老舗，鰻魚重香氣十足，常需排隊。" }
+  ]
+};
+
+function generateRestaurants(){
+  const list = [];
+  CURATED.forEach(spot => {
+    const entries = REAL_RESTAURANTS[spot.id];
+    if(!entries) return;
+    entries.forEach((r, i) => {
+      list.push({
+        id: spot.id + '-r' + (i + 1),
+        name: r.name,
+        pref: spot.pref,
+        cat: "餐廳",
+        season: "",
+        ticket: r.type,
+        desc: `${spot.name}周邊的真實店家：${r.note}`,
+        nearSpotName: spot.name
+      });
+    });
+  });
+  return list;
+}
+
+const RESTAURANTS = generateRestaurants();
 const FALLBACK_PICS = [
   "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",
@@ -668,13 +728,19 @@ PREFS.forEach(p => { const o = el('option', null, p); o.value = p; fPref.appendC
 CATS.forEach(c => { const o = el('option', null, c); o.value = c; fCat.appendChild(o); });
 
 function allSpots(){
-  return [...CURATED, ...userSpots];
+  return [...CURATED, ...RESTAURANTS, ...userSpots];
 }
 
 function mapSearchUrl(spot){
+  if(spot.cat === "餐廳" && spot.nearSpotName){
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.nearSpotName + ' ' + spot.pref + ' 餐廳 日本');
+  }
   return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.name + ' ' + spot.pref + ' 日本');
 }
 function mapDirectionsUrl(spot){
+  if(spot.cat === "餐廳" && spot.nearSpotName){
+    return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(spot.nearSpotName + ' ' + spot.pref + ' 日本') + '&travelmode=driving';
+  }
   return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(spot.name + ' ' + spot.pref + ' 日本') + '&travelmode=driving';
 }
 
@@ -742,8 +808,12 @@ card.appendChild(banner);
 
   tags.appendChild(el('span','tag cat',s.cat));
 
-  const ticketText = s.ticket || "免費參觀";
-  tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
+  if(s.cat === "餐廳"){
+    tags.appendChild(el('span','tag ticket','🍴 ' + s.ticket));
+  } else {
+    const ticketText = s.ticket || "免費參觀";
+    tags.appendChild(el('span','tag ticket','🎟️ ' + ticketText));
+  }
 
   if(s.season){
     tags.appendChild(el('span','tag season','🌿 ' + s.season));
@@ -766,14 +836,14 @@ card.appendChild(banner);
   viewLink.href = mapSearchUrl(s);
   viewLink.target = '_blank';
   viewLink.rel = 'noopener';
-  viewLink.textContent = '📍 查看地圖';
+  viewLink.textContent = (s.cat === "餐廳") ? '📍 周邊餐廳搜尋' : '📍 查看地圖';
 
   const routeLink = document.createElement('a');
   routeLink.className = 'maplink route';
   routeLink.href = mapDirectionsUrl(s);
   routeLink.target = '_blank';
   routeLink.rel = 'noopener';
-  routeLink.textContent = '🚗 規劃路線';
+  routeLink.textContent = (s.cat === "餐廳") ? '🚗 前往景點' : '🚗 規劃路線';
 
   actions.appendChild(viewLink);
   actions.appendChild(routeLink);
