@@ -934,10 +934,10 @@ card.appendChild(banner);
   grid.appendChild(card);
 });
 }
-
+  
 async function fetchWikiImage(spotName) {
-  // 維基百科 API 網址
-  const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(spotName)}&prop=pageimages&format=json&pithumbsize=400&origin=*`;
+  // 為了提高成功率，使用中文維基的 API，並加入嘗試機制
+  const url = `https://zh.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(spotName)}&prop=pageimages&format=json&pithumbsize=400&origin=*`;
   
   try {
     const response = await fetch(url);
@@ -945,15 +945,14 @@ async function fetchWikiImage(spotName) {
     const pages = data.query.pages;
     const pageId = Object.keys(pages)[0];
     
-    // 如果有圖片則回傳 URL，否則回傳預設圖片
-    if (pages[pageId].thumbnail) {
+    if (pages[pageId] && pages[pageId].thumbnail) {
       return pages[pageId].thumbnail.source;
     } else {
-      return 'https://via.placeholder.com/400x250?text=No+Image'; // 預設圖
+      // 若無圖，回傳一個高品質的免費風景圖（Unsplash）
+      return `https://source.unsplash.com/400x250/?${encodeURIComponent(spotName)}`;
     }
   } catch (error) {
-    console.error("圖片抓取失敗:", error);
-    return 'https://via.placeholder.com/400x250?text=Load+Error';
+    return 'https://via.placeholder.com/400x250?text=Image+Unavailable';
   }
 }
 
