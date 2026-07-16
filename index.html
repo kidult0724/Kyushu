@@ -934,47 +934,23 @@ card.appendChild(banner);
   grid.appendChild(card);
 });
 }
-  
-async function fetchWikiImage(spotName) {
-  // 為了提高成功率，使用中文維基的 API，並加入嘗試機制
-  const url = `https://zh.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(spotName)}&prop=pageimages&format=json&pithumbsize=400&origin=*`;
-  
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    const pages = data.query.pages;
-    const pageId = Object.keys(pages)[0];
-    
-    if (pages[pageId] && pages[pageId].thumbnail) {
-      return pages[pageId].thumbnail.source;
-    } else {
-      // 若無圖，回傳一個高品質的免費風景圖（Unsplash）
-      return `https://source.unsplash.com/400x250/?${encodeURIComponent(spotName)}`;
-    }
-  } catch (error) {
-    return 'https://via.placeholder.com/400x250?text=Image+Unavailable';
-  }
-}
 
-// 修改 loadPrefImages 函式
-async function loadPrefImages() {
+async function loadPrefImages(){
   await Promise.all(PREFS.map(async (p) => {
     const title = PREF_LANDMARK[p];
-    try {
+    try{
       const url = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('wiki fetch failed');
+      if(!res.ok) throw new Error('wiki fetch failed');
       const data = await res.json();
       const src = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source);
-      
-      // 若成功抓到圖片則存入，失敗則給一個預設背景圖
-      PREF_IMAGES[p] = src || 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=600&q=80';
-    } catch (e) {
-      PREF_IMAGES[p] = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=600&q=80';
+      if(src) PREF_IMAGES[p] = src;
+    }catch(e){
+      // 抓取失敗時維持空白，卡片會顯示底色而不會壞掉
     }
   }));
 }
-  
+
 function toggleFavorite(id, btn){
   favorites[id] = !favorites[id];
   btn.classList.toggle('on', favorites[id]);
@@ -1087,3 +1063,4 @@ async function loadWeather(){
 })();
 </script>
 </body>
+</html>
