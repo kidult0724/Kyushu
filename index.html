@@ -919,24 +919,35 @@ tags.appendChild(crowdTag);
     body.appendChild(el('p','app-desc',spot.desc));
 
     // 地圖按鈕
-    const actions = el('div','card-actions');
+const actions = document.createElement('div');
+    actions.className = 'card-actions';
+
+    // 1. 原有的「查看地圖」按鈕
     const viewLink = document.createElement('a');
     viewLink.className = 'maplink';
-    viewLink.href = mapSearchUrl(spot); // 使用 spot
+    viewLink.href = mapSearchUrl(spot);
     viewLink.target = '_blank';
     viewLink.textContent = (spot.cat === "餐廳") ? '📍 餐廳地點' : '📍 查看地圖';
 
+    // 2. 原有的「規劃路線」按鈕
     const routeLink = document.createElement('a');
     routeLink.className = 'maplink route';
-    routeLink.href = mapDirectionsUrl(spot); // 使用 spot
+    routeLink.href = mapDirectionsUrl(spot);
     routeLink.target = '_blank';
-    routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往景點' : '🚗 規劃路線';
+    routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往餐廳' : '🚗 規劃路線';
+
+    // 3. 【新增】查看即時人潮按鈕
+    const crowdLink = document.createElement('a');
+    crowdLink.className = 'maplink';
+    // 連接到 Google 地圖的搜尋頁面，使用者點開即可看人潮狀況
+    crowdLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.pref)}`;
+    crowdLink.target = '_blank';
+    crowdLink.textContent = '📊 即時人潮';
 
     actions.appendChild(viewLink);
     actions.appendChild(routeLink);
+    actions.appendChild(crowdLink); // 將新按鈕加入
     body.appendChild(actions);
-    card.appendChild(body);
-    grid.appendChild(card);
   });
 }
 
