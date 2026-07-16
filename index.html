@@ -936,11 +936,12 @@ const actions = document.createElement('div');
     routeLink.target = '_blank';
     routeLink.textContent = (spot.cat === "餐廳") ? '🚗 前往餐廳' : '🚗 規劃路線';
 
-    // 3. 【新增】查看即時人潮按鈕
+// 3. 【新增】查看即時人潮按鈕
     const crowdLink = document.createElement('a');
     crowdLink.className = 'maplink';
-    // 連接到 Google 地圖的搜尋頁面，使用者點開即可看人潮狀況
-    crowdLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.pref)}`;
+    
+    // 修正重點：使用 ${} 包裹變數，並使用正確的 Google Maps 搜尋網址
+    crowdLink.href = `https://www.google.com/maps/search/${encodeURIComponent(spot.name + ' ' + spot.pref)}`;
     crowdLink.target = '_blank';
     crowdLink.textContent = '📊 即時人潮';
 
