@@ -524,7 +524,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
   <footer>
-    景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+    景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
   </footer>
 </div>
 
@@ -552,15 +552,21 @@ const WEATHER_CODE_MAP = {
   95:"雷雨",96:"雷雨挾冰雹",99:"雷雨挾冰雹"
 };
 
-// 45個經典景點：更新導入 Unsplash 照片(img)與真實門票(ticket)資訊
+// 預設圖（Wikipedia 抓取失敗時的備用色塊圖，避免版面空白）
 const PREF_IMAGES = {
-  "福岡":"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
-  "佐賀":"https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?auto=format&fit=crop&w=800&q=80",
-  "長崎":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-  "熊本":"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
-  "大分":"https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?auto=format&fit=crop&w=800&q=80",
-  "宮崎":"https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=800&q=80",
-  "鹿兒島":"https://images.unsplash.com/photo-1536152470836-b943b246224c?auto=format&fit=crop&w=800&q=80"
+  "福岡":"", "佐賀":"", "長崎":"", "熊本":"", "大分":"", "宮崎":"", "鹿兒島":""
+};
+
+// 各縣用來向維基百科抓取「代表景點真實照片」的地名關鍵字
+// 想換成別的代表景點，只要把這裡的地名文字換掉即可，不需要自己找圖片網址
+const PREF_LANDMARK = {
+  "福岡":"太宰府天満宮",
+  "佐賀":"唐津城",
+  "長崎":"グラバー園",
+  "熊本":"熊本城",
+  "大分":"由布岳",
+  "宮崎":"高千穂峡",
+  "鹿兒島":"仙巌園"
 };
 const CURATED = [
   {id:"c1",name:"太宰府天滿宮",pref:"福岡",cat:"歷史文化",season:"1-3月賞梅、11-12月賞楓",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",desc:"創建逾千年的學問之神總本社，參道兩旁有伴手禮與名物梅枝餅，是福岡最具代表性的神社。"},
@@ -779,6 +785,22 @@ card.appendChild(banner);
 });
 }
 
+async function loadPrefImages(){
+  await Promise.all(PREFS.map(async (p) => {
+    const title = PREF_LANDMARK[p];
+    try{
+      const url = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('wiki fetch failed');
+      const data = await res.json();
+      const src = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source);
+      if(src) PREF_IMAGES[p] = src;
+    }catch(e){
+      // 抓取失敗時維持空白，卡片會顯示底色而不會壞掉
+    }
+  }));
+}
+
 function toggleFavorite(id, btn){
   favorites[id] = !favorites[id];
   btn.classList.toggle('on', favorites[id]);
@@ -885,6 +907,8 @@ async function loadWeather(){
   loadFavorites();
   loadUserSpots();
   await loadWeather();
+  render();
+  await loadPrefImages();
   render();
 })();
 </script>
