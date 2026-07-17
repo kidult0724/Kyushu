@@ -291,6 +291,79 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   color: var(--clay-deep);
 }
 
+.crowd-meter{
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  margin: 2px 0 4px;
+  background: linear-gradient(to right,
+    rgba(78,205,196,0.25) 0%, rgba(78,205,196,0.25) 40%,
+    rgba(199,168,62,0.25) 40%, rgba(199,168,62,0.25) 60%,
+    rgba(242,153,74,0.25) 60%, rgba(242,153,74,0.25) 80%,
+    rgba(226,72,58,0.25) 80%, rgba(226,72,58,0.25) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.crowd-meter-fill{
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.5) inset;
+}
+
+/* ===== 收藏分組：景點與附近餐廳的視覺關聯 ===== */
+.fav-group{
+  grid-column: 1 / -1;
+  margin-bottom: 8px;
+}
+
+.fav-group-food{
+  margin: 14px 0 8px 28px;
+  padding: 14px 16px 16px;
+  border-left: 3px dashed var(--clay);
+  border-radius: 0 12px 12px 0;
+  background: rgba(181,72,47,0.05);
+  position: relative;
+}
+
+.fav-group-food::before{
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -14px;
+  width: 3px;
+  height: 14px;
+  background: var(--clay);
+}
+
+.fav-group-food-label{
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--clay-deep);
+  margin-bottom: 10px;
+  letter-spacing: .03em;
+}
+
+.fav-group-food-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.fav-standalone-label{
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 18px 0 4px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
 .viewmode-row{
   display:flex;
   gap:8px;
@@ -323,12 +396,22 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 
   .viewmode-row{
     width:100%;
+    flex-wrap: wrap;
   }
 
   .viewmode-btn{
-    flex:1;
-    padding:12px;
-    font-size:15px;
+    flex:1 1 40%;
+    padding:12px 6px;
+    font-size:13px;
+  }
+
+  .fav-group-food{
+    margin-left: 10px;
+    padding: 12px 12px 14px;
+  }
+
+  .fav-group-food-grid{
+    grid-template-columns: 1fr;
   }
 
   .wrap{
@@ -623,7 +706,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
 <footer>
-  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」與「+ 新增餐廳」按鈕，兩者欄位不同（餐廳可填鄰近景點與平均消費）；餐廳卡片左側為橘色色條並標示「鄰近景點」與「💰平均消費」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合「星期幾、時段、該縣即時天氣與氣溫」推估的參考百分比：晴天 +5、多雲 +2、陰天 +0、雨天 -5〜-10（依雨勢）、下雪 -8、氣溫過高或過低額外 -5；戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升。數字會隨你打開頁面的當下時間變動，僅供概略參考。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」與「+ 新增餐廳」按鈕，兩者欄位不同（餐廳可填鄰近景點與平均消費）；餐廳卡片左側為橘色色條並標示「鄰近景點」與「💰平均消費」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量與人口排序為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
 </footer>
 </div>
 
@@ -983,9 +1066,22 @@ function weatherDelta(pref, cat){
   return base;
 }
 
+// 七縣「觀光客量」評分（依訪日外國人造訪比例等公開資料排序推估，福岡最高、宮崎最低）
+const PREF_TOURISM = {
+  "福岡": 6, "大分": 4, "熊本": 2, "長崎": 0, "鹿兒島": -2, "佐賀": -4, "宮崎": -6
+};
+
+// 七縣「人口」評分（依各縣人口排序，福岡最高、佐賀最低）
+const PREF_POPULATION = {
+  "福岡": 3, "熊本": 2, "鹿兒島": 1, "長崎": 0, "大分": -1, "宮崎": -2, "佐賀": -3
+};
+
+// 星期幾評分（0=日 1=一 2=二 3=三 4=四 5=五 6=六）
+const DAY_SCORE = { 0: 5, 1: -2, 2: -1, 3: 0, 4: 1, 5: 3, 6: 4 };
+
 // ===== 即時人潮推估 =====
-// 不使用關鍵字猜測，改以「現在的星期幾、現在幾點、當地即時天氣與氣溫」這幾個
-// 會隨時間變動的公開/預設資料來推估人潮。
+// 不使用關鍵字猜測，改以「現在的星期幾、現在幾點、當地即時天氣與氣溫、
+// 該縣觀光客量、該縣人口」這幾個因子來推估人潮。
 // 景點與餐廳用不同的時段曲線：景點在午餐、晚餐時段人潮會下降（遊客去吃飯了），
 // 餐廳則正好相反，在那兩個時段人潮會上升。
 function estimateCrowd(spot){
@@ -993,53 +1089,71 @@ function estimateCrowd(spot){
   // 轉換成日本時間（Asia/Tokyo, UTC+9）
   const jstHour = (now.getUTCHours() + 9) % 24;
   const jstDay = new Date(now.getTime() + 9 * 3600 * 1000).getUTCDay(); // 0=日 6=六
-  const isWeekend = (jstDay === 0 || jstDay === 6);
   const isFood = (spot.cat === "餐廳");
 
-  let score;
+  // 時段基礎分數（0-100），景點與餐廳曲線不同
+  let timeScore;
   if(!isFood){
-    // 景點時段曲線：白天上升，午餐、晚餐時段明顯下降；細分傍晚過渡期避免斷層
-    if(jstHour >= 23 || jstHour < 6)      score = 3;   // 深夜
-    else if(jstHour < 9)                  score = 14;  // 清晨
-    else if(jstHour < 11)                 score = 55;  // 上午漸增
-    else if(jstHour < 13)                 score = 26;  // 午餐時段，遊客去吃飯 → 下降
-    else if(jstHour < 16)                 score = 90;  // 下午尖峰
-    else if(jstHour < 17)                 score = 62;  // 傍晚漸緩（過渡）
-    else if(jstHour < 18)                 score = 40;  // 接近晚餐前 → 持續下降
-    else if(jstHour < 20)                 score = 16;  // 晚餐時段 → 最低
-    else if(jstHour < 22)                 score = 22;
-    else                                  score = 10;  // 晚間收尾
+    if(jstHour >= 23 || jstHour < 6)      timeScore = 3;
+    else if(jstHour < 9)                  timeScore = 14;
+    else if(jstHour < 11)                 timeScore = 55;
+    else if(jstHour < 13)                 timeScore = 26;
+    else if(jstHour < 16)                 timeScore = 90;
+    else if(jstHour < 17)                 timeScore = 62;
+    else if(jstHour < 18)                 timeScore = 40;
+    else if(jstHour < 20)                 timeScore = 16;
+    else if(jstHour < 22)                 timeScore = 22;
+    else                                  timeScore = 10;
   } else {
-    // 餐廳時段曲線：只有真正的用餐時段才會衝高，其餘時段明顯偏低
-    if(jstHour >= 23 || jstHour < 6)      score = 3;
-    else if(jstHour < 10)                 score = 8;   // 早餐前，非尖峰
-    else if(jstHour < 11)                 score = 20;  // 準備午餐
-    else if(jstHour < 13)                 score = 92;  // 午餐尖峰
-    else if(jstHour < 15)                 score = 26;  // 午後空檔
-    else if(jstHour < 17)                 score = 14;  // 下午最低（店休空檔）
-    else if(jstHour < 18)                 score = 36;  // 晚餐前，剛開始回升，尚未到高峰
-    else if(jstHour < 20)                 score = 94;  // 晚餐尖峰
-    else if(jstHour < 21)                 score = 55;  // 晚餐漸緩
-    else if(jstHour < 22)                 score = 32;
-    else                                  score = 12;
+    if(jstHour >= 23 || jstHour < 6)      timeScore = 3;
+    else if(jstHour < 10)                 timeScore = 8;
+    else if(jstHour < 11)                 timeScore = 20;
+    else if(jstHour < 13)                 timeScore = 92;
+    else if(jstHour < 15)                 timeScore = 26;
+    else if(jstHour < 17)                 timeScore = 14;
+    else if(jstHour < 18)                 timeScore = 36;
+    else if(jstHour < 20)                 timeScore = 94;
+    else if(jstHour < 21)                 timeScore = 55;
+    else if(jstHour < 22)                 timeScore = 32;
+    else                                  timeScore = 12;
   }
 
-  // 週末加成（拉大差異：景點週末白天更多人，餐廳週末用餐時段更多人）
-  if(isWeekend) score += isFood ? 14 : 22;
+  // 把每個因子換算成 0-100 的正規化分數，再用加權平均合成，
+  // 而不是直接全部相加——這樣即使每個因子都拉到最高，
+  // 也不會讓所有晴天景點一律衝到 100%，同時仍能保留彼此差距。
+  const dayNorm = ((DAY_SCORE[jstDay] - (-2)) / (5 - (-2))) * 100; // -2~5 → 0~100
 
-  // 即時天氣與氣溫調整
-  score += weatherDelta(spot.pref, spot.cat);
+  const tourism = PREF_TOURISM[spot.pref] || 0;
+  const tourismNorm = ((tourism - (-6)) / (6 - (-6))) * 100; // -6~6 → 0~100
 
-  score = Math.max(3, Math.min(100, Math.round(score)));
+  const population = PREF_POPULATION[spot.pref] || 0;
+  const popNorm = ((population - (-3)) / (3 - (-3))) * 100; // -3~3 → 0~100
+
+  const wDelta = weatherDelta(spot.pref, spot.cat);
+  const wClamped = Math.max(-22, Math.min(8, wDelta));
+  const weatherNorm = ((wClamped - (-22)) / (8 - (-22))) * 100; // -22~8 → 0~100
+
+  // 權重：調降時段的主導性，讓星期、縣市觀光客量/人口、天氣這幾個
+  // 「彼此不同」的因子有更多發言權——即使在尖峰時段，不同縣市、不同天氣
+  // 條件下的景點也能維持明顯可見的差距，而不會被時段一個因子蓋過去。
+  const score = Math.round(
+    timeScore   * 0.32 +
+    dayNorm     * 0.15 +
+    tourismNorm * 0.20 +
+    popNorm     * 0.13 +
+    weatherNorm * 0.20
+  );
+
+  const finalScore = Math.max(3, Math.min(100, score));
 
   // 四級距：較無人潮 ≤40% / 稍有人潮 ≤60% / 人潮較多 ≤80% / 人潮擁擠 >80%
   let text, color;
-  if(score <= 40){ text = '較無人潮'; color = '#4ecdc4'; }
-  else if(score <= 60){ text = '稍有人潮'; color = '#c7a83e'; }
-  else if(score <= 80){ text = '人潮較多'; color = '#f2994a'; }
+  if(finalScore <= 40){ text = '較無人潮'; color = '#4ecdc4'; }
+  else if(finalScore <= 60){ text = '稍有人潮'; color = '#c7a83e'; }
+  else if(finalScore <= 80){ text = '人潮較多'; color = '#f2994a'; }
   else { text = '人潮擁擠'; color = '#e2483a'; }
 
-  return { text: `${text} ${score}%`, color, score };
+  return { text: `${text} ${finalScore}%`, color, score: finalScore };
 }
 
 
@@ -1108,24 +1222,7 @@ function mapDirectionsUrl(spot) {
   return `https://www.google.com/maps/dir/?api=1&destination=${query}&travelmode=driving`;
 }
 
-function render(){
-  syncChips();
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  const spots = allSpots().filter(s => {
-    if(viewMode === 'spot' && s.cat === "餐廳") return false;
-    if(viewMode === 'food' && s.cat !== "餐廳") return false;
-    if(viewMode === 'fav' && !favorites[s.id]) return false;
-    if(activePref && s.pref !== activePref) return false;
-    if(activeCat && s.cat !== activeCat) return false;
-    if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q))) return false;
-    return true;
-  });
-  document.getElementById('countLabel').textContent = `共 ${spots.length} 個項目`;
-  document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
-
-  spots.forEach(spot => { // 確保這裡統一使用 spot
+function buildCard(spot){
     const card = el('div', spot.cat === "餐廳" ? 'card card-food' : 'card card-spot');
     const banner = el('div','pref-banner');
 
@@ -1194,6 +1291,15 @@ tags.appendChild(crowdTag);
     if(spot.userAdded) tags.appendChild(el('span','tag user','使用者新增'));
 
     body.appendChild(tags);
+
+    // 人潮視覺化長條：用長度直接表現差異，不用只靠數字比較
+    const meterWrap = el('div','crowd-meter');
+    const meterFill = el('div','crowd-meter-fill');
+    meterFill.style.width = crowdData.score + '%';
+    meterFill.style.backgroundColor = crowdData.color;
+    meterWrap.appendChild(meterFill);
+    body.appendChild(meterWrap);
+
     body.appendChild(el('p','app-desc',spot.desc));
 
     // 地圖按鈕
@@ -1214,8 +1320,86 @@ tags.appendChild(crowdTag);
     actions.appendChild(routeLink);
     body.appendChild(actions);
     card.appendChild(body);
-    grid.appendChild(card);
+    return card;
+}
+
+function render(){
+  syncChips();
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  if(viewMode === 'fav'){
+    renderFavGrouped(grid, q);
+    return;
+  }
+
+  const spots = allSpots().filter(s => {
+    if(viewMode === 'spot' && s.cat === "餐廳") return false;
+    if(viewMode === 'food' && s.cat !== "餐廳") return false;
+    if(activePref && s.pref !== activePref) return false;
+    if(activeCat && s.cat !== activeCat) return false;
+    if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q))) return false;
+    return true;
   });
+  document.getElementById('countLabel').textContent = `共 ${spots.length} 個項目`;
+  document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
+
+  spots.forEach(spot => {
+    grid.appendChild(buildCard(spot));
+  });
+}
+
+// ===== 收藏分組畫面 =====
+// 把「收藏的景點」跟「該景點附近的餐廳」用視覺上明顯相連的方式呈現：
+// 景點卡片在上，下方用橘色虛線縮排框住所有鄰近餐廳卡片，一眼就能看出對應關係。
+function renderFavGrouped(grid, q){
+  const matchesQuery = (s) => !q || (s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q));
+  const passPrefCat = (s) => (!activePref || s.pref === activePref) && (!activeCat || s.cat === activeCat);
+
+  const allItems = allSpots();
+  const favSpots = allItems.filter(s => s.cat !== "餐廳" && favorites[s.id] && matchesQuery(s) && passPrefCat(s));
+  const allFood = allItems.filter(s => s.cat === "餐廳");
+
+  let shownCount = 0;
+  const usedFoodIds = new Set();
+
+  // 第一部分：每個收藏的景點 + 它附近的所有餐廳（無論餐廳本身是否被收藏）
+  favSpots.forEach(spot => {
+    const group = el('div','fav-group');
+    group.appendChild(buildCard(spot));
+
+    const nearbyFood = allFood.filter(f => f.nearSpotName === spot.name && f.pref === spot.pref);
+    if(nearbyFood.length){
+      const wrap = el('div','fav-group-food');
+      wrap.appendChild(el('div','fav-group-food-label', `🍴 ${spot.name} 附近的餐廳（${nearbyFood.length}）`));
+      const inner = el('div','fav-group-food-grid');
+      nearbyFood.forEach(f => {
+        usedFoodIds.add(f.id);
+        inner.appendChild(buildCard(f));
+      });
+      wrap.appendChild(inner);
+      group.appendChild(wrap);
+    }
+
+    grid.appendChild(group);
+    shownCount += 1 + nearbyFood.length;
+  });
+
+  // 第二部分：收藏的餐廳，但它對應的景點沒有被收藏 → 各自獨立顯示，仍保留鄰近景點標示
+  const orphanFavFood = allFood.filter(f => favorites[f.id] && !usedFoodIds.has(f.id) && matchesQuery(f) && passPrefCat(f));
+  if(orphanFavFood.length){
+    const section = el('div','fav-standalone-label','★ 其他收藏餐廳');
+    grid.appendChild(section);
+    const standaloneGrid = el('div','fav-group-food-grid');
+    orphanFavFood.forEach(f => standaloneGrid.appendChild(buildCard(f)));
+    standaloneGrid.style.gridColumn = '1 / -1';
+    grid.appendChild(standaloneGrid);
+    shownCount += orphanFavFood.length;
+  }
+
+  document.getElementById('countLabel').textContent = `共收藏 ${favSpots.length + allFood.filter(f=>favorites[f.id]).length} 個項目`;
+  document.getElementById('emptyState').style.display = shownCount ? 'none' : 'block';
 }
 
 async function getWikiImage(title) {
