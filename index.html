@@ -523,6 +523,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="viewmode-row" id="viewModeRow">
       <button type="button" class="viewmode-btn" data-mode="spot">景點</button>
       <button type="button" class="viewmode-btn" data-mode="food">餐廳</button>
+      <button type="button" class="viewmode-btn" data-mode="fav">★ 我的收藏</button>
       <button type="button" class="viewmode-btn active" data-mode="all">全部</button>
     </div>
     <div class="chiprow" id="prefRow"><span class="chiprow-label">縣市</span></div>
@@ -531,7 +532,10 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 
   <div class="count-row">
     <span id="countLabel">共 0 個景點</span>
-    <button class="addbtn" id="toggleForm">+ 新增景點</button>
+    <div style="display:flex;gap:8px;">
+      <button class="addbtn" id="toggleForm">+ 新增景點</button>
+      <button class="addbtn" id="toggleFoodForm">+ 新增餐廳</button>
+    </div>
   </div>
 
   <div class="form" id="addForm">
@@ -574,11 +578,52 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
     <p class="hint">新增的景點會標示「使用者新增」，並保存在這台裝置的瀏覽器裡，之後在同一台裝置、同一個瀏覽器再次打開這個檔案也能看到。</p>
   </div>
 
+  <div class="form" id="addFoodForm">
+    <h3>新增一間餐廳</h3>
+    <div class="row">
+      <div>
+        <label for="ff-name">餐廳名稱</label>
+        <input id="ff-name" type="text" placeholder="例如：一蘭 太宰府参道店">
+      </div>
+      <div>
+        <label for="ff-pref">縣市</label>
+        <select id="ff-pref"></select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="ff-near">鄰近景點（選填）</label>
+        <input id="ff-near" type="text" placeholder="例如：太宰府天滿宮">
+      </div>
+      <div>
+        <label for="ff-type">料理類型</label>
+        <input id="ff-type" type="text" placeholder="例如：豚骨拉麵、鰻魚飯">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="ff-cost">平均消費（選填）</label>
+        <input id="ff-cost" type="text" placeholder="例如：¥900〜1,300">
+      </div>
+      <div style="visibility: hidden;"> </div>
+    </div>
+    <div>
+      <label for="ff-desc">簡介</label>
+      <textarea id="ff-desc" placeholder="推薦這間店的原因、招牌菜是什麼？"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="submitFood">加入餐廳清單</button>
+      <button class="btn-ghost" id="cancelFood">取消</button>
+    </div>
+    <p class="hint">新增的餐廳會標示「使用者新增」，並保存在這台裝置的瀏覽器裡，之後在同一台裝置、同一個瀏覽器再次打開這個檔案也能看到。</p>
+  </div>
+
+
   <div class="grid" id="grid"></div>
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
 <footer>
-  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／全部」可切換只看景點或只看餐廳；餐廳卡片左側為橘色色條並標示「鄰近景點」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家（部分景點仍陸續查證補齊中），營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準；也歡迎自行新增你去過、確認過的餐廳。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是根據當下的星期幾、時段、以及該縣即時天氣（Open-Meteo）綜合推估的參考百分比，數字會隨你打開頁面的當下時間變動，僅供概略參考。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的景點會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」與「+ 新增餐廳」按鈕，兩者欄位不同（餐廳可填鄰近景點與平均消費）；餐廳卡片左側為橘色色條並標示「鄰近景點」與「💰平均消費」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合「星期幾、時段、該縣即時天氣與氣溫」推估的參考百分比：晴天 +5、多雲 +2、陰天 +0、雨天 -5〜-10（依雨勢）、下雪 -8、氣溫過高或過低額外 -5；戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升。數字會隨你打開頁面的當下時間變動，僅供概略參考。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
 </footer>
 </div>
 
@@ -671,151 +716,195 @@ const CURATED = [
 ];
 
 // ===== 真實餐廳資料庫 =====
-// 每個景點對應 2-3 間「實際查證存在」的真實店家（非隨機產生）。
-// 進度：已完成 14 / 45 個景點的真實餐廳查證，其餘景點持續分批補上；
-// 尚未補上真實資料的景點，暫時不會顯示餐廳卡片。
-// 訪客也可以用「餐廳」這個類型，自行新增自己去過、確認過的店家。
+// 每個景點對應 1-3 間「實際查證存在」的真實店家（非隨機產生），並附上平均消費價格區間。
+// 45 個景點已全數完成真實餐廳查證。
+// 訪客也可以用下方「+ 新增餐廳」按鈕，自行新增自己去過、確認過的店家。
 const REAL_RESTAURANTS = {
-  // --- 福岡 (指定景點全數保留) ---
+  // --- 福岡 ---
   "c1": [ // 太宰府天滿宮
-    { name: "かさの家", type: "梅ヶ枝餅", note: "參道老字號，外皮酥脆。" },
-    { name: "一蘭 太宰府参道店", type: "豚骨拉麵", note: "限定五角形碗，合格祈願。" },
-    { name: "筑紫庵本店", type: "唐揚げ漢堡", note: "在地限定特製醬汁雞肉堡。" }
+    { name: "かさの家", type: "梅ヶ枝餅", avgCost: "¥300〜600", note: "參道老字號，外皮酥脆。" },
+    { name: "一蘭 太宰府参道店", type: "豚骨拉麵", avgCost: "¥900〜1,200", note: "限定五角形碗，合格祈願。" },
+    { name: "筑紫庵本店", type: "唐揚げ漢堡", avgCost: "¥800〜1,200", note: "在地限定特製醬汁雞肉堡。" }
   ],
   "c2": [ // 柳川遊船
-    { name: "若松屋", type: "鰻魚飯", note: "江戶老店，香氣濃郁。" },
-    { name: "元祖本吉屋 本店", type: "鰻魚飯", note: "傳承獨門蒸烤製法。" }
+    { name: "若松屋", type: "鰻魚飯", avgCost: "¥3,000〜4,500", note: "江戶老店，香氣濃郁。" },
+    { name: "元祖本吉屋 本店", type: "鰻魚飯", avgCost: "¥3,000〜4,500", note: "傳承獨門蒸烤製法。" }
   ],
   "c3": [ // 博多運河城
-    { name: "拉麵競技場", type: "拉麵", note: "集結各地人氣名店。" },
-    { name: "博多一双", type: "豚骨拉麵", note: "濃厚泡系名店。" },
-    { name: "天麩羅 Hirao", type: "天婦羅", note: "現炸直送，超高性價比。" }
+    { name: "拉麵競技場", type: "拉麵", avgCost: "¥800〜1,200", note: "集結各地人氣名店。" },
+    { name: "博多一双", type: "豚骨拉麵", avgCost: "¥900〜1,200", note: "濃厚泡系名店。" },
+    { name: "天麩羅 Hirao", type: "天婦羅", avgCost: "¥700〜1,000", note: "現炸直送，超高性價比。" }
+  ],
+  "c4": [ // 門司港懷舊
+    { name: "伽哩本舗 門司港レトロ店", type: "門司港燒咖哩", avgCost: "¥900〜1,300", note: "門司港燒咖哩風潮的元祖店之一，可眺望關門海峽。" },
+    { name: "ミツバチカレー 門司港本店", type: "門司港燒咖哩", avgCost: "¥900〜1,300", note: "門司港燒咖哩代表店家之一。" }
   ],
   "c5": [ // 福岡塔
-    { name: "煉瓦倶楽部", type: "洋食", note: "1樓洋食，提供套餐與吃到飽。" },
-    { name: "こんぶりお", type: "野菜料理", note: "使用糸島新鮮蔬菜，氣氛明亮。" }
+    { name: "煉瓦倶楽部", type: "洋食", avgCost: "¥1,500〜2,500", note: "1樓洋食，提供套餐與吃到飽。" },
+    { name: "こんぶりお", type: "野菜料理", avgCost: "¥1,200〜1,800", note: "使用糸島新鮮蔬菜，氣氛明亮。" }
   ],
   "c6": [ // 大濠公園
-    { name: "ロイヤルガーデンカフェ", type: "湖景餐廳", note: "位於Boat House內，風景優美。" },
-    { name: "カフェ アクアム", type: "咖啡廳", note: "鄰近美術館，適合散步後小憩。" }
-  ],
-  "c8": [ // 小倉城
-    { name: "資さんうどん", type: "烏龍麵", note: "北九州靈魂美食，必吃牛蒡天婦羅。" },
-    { name: "田舎庵", type: "鰻魚料理", note: "小倉知名鰻魚老舗，香氣十足。" }
-  ],
-  // --- 福岡（新查證補完） ---
-  "c4": [ // 門司港懷舊
-    { name: "伽哩本舗 門司港レトロ店", type: "門司港燒咖哩", note: "門司港燒咖哩風潮的元祖店之一，可眺望關門海峽。" },
-    { name: "ミツバチカレー 門司港本店", type: "門司港燒咖哩", note: "門司港燒咖哩代表店家之一。" }
+    { name: "ロイヤルガーデンカフェ", type: "湖景餐廳", avgCost: "¥1,500〜2,500", note: "位於Boat House內，風景優美。" },
+    { name: "カフェ アクアム", type: "咖啡廳", avgCost: "¥800〜1,300", note: "鄰近美術館，適合散步後小憩。" }
   ],
   "c7": [ // 海之中道海濱公園
-    { name: "ワンダーシャトル", type: "拉麵・義大利麵", note: "公園內Wonder World區的官方餐廳，提供豚骨拉麵與義大利麵等定番餐點。" },
-    { name: "mako's café", type: "咖啡輕食", note: "西戶崎海邊的懷舊咖啡廳，可邊眺望海景邊用餐。" }
+    { name: "ワンダーシャトル", type: "拉麵・義大利麵", avgCost: "¥900〜1,300", note: "公園內Wonder World區的官方餐廳，提供豚骨拉麵與義大利麵等定番餐點。" },
+    { name: "mako's café", type: "咖啡輕食", avgCost: "¥700〜1,200", note: "西戶崎海邊的懷舊咖啡廳，可邊眺望海景邊用餐。" }
+  ],
+  "c8": [ // 小倉城
+    { name: "資さんうどん", type: "烏龍麵", avgCost: "¥500〜900", note: "北九州靈魂美食，必吃牛蒡天婦羅。" },
+    { name: "田舎庵", type: "鰻魚料理", avgCost: "¥2,500〜3,500", note: "小倉知名鰻魚老舗，香氣十足。" }
   ],
   "c9": [ // 櫛田神社
-    { name: "博多一天門", type: "豚骨拉麵", note: "櫛田神社前駅附近的人氣拉麵店，招牌半熟煮玉子拉麵。" },
-    { name: "めし魚処 わさび", type: "海鮮定食", note: "使用當日鮮魚的定食與壽司店，就在川端商店街附近。" }
+    { name: "博多一天門", type: "豚骨拉麵", avgCost: "¥800〜1,100", note: "櫛田神社前駅附近的人氣拉麵店，招牌半熟煮玉子拉麵。" },
+    { name: "めし魚処 わさび", type: "海鮮定食", avgCost: "¥1,200〜1,800", note: "使用當日鮮魚的定食與壽司店，就在川端商店街附近。" }
   ],
   // --- 佐賀 ---
   "c10": [ // 唐津城
-    { name: "唐津 飴源", type: "茶泡飯", note: "老字號漁獲料理。" },
-    { name: "川島豆腐店", type: "豆腐料理", note: "傳統鄉土風味。" }
+    { name: "唐津 飴源", type: "茶泡飯", avgCost: "¥1,000〜1,800", note: "老字號漁獲料理。" },
+    { name: "川島豆腐店", type: "豆腐料理", avgCost: "¥900〜1,500", note: "傳統鄉土風味。" }
   ],
   "c11": [ // 有田陶瓷
-    { name: "Gallery 有田", type: "瓷器料理", note: "可挑選瓷杯飲用。" },
-    { name: "有田燒五膳", type: "鄉土料理", note: "嚴選五種特色食材。" }
+    { name: "Gallery 有田", type: "瓷器料理", avgCost: "¥1,500〜2,500", note: "可挑選瓷杯飲用。" },
+    { name: "有田燒五膳", type: "鄉土料理", avgCost: "¥1,500〜2,500", note: "嚴選五種特色食材。" }
   ],
   "c12": [ // 嬉野溫泉
-    { name: "佐賀牛 志場", type: "佐賀牛", note: "頂級佐賀牛燒肉。" },
-    { name: "嬉野温泉 公衆浴場", type: "湯豆腐", note: "滑嫩溫泉豆腐。" }
+    { name: "佐賀牛 志場", type: "佐賀牛", avgCost: "¥3,000〜5,000", note: "頂級佐賀牛燒肉。" },
+    { name: "嬉野温泉 公衆浴場", type: "湯豆腐", avgCost: "¥1,200〜1,800", note: "滑嫩溫泉豆腐。" }
   ],
   "c13": [ // 虹之松原
-    { name: "からつバーガー 虹ノ松原本店", type: "唐津漢堡", note: "1961年創業，唐津代表B級美食，可邊眺望松原邊享用。" },
-    { name: "海浜館", type: "歐風料理", note: "1984年開業的洋館餐廳，位於虹之松原中間，提供唐津食材料理。" }
+    { name: "からつバーガー 虹ノ松原本店", type: "唐津漢堡", avgCost: "¥500〜800", note: "1961年創業，唐津代表B級美食，可邊眺望松原邊享用。" },
+    { name: "海浜館", type: "歐風料理", avgCost: "¥1,500〜2,500", note: "1984年開業的洋館餐廳，位於虹之松原中間，提供唐津食材料理。" }
   ],
   "c14": [ // 吉野里遺跡
-    { name: "吉野ヶ里歴史公園レストラン", type: "彌生風定食", note: "園內唯一餐廳，招牌限定「古代貝汁御膳」與赤米飯。" }
-  ],
-  "c16": [ // 九十九島
-    { name: "九十九島 海遊", type: "海鮮料理", note: "九十九島珍珠海洋渡假區內餐廳，主打九十九島新鮮活魚料理，可眺望海景。" }
+    { name: "吉野ヶ里歴史公園レストラン", type: "彌生風定食", avgCost: "¥900〜1,500", note: "園內唯一餐廳，招牌限定「古代貝汁御膳」與赤米飯。" }
   ],
   // --- 長崎 ---
   "c15": [ // 豪斯登堡
-
-    { name: "ロード・レーウ", type: "土耳其飯", note: "經典長崎洋食。" },
-    { name: "悟空", type: "佐世保漢堡", note: "份量扎實的在地漢堡。" }
+    { name: "ロード・レーウ", type: "土耳其飯", avgCost: "¥1,300〜2,200", note: "經典長崎洋食。" },
+    { name: "悟空", type: "佐世保漢堡", avgCost: "¥900〜1,500", note: "份量扎實的在地漢堡。" }
+  ],
+  "c16": [ // 九十九島
+    { name: "九十九島 海遊", type: "海鮮料理", avgCost: "¥1,500〜2,500", note: "九十九島珍珠海洋渡假區內餐廳，主打九十九島新鮮活魚料理，可眺望海景。" }
   ],
   "c17": [ // 稻佐山
-    { name: "展望台餐廳", type: "景觀料理", note: "飽覽百萬夜景。" },
-    { name: "江山樓", type: "強棒麵", note: "必吃長崎經典名店。" }
+    { name: "展望台餐廳", type: "景觀料理", avgCost: "¥1,800〜2,800", note: "飽覽百萬夜景。" },
+    { name: "江山樓", type: "強棒麵", avgCost: "¥1,200〜1,800", note: "必吃長崎經典名店。" }
   ],
   "c18": [ // 出島
-    { name: "出島內外倶樂部レストラン", type: "洋食・土耳其飯", note: "1903年洋館建築改建，出島園區內的懷舊餐廳，招牌長崎土耳其飯與鯨魚排。" },
-    { name: "Branch OTTO Dejima", type: "咖啡簡餐", note: "出島東側明治門旁的開放式咖啡餐廳，提供義大利麵與鬆餅。" }
+    { name: "出島內外倶樂部レストラン", type: "洋食・土耳其飯", avgCost: "¥1,800〜3,000", note: "1903年洋館建築改建，出島園區內的懷舊餐廳，招牌長崎土耳其飯與鯨魚排。" },
+    { name: "Branch OTTO Dejima", type: "咖啡簡餐", avgCost: "¥1,000〜1,800", note: "出島東側明治門旁的開放式咖啡餐廳，提供義大利麵與鬆餅。" }
   ],
   "c19": [ // 眼鏡橋
-    { name: "珈琲 冨士男", type: "老字號咖啡", note: "創業70餘年的純喫茶老店，就在眼鏡橋南邊，復古氛圍。" },
-    { name: "花ござ", type: "島原鄉土料理", note: "距眼鏡橋徒步約10秒的和食屋，二樓座位可邊眺望眼鏡橋邊用餐。" }
+    { name: "珈琲 冨士男", type: "老字號咖啡", avgCost: "¥600〜1,200", note: "創業70餘年的純喫茶老店，就在眼鏡橋南邊，復古氛圍。" },
+    { name: "花ござ", type: "島原鄉土料理", avgCost: "¥1,200〜2,000", note: "距眼鏡橋徒步約10秒的和食屋，二樓座位可邊眺望眼鏡橋邊用餐。" }
   ],
   "c20": [ // 哥拉巴園
-    { name: "自由亭", type: "洋食", note: "園區內復古洋食館。" },
-    { name: "長崎港餐廳", type: "海鮮", note: "鮮撈海鮮直送。" }
+    { name: "自由亭", type: "洋食", avgCost: "¥1,500〜2,800", note: "園區內復古洋食館。" },
+    { name: "長崎港餐廳", type: "海鮮", avgCost: "¥1,500〜2,500", note: "鮮撈海鮮直送。" }
   ],
   // --- 熊本 ---
   "c21": [ // 熊本城
-    { name: "城見櫓", type: "鄉土料理", note: "眺望城堡景觀餐廳。" },
-    { name: "菅乃屋", type: "馬肉料理", note: "熊本特色馬肉專賣。" },
-    { name: "桂花拉麵", type: "拉麵", note: "蒜油香氣濃郁。" }
+    { name: "城見櫓", type: "鄉土料理", avgCost: "¥1,500〜2,500", note: "眺望城堡景觀餐廳。" },
+    { name: "菅乃屋", type: "馬肉料理", avgCost: "¥1,800〜2,800", note: "熊本特色馬肉專賣。" },
+    { name: "桂花拉麵", type: "拉麵", avgCost: "¥800〜1,100", note: "蒜油香氣濃郁。" }
   ],
   "c22": [ // 阿蘇火山
-    { name: "火口茶屋", type: "輕食", note: "阿蘇特產輕食。" },
-    { name: "あか牛丼 いわさき", type: "赤牛丼", note: "軟嫩阿蘇赤牛。" }
+    { name: "火口茶屋", type: "輕食", avgCost: "¥600〜1,200", note: "阿蘇特產輕食。" },
+    { name: "あか牛丼 いわさき", type: "赤牛丼", avgCost: "¥1,800〜2,800", note: "軟嫩阿蘇赤牛。" }
+  ],
+  "c23": [ // 草千里之濱
+    { name: "ニュー草千里 草千里食堂", type: "あか牛丼", avgCost: "¥1,960〜2,800", note: "草千里正面的展望餐廳，招牌阿蘇名物あか牛丼與あか牛牛排。" },
+    { name: "douce Nucca", type: "景觀洋食", avgCost: "¥1,300〜1,800", note: "面對草千里草原的餐廳，招牌鹹派套餐與檸檬戚風蛋糕。" }
   ],
   "c24": [ // 黑川溫泉
-    { name: "山みず木", type: "懷石料理", note: "高級溫泉饗宴。" },
-    { name: "豆腐料理店", type: "豆腐", note: "甘甜泉水豆腐。" }
+    { name: "山みず木", type: "懷石料理", avgCost: "¥4,000〜7,000", note: "高級溫泉饗宴。" },
+    { name: "豆腐料理店", type: "豆腐", avgCost: "¥1,200〜1,800", note: "甘甜泉水豆腐。" }
+  ],
+  "c25": [ // 上色見熊野座神社
+    { name: "とくまる食堂", type: "高森田楽", avgCost: "¥1,890（套餐）", note: "700〜800年歷史的高森田樂元祖店，古民家圍爐裏料理，位於神社周邊高森町。" }
+  ],
+  "c26": [ // 通潤橋
+    { name: "食事処いしばし", type: "和食定食", avgCost: "¥900〜1,800", note: "道之驛通潤橋內的食事處，可邊眺望通潤橋邊用餐，招牌馬筋丼。" },
+    { name: "レストランARCH", type: "地產地消洋食", avgCost: "¥1,500〜2,500", note: "道之驛通潤橋內餐廳，以當季山都町在地食材入菜。" }
+  ],
+  "c27": [ // 熊本熊部長辦公室
+    { name: "くまモンスクエア内カフェ", type: "熊本熊主題咖啡", avgCost: "¥600〜1,200", note: "熊本熊辦公室內附設咖啡廳，使用熊本縣產食材的百匯與熊本熊拉花咖啡。" },
+    { name: "熊本屋台村", type: "熊本代表美食街", avgCost: "¥1,000〜2,000", note: "鄰近桜町巴士總站的屋台村，集結熊本代表飲食店家共17間。" }
   ],
   // --- 大分 ---
   "c28": [ // 由布院金鱗湖
-    { name: "由布まぶし 心", type: "釜飯", note: "豐後牛蓋飯名店。" },
-    { name: "カフェ・ラ・リューシュ", type: "咖啡", note: "湖畔絕美景觀。" },
-    { name: "湯布院花麴菊家", type: "甜點", note: "招牌濃郁布丁。" }
+    { name: "由布まぶし 心", type: "釜飯", avgCost: "¥1,800〜2,800", note: "豐後牛蓋飯名店。" },
+    { name: "カフェ・ラ・リューシュ", type: "咖啡", avgCost: "¥800〜1,300", note: "湖畔絕美景觀。" },
+    { name: "湯布院花麴菊家", type: "甜點", avgCost: "¥500〜900", note: "招牌濃郁布丁。" }
   ],
   "c29": [ // 別府地獄
-    { name: "岡本屋売店", type: "地獄蒸布丁", note: "在地傳統蒸氣甜點。" },
-    { name: "別府海鮮処", type: "壽司", note: "灣區新鮮漁獲。" }
+    { name: "岡本屋売店", type: "地獄蒸布丁", avgCost: "¥400〜700", note: "在地傳統蒸氣甜點。" },
+    { name: "別府海鮮処", type: "壽司", avgCost: "¥1,800〜2,800", note: "灣區新鮮漁獲。" }
   ],
   "c30": [ // 九重夢吊橋
-    { name: "吊橋餐廳", type: "輕食", note: "飽覽山景簡餐。" },
-    { name: "九重料理店", type: "山菜料理", note: "在地野菜風味。" }
+    { name: "吊橋餐廳", type: "輕食", avgCost: "¥800〜1,500", note: "飽覽山景簡餐。" },
+    { name: "九重料理店", type: "山菜料理", avgCost: "¥1,200〜1,800", note: "在地野菜風味。" }
+  ],
+  "c31": [ // 九州自然動物公園
+    { name: "サルビア", type: "家庭洋食", avgCost: "¥1,000〜1,800", note: "園內菜單最豐富的大型主餐廳，備有兒童餐，適合親子用餐。" }
+  ],
+  "c32": [ // 由布岳
+    { name: "ゆふいん牧場", type: "霜淇淋・唐揚げ", avgCost: "¥400〜900", note: "由布院登山口城鎮著名食べ歩き小吃店，招牌牛乳霜淇淋與唐揚げ。" }
+  ],
+  "c33": [ // 杉乃井溫泉棚湯
+    { name: "シーダパレス", type: "西式自助餐", avgCost: "¥2,500〜3,500", note: "杉乃井飯店三大自助餐廳之一，那不勒斯街景裝潢，巨大水槽為招牌。" },
+    { name: "和ダイニング星 HOSHI", type: "和食自助餐", avgCost: "¥3,000〜4,000", note: "飯店最高樓層餐廳，天窗設計可邊賞星空邊享用和食自助餐。" }
   ],
   // --- 宮崎 ---
   "c34": [ // 高千穗峽
-    { name: "千穂の家", type: "流水素麵", note: "元祖流水素麵。" },
-    { name: "神和宿", type: "地雞", note: "炭烤地雞香氣。" },
-    { name: "高千穗牛 和", type: "燒肉", note: "入口即化牛肉。" }
+    { name: "千穂の家", type: "流水素麵", avgCost: "¥700〜1,200", note: "元祖流水素麵。" },
+    { name: "神和宿", type: "地雞", avgCost: "¥1,800〜2,800", note: "炭烤地雞香氣。" },
+    { name: "高千穗牛 和", type: "燒肉", avgCost: "¥3,000〜5,000", note: "入口即化牛肉。" }
+  ],
+  "c35": [ // 日南太陽花園
+    { name: "南洋レストラン ノアノア", type: "南洋料理", avgCost: "¥1,200〜2,200", note: "日南太陽花園園內唯一餐廳，可邊眺望摩艾石像與太平洋邊用餐。" }
   ],
   "c36": [ // 鵜戶神宮
-    { name: "觀景台餐廳", type: "海景輕食", note: "太平洋海景座位。" },
-    { name: "日南鄉土餐館", type: "海鮮", note: "新鮮漁獲。" }
+    { name: "觀景台餐廳", type: "海景輕食", avgCost: "¥900〜1,500", note: "太平洋海景座位。" },
+    { name: "日南鄉土餐館", type: "海鮮", avgCost: "¥1,500〜2,500", note: "新鮮漁獲。" }
   ],
   "c37": [ // 青島神社
-    { name: "青島屋", type: "宮崎料理", note: "在地冷汁料理。" },
-    { name: "青島海灘中心", type: "咖啡", note: "舒適海邊休憩。" }
+    { name: "青島屋", type: "宮崎料理", avgCost: "¥1,000〜1,800", note: "在地冷汁料理。" },
+    { name: "青島海灘中心", type: "咖啡", avgCost: "¥600〜1,000", note: "舒適海邊休憩。" }
+  ],
+  "c38": [ // 生駒高原
+    { name: "花の駅 生駒高原", type: "咖啡輕食", avgCost: "¥400〜900", note: "生駒高原入口的伴手禮咖啡廳，招牌花霜淇淋與當地水果果汁。" },
+    { name: "Chalet生駒高原", type: "法式洋食", avgCost: "¥2,000〜3,500", note: "高原內的洋食餐廳，使用當地食材的午餐與酒品配對晚餐。" }
   ],
   // --- 鹿兒島 ---
   "c39": [ // 仙巖園
-    { name: "仙巌園茶寮", type: "茶點", note: "抹茶配兩棒餅。" },
-    { name: "松風軒", type: "黑豬肉", note: "經典涮涮鍋。" },
-    { name: "星巴克", type: "咖啡", note: "歷史氛圍門市。" }
+    { name: "仙巌園茶寮", type: "茶點", avgCost: "¥800〜1,300", note: "抹茶配兩棒餅。" },
+    { name: "松風軒", type: "黑豬肉", avgCost: "¥2,000〜3,000", note: "經典涮涮鍋。" },
+    { name: "星巴克 仙巖園店", type: "咖啡", avgCost: "¥600〜1,000", note: "歷史氛圍門市。" }
   ],
   "c40": [ // 櫻島
-    { name: "熔岩展望台", type: "輕食", note: "邊看火山邊用餐。" },
-    { name: "櫻島小食堂", type: "湯麵", note: "在地食材湯麵。" }
+    { name: "熔岩展望台", type: "輕食", avgCost: "¥700〜1,200", note: "邊看火山邊用餐。" },
+    { name: "櫻島小食堂", type: "湯麵", avgCost: "¥800〜1,300", note: "在地食材湯麵。" }
+  ],
+  "c41": [ // 屋久島
+    { name: "かもがわレストラン", type: "飛魚定食", avgCost: "¥1,200〜2,000", note: "安房漁港旁的懷舊食堂，招牌整尾現炸的飛魚姿揚定食。" },
+    { name: "Restaurant&cafe屋久島", type: "屋久島料理", avgCost: "¥1,300〜2,200", note: "屋久島觀光中心2樓餐廳，招牌首折れサバ與飛魚料理，屋久杉食器盛裝。" }
   ],
   "c42": [ // 指宿溫泉
-    { name: "砂浴咖啡", type: "咖啡", note: "放鬆休憩空間。" },
-    { name: "指宿料理屋", type: "黑豚料理", note: "清爽在地風味。" }
+    { name: "砂浴咖啡", type: "咖啡", avgCost: "¥600〜1,000", note: "放鬆休憩空間。" },
+    { name: "指宿料理屋", type: "黑豚料理", avgCost: "¥1,500〜2,500", note: "清爽在地風味。" }
+  ],
+  "c43": [ // 霧島神宮
+    { name: "霧花", type: "三明治・甜點咖啡", avgCost: "¥900〜1,600", note: "夫妻共同經營的咖啡廳，就在霧島神宮周邊，招牌鬆軟三明治與甜點。" }
+  ],
+  "c44": [ // 知覽武家屋敷
+    { name: "そば茶屋 吹上庵 知覧武家屋敷店", type: "蕎麥麵", avgCost: "¥880〜1,500", note: "茅草屋與水車為標誌的鹿兒島蕎麥老店，招牌天婦羅板蕎麥麵。" },
+    { name: "高城庵", type: "鄉土料理御膳", avgCost: "¥1,300〜2,000", note: "武家屋敷群入口前的古民家改建食事處，可邊賞庭園邊享用薩摩鄉土料理御膳。" }
+  ],
+  "c45": [ // 奄美大島
+    { name: "元祖鶏飯 みなとや", type: "奄美鶏飯", avgCost: "¥1,300〜1,800", note: "奄美名物鶏飯的元祖名店，位於奄美大島北部，湯頭鮮甜。" },
+    { name: "奄美鶏飯と島料理の鳥しん", type: "鄉土料理居酒屋", avgCost: "¥1,500〜2,500", note: "名瀨市區的人氣居酒屋，鶏飯與獲獎的黑豚青木瓜丼都是招牌。" }
   ]
 };
 function generateRestaurants(){
@@ -831,6 +920,7 @@ function generateRestaurants(){
         cat: "餐廳",
         season: "",
         ticket: r.type,
+        avgCost: r.avgCost || '價格資訊未提供',
         desc: `${spot.name}周邊的店家：${r.note}`,
         nearSpotName: spot.name
       });
@@ -859,11 +949,42 @@ let activePref = null;
 let activeCat = null;
 let viewMode = 'all'; // 'spot' | 'food' | 'all'
 
-// 各縣目前的天氣代碼（由 loadWeather 即時寫入），供人潮估算使用
+// 各縣目前的天氣代碼與氣溫（由 loadWeather 即時寫入），供人潮估算使用
 const PREF_WEATHER = {};
+const PREF_TEMP = {};
+
+// 天氣對人潮的加減分表：
+// 晴天 +5 / 多雲 +2 / 陰天 +0 / 起霧 -3 / 雨天 -5 / 大雨或雷雨 -10 / 下雪 -8
+// 額外因子：氣溫過高(≥34°C)或過低(≤3°C) 額外 -5（不論晴雨，極端氣溫都會讓人少出門）
+// 戶外類景點（自然景觀、花卉庭園）天氣影響會放大；餐廳、城市漫遊、親子樂園等室內傾向的
+// 類型則在壞天氣時「轉正」——遊客從戶外轉往室內用餐、逛街，人潮不減反增。
+function weatherDelta(pref, cat){
+  const code = PREF_WEATHER[pref];
+  if(code === undefined) return 0;
+
+  let base;
+  if(code === 0) base = 5;                                    // 晴天
+  else if(code === 1 || code === 2) base = 2;                 // 晴時多雲/多雲
+  else if(code === 3) base = 0;                                // 陰天
+  else if(code === 45 || code === 48) base = -3;               // 起霧
+  else if([51,53,55,61,63,80].includes(code)) base = -5;       // 一般雨天
+  else if([65,81,82].includes(code)) base = -10;               // 大雨/強陣雨
+  else if([71,73,75].includes(code)) base = -8;                // 下雪
+  else if([95,96,99].includes(code)) base = -10;               // 雷雨
+
+  const temp = PREF_TEMP[pref];
+  if(temp !== undefined && (temp >= 34 || temp <= 3)) base -= 5; // 極端氣溫額外扣分
+
+  const isOutdoor = (cat === "自然景觀" || cat === "花卉庭園");
+  const isIndoorLeaning = (cat === "餐廳" || cat === "城市漫遊" || cat === "親子樂園");
+
+  if(isOutdoor) return base * 1.4;              // 戶外類受天氣影響放大
+  if(base < 0 && isIndoorLeaning) return Math.abs(base) * 0.6; // 壞天氣時室內類人潮部分轉正
+  return base;
+}
 
 // ===== 即時人潮推估 =====
-// 不使用關鍵字猜測，改以「現在的星期幾、現在幾點、當地即時天氣」這三個
+// 不使用關鍵字猜測，改以「現在的星期幾、現在幾點、當地即時天氣與氣溫」這幾個
 // 會隨時間變動的公開/預設資料來推估人潮。
 // 景點與餐廳用不同的時段曲線：景點在午餐、晚餐時段人潮會下降（遊客去吃飯了），
 // 餐廳則正好相反，在那兩個時段人潮會上升。
@@ -875,9 +996,7 @@ function estimateCrowd(spot){
   const isWeekend = (jstDay === 0 || jstDay === 6);
   const isFood = (spot.cat === "餐廳");
 
-const baseHeat = spot.popularity || 50;
-
-  let score = baseHeat; // 起始點加入熱度判斷
+  let score;
   if(!isFood){
     // 景點時段曲線：白天上升，午餐、晚餐時段明顯下降；細分傍晚過渡期避免斷層
     if(jstHour >= 23 || jstHour < 6)      score = 3;   // 深夜
@@ -908,28 +1027,19 @@ const baseHeat = spot.popularity || 50;
   // 週末加成（拉大差異：景點週末白天更多人，餐廳週末用餐時段更多人）
   if(isWeekend) score += isFood ? 14 : 22;
 
-  // 即時天氣調整：下雨/下雪對戶外景點衝擊更大，對室內／美食類是加分
-  const code = PREF_WEATHER[spot.pref];
-  if(code !== undefined){
-    const isWet = [51,53,55,61,63,65,71,73,75,80,81,82,95,96,99].includes(code);
-    if(isWet){
-      if(spot.cat === "自然景觀" || spot.cat === "花卉庭園") score -= 30;
-      else if(spot.cat === "城市漫遊" || spot.cat === "親子樂園") score -= 10;
-      else if(isFood) score += 15;
-    }
-  }
+  // 即時天氣與氣溫調整
+  score += weatherDelta(spot.pref, spot.cat);
 
   score = Math.max(3, Math.min(100, Math.round(score)));
 
   // 四級距：較無人潮 ≤40% / 稍有人潮 ≤60% / 人潮較多 ≤80% / 人潮擁擠 >80%
-  // 四級距判斷，僅輸出文字，移除 %
   let text, color;
   if(score <= 40){ text = '較無人潮'; color = '#4ecdc4'; }
   else if(score <= 60){ text = '稍有人潮'; color = '#c7a83e'; }
   else if(score <= 80){ text = '人潮較多'; color = '#f2994a'; }
   else { text = '人潮擁擠'; color = '#e2483a'; }
 
-  return { text: `${text} ${score}%`, color, score }; // 移除數值百分比
+  return { text: `${text} ${score}%`, color, score };
 }
 
 
@@ -1006,6 +1116,7 @@ function render(){
   const spots = allSpots().filter(s => {
     if(viewMode === 'spot' && s.cat === "餐廳") return false;
     if(viewMode === 'food' && s.cat !== "餐廳") return false;
+    if(viewMode === 'fav' && !favorites[s.id]) return false;
     if(activePref && s.pref !== activePref) return false;
     if(activeCat && s.cat !== activeCat) return false;
     if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q))) return false;
@@ -1074,6 +1185,7 @@ tags.appendChild(crowdTag);
 
     if(spot.cat === "餐廳"){
       tags.appendChild(el('span','tag ticket','🍴 ' + spot.ticket));
+      tags.appendChild(el('span','tag season','💰 ' + (spot.avgCost || '價格資訊未提供')));
     } else {
       tags.appendChild(el('span','tag ticket','🎟️ ' + (spot.ticket || "免費參觀")));
     }
@@ -1167,6 +1279,7 @@ document.getElementById('searchInput').addEventListener('input', render);
 
 const formEl = document.getElementById('addForm');
 document.getElementById('toggleForm').addEventListener('click', () => {
+  document.getElementById('addFoodForm').classList.remove('open');
   formEl.classList.toggle('open');
 });
 document.getElementById('cancelSpot').addEventListener('click', () => {
@@ -1201,6 +1314,51 @@ document.getElementById('submitSpot').addEventListener('click', () => {
   render();
 });
 
+const ffPref = document.getElementById('ff-pref');
+PREFS.forEach(p => { const o = el('option', null, p); o.value = p; ffPref.appendChild(o); });
+
+const foodFormEl = document.getElementById('addFoodForm');
+document.getElementById('toggleFoodForm').addEventListener('click', () => {
+  formEl.classList.remove('open');
+  foodFormEl.classList.toggle('open');
+});
+document.getElementById('cancelFood').addEventListener('click', () => {
+  foodFormEl.classList.remove('open');
+});
+
+document.getElementById('submitFood').addEventListener('click', () => {
+  const name = document.getElementById('ff-name').value.trim();
+  const desc = document.getElementById('ff-desc').value.trim();
+  const type = document.getElementById('ff-type').value.trim();
+  const cost = document.getElementById('ff-cost').value.trim();
+  const near = document.getElementById('ff-near').value.trim();
+  if(!name || !desc){
+    alert('請至少填寫餐廳名稱與簡介');
+    return;
+  }
+  const food = {
+    id: 'u' + Date.now(),
+    name,
+    pref: ffPref.value,
+    cat: "餐廳",
+    season: "",
+    ticket: type || '料理類型未提供',
+    avgCost: cost || '價格資訊未提供',
+    desc,
+    nearSpotName: near,
+    userAdded: true
+  };
+  userSpots.push(food);
+  saveUserSpots();
+  document.getElementById('ff-name').value = '';
+  document.getElementById('ff-desc').value = '';
+  document.getElementById('ff-type').value = '';
+  document.getElementById('ff-cost').value = '';
+  document.getElementById('ff-near').value = '';
+  foodFormEl.classList.remove('open');
+  render();
+});
+
 async function loadWeather(){
   const row = document.getElementById('weatherRow');
   row.innerHTML = '';
@@ -1219,6 +1377,7 @@ async function loadWeather(){
       const data = await res.json();
       const cw = data.current_weather;
       PREF_WEATHER[p] = cw.weathercode;
+      PREF_TEMP[p] = cw.temperature;
       const desc = WEATHER_CODE_MAP[cw.weathercode] || '天氣資料';
       const tmax = data.daily && data.daily.temperature_2m_max ? Math.round(data.daily.temperature_2m_max[0]) : null;
       const tmin = data.daily && data.daily.temperature_2m_min ? Math.round(data.daily.temperature_2m_min[0]) : null;
