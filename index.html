@@ -648,7 +648,10 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
         <label for="f-ticket">門票費用資訊</label>
         <input id="f-ticket" type="text" placeholder="例如：免費參觀、或約 500 日圓">
       </div>
-      <div style="visibility: hidden;"> </div>
+      <div>
+        <label for="f-address">詳細地址或 Google Maps 連結（選填）</label>
+        <input id="f-address" type="text" placeholder="貼上地址或 Google Maps 分享連結，定位更準確">
+      </div>
     </div>
     <div>
       <label for="f-desc">簡介</label>
@@ -688,7 +691,10 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
         <label for="ff-cost">平均消費（選填）</label>
         <input id="ff-cost" type="text" placeholder="例如：¥900〜1,300">
       </div>
-      <div style="visibility: hidden;"> </div>
+      <div>
+        <label for="ff-address">詳細地址或 Google Maps 連結（選填）</label>
+        <input id="ff-address" type="text" placeholder="貼上地址或 Google Maps 分享連結，定位更準確">
+      </div>
     </div>
     <div>
       <label for="ff-desc">簡介</label>
@@ -798,7 +804,25 @@ const CURATED = [
   {id:"c45",name:"奄美大島",pref:"鹿兒島",cat:"自然景觀",season:"全年，夏季適合浮潛",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"擁有亞熱帶原始林與珊瑚礁海域的世界自然遺產島嶼，生態豐富。"}
 ];
 
-// ===== 真實餐廳資料庫 =====
+// 每個景點對應正確的日文維基百科條目標題。
+// 景點清單裡的名稱是繁體中文用字（例如「太宰府天滿宮」），跟日文維基的
+// 正式條目標題常有一兩個字不同（日文是「太宰府天満宮」），直接拿中文名稱去查
+// 常常查不到或查錯，所以另外建一份精確對照表，確保抓到的圖片是真的對應景點。
+const SPOT_WIKI_TITLE = {
+  "c1": "太宰府天満宮", "c2": "柳川市", "c3": "キャナルシティ博多", "c4": "門司港レトロ",
+  "c5": "福岡タワー", "c6": "大濠公園", "c7": "海の中道海浜公園", "c8": "小倉城",
+  "c9": "櫛田神社 (福岡市)",
+  "c10": "唐津城", "c11": "有田焼", "c12": "嬉野温泉", "c13": "虹の松原", "c14": "吉野ヶ里遺跡",
+  "c15": "ハウステンボス", "c16": "九十九島 (長崎県)", "c17": "稲佐山", "c18": "出島",
+  "c19": "眼鏡橋 (長崎市)", "c20": "グラバー園",
+  "c21": "熊本城", "c22": "阿蘇山", "c23": "草千里ヶ浜", "c24": "黒川温泉",
+  "c25": "上色見熊野座神社", "c26": "通潤橋", "c27": "くまモンスクエア",
+  "c28": "由布院温泉", "c29": "別府温泉", "c30": "九重夢大吊橋", "c31": "アフリカンサファリ",
+  "c32": "由布岳", "c33": "杉乃井ホテル",
+  "c34": "高千穂峡", "c35": "サンメッセ日南", "c36": "鵜戸神宮", "c37": "青島神社 (宮崎県)", "c38": "生駒高原 (宮崎県)",
+  "c39": "仙巌園", "c40": "桜島", "c41": "屋久島", "c42": "指宿温泉", "c43": "霧島神宮",
+  "c44": "知覧武家屋敷庭園", "c45": "奄美大島"
+};
 // 每個景點對應 1-3 間「實際查證存在」的真實店家（非隨機產生），並附上平均消費價格區間。
 // 45 個景點已全數完成真實餐廳查證。
 // 訪客也可以用下方「+ 新增餐廳」按鈕，自行新增自己去過、確認過的店家。
@@ -1244,15 +1268,22 @@ function allSpots(){
 
 // 修改後的搜尋連結（精準鎖定地點）
 function mapSearchUrl(spot) {
-  // 將搜尋參數調整為 Google Maps 官方的地點搜尋格式
-  // 透過加入「日本」與地區關鍵字，確保搜尋引擎能直接跳轉至該地點的 Google Maps 標記頁面
+  // 若使用者有填寫詳細地址或 Google Maps 連結，優先使用，定位更準確；
+  // 若填的本身就是完整的 Google Maps 連結，直接開啟該連結。
+  if(spot.address){
+    if(/^https?:\/\//.test(spot.address.trim())) return spot.address.trim();
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.address.trim())}`;
+  }
+  // 沒有填寫時，退回用名稱＋縣市搜尋
   const query = encodeURIComponent(spot.name + ' ' + spot.pref + ' 日本');
   return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
 // 修改後的導航連結（精準導航至該地點）
 function mapDirectionsUrl(spot) {
-  // 使用 destination 參數，直接設定導航終點為該景點或餐廳
+  if(spot.address && !/^https?:\/\//.test(spot.address.trim())){
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(spot.address.trim())}&travelmode=driving`;
+  }
   const query = encodeURIComponent(spot.name + ' ' + spot.pref + ' 日本');
   return `https://www.google.com/maps/dir/?api=1&destination=${query}&travelmode=driving`;
 }
@@ -1270,14 +1301,15 @@ function buildCard(spot){
 
 
 
-    // 呼叫維基 API
-getWikiImage(spot.name).then(imgUrl => {
+    // 呼叫圖片抓取：景點用精確維基標題查詢；餐廳先試店名，查不到則依料理類型配對照片
+    const imgQuery = (spot.cat === "餐廳") ? spot.name : (SPOT_WIKI_TITLE[spot.id] || spot.name);
+    getWikiImage(imgQuery).then(imgUrl => {
     if (imgUrl) {
       banner.style.backgroundImage = `url(${imgUrl})`;
     } else {
-      // 若抓不到維基圖，餐廳給食物示意圖，景點給縣市代表圖
+      // 若抓不到維基圖，餐廳依料理類型給對應美食照片，景點給縣市代表圖
       const fallback = (spot.cat === "餐廳")
-        ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'
+        ? cuisineImage(spot.ticket)
         : PREF_IMAGES[spot.pref];
       banner.style.backgroundImage = `url(${fallback})`;
     }
@@ -1439,14 +1471,55 @@ function renderFavGrouped(grid, q){
 
 async function getWikiImage(title) {
   try {
+    // 第一步：直接用精確標題查詢
     const url = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
     const res = await fetch(url);
-    if (!res.ok) return null;
-    const data = await res.json();
-    return (data.thumbnail && data.thumbnail.source) ? data.thumbnail.source : null;
+    if (res.ok) {
+      const data = await res.json();
+      const direct = (data.thumbnail && data.thumbnail.source) ? data.thumbnail.source : null;
+      if (direct) return direct;
+    }
+  } catch (e) { /* 繼續往下嘗試搜尋 */ }
+
+  try {
+    // 第二步：精確標題查不到時，改用維基搜尋 API 做模糊比對，
+    // 找出最相關的條目後再抓那篇的縮圖，提高命中率
+    const searchUrl = `https://ja.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(title)}&format=json&origin=*&srlimit=1`;
+    const sres = await fetch(searchUrl);
+    if (!sres.ok) return null;
+    const sdata = await sres.json();
+    const hit = sdata.query && sdata.query.search && sdata.query.search[0];
+    if (!hit) return null;
+    const summaryUrl = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(hit.title)}`;
+    const sumRes = await fetch(summaryUrl);
+    if (!sumRes.ok) return null;
+    const sumData = await sumRes.json();
+    return (sumData.thumbnail && sumData.thumbnail.source) ? sumData.thumbnail.source : null;
   } catch (e) {
-    return null; // 失敗回傳 null，讓後面接手處理
+    return null; // 兩種方式都失敗，回傳 null 讓後面接手處理
   }
+}
+
+// 依餐廳的料理類型（ticket 欄位）配對對應的美食情境照片，
+// 比「所有餐廳共用同一張泛用食物照」更貼近實際店家的餐點種類。
+const CUISINE_IMAGES = [
+  { keys: ["拉麵"], url: "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["烏龍麵","蕎麥麵","流水素麵"], url: "https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["鰻魚"], url: "https://images.unsplash.com/photo-1580217593608-61931cefc821?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["壽司","海鮮","漁"], url: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["燒肉","牛","黑豚","豬肉","地雞","肉料理"], url: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["咖啡","甜點","布丁","霜淇淋","喫茶"], url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["洋食","漢堡","咖哩","義大利麵","土耳其飯"], url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["定食","鄉土料理","御膳","懷石"], url: "https://images.unsplash.com/photo-1580476262798-bddd9f4b7369?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["自助餐","吃到飽"], url: "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=600&q=80" },
+  { keys: ["豆腐"], url: "https://images.unsplash.com/photo-1546069901-eacf546c69bd?auto=format&fit=crop&w=600&q=80" }
+];
+const DEFAULT_FOOD_IMAGE = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
+
+function cuisineImage(ticketType){
+  if(!ticketType) return DEFAULT_FOOD_IMAGE;
+  const match = CUISINE_IMAGES.find(c => c.keys.some(k => ticketType.includes(k)));
+  return match ? match.url : DEFAULT_FOOD_IMAGE;
 }
 
 async function loadPrefImages(){
@@ -1509,6 +1582,7 @@ document.getElementById('submitSpot').addEventListener('click', () => {
   const name = document.getElementById('f-name').value.trim();
   const desc = document.getElementById('f-desc').value.trim();
   const ticketInput = document.getElementById('f-ticket').value.trim();
+  const address = document.getElementById('f-address').value.trim();
   if(!name || !desc){
     alert('請至少填寫景點名稱與簡介');
     return;
@@ -1520,6 +1594,7 @@ document.getElementById('submitSpot').addEventListener('click', () => {
     cat: fCat.value,
     season: document.getElementById('f-season').value.trim(),
     ticket: ticketInput || '免費參觀',
+    address,
     desc,
     userAdded: true
   };
@@ -1529,6 +1604,7 @@ document.getElementById('submitSpot').addEventListener('click', () => {
   document.getElementById('f-desc').value = '';
   document.getElementById('f-season').value = '';
   document.getElementById('f-ticket').value = '';
+  document.getElementById('f-address').value = '';
   formEl.classList.remove('open');
   render();
 });
@@ -1551,6 +1627,7 @@ document.getElementById('submitFood').addEventListener('click', () => {
   const type = document.getElementById('ff-type').value.trim();
   const cost = document.getElementById('ff-cost').value.trim();
   const near = document.getElementById('ff-near').value.trim();
+  const address = document.getElementById('ff-address').value.trim();
   if(!name || !desc){
     alert('請至少填寫餐廳名稱與簡介');
     return;
@@ -1563,6 +1640,7 @@ document.getElementById('submitFood').addEventListener('click', () => {
     season: "",
     ticket: type || '料理類型未提供',
     avgCost: cost || '價格資訊未提供',
+    address,
     desc,
     nearSpotName: near,
     userAdded: true
@@ -1574,6 +1652,7 @@ document.getElementById('submitFood').addEventListener('click', () => {
   document.getElementById('ff-type').value = '';
   document.getElementById('ff-cost').value = '';
   document.getElementById('ff-near').value = '';
+  document.getElementById('ff-address').value = '';
   foodFormEl.classList.remove('open');
   render();
 });
