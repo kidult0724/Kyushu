@@ -283,6 +283,24 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   border-left: 4px solid var(--pine);
 }
 
+.card-closed{
+  opacity: 0.6;
+  filter: grayscale(35%);
+}
+
+.card-closed .pref-banner{
+  filter: grayscale(60%);
+}
+
+.tag.hours{
+  background: #EDE9DD;
+  color: var(--ink-soft);
+}
+
+.tag.crowd.closed{
+  font-style: normal;
+}
+
 .card-food{
   border-left: 4px solid var(--clay);
 }
@@ -712,7 +730,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
 <footer>
-  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」與「+ 新增餐廳」按鈕，兩者欄位不同（餐廳可填鄰近景點與平均消費）；餐廳卡片左側為橘色色條並標示「鄰近景點」與「💰平均消費」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量與人口排序為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」與「+ 新增餐廳」按鈕，兩者欄位不同（餐廳可填鄰近景點與平均消費，也都可填地址或Google Maps連結讓地圖定位更準確）；餐廳卡片左側為橘色色條並標示「鄰近景點」與「💰平均消費」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。每張卡片標籤列上的「🕐營業時間」為依景點類型（如歷史文化多為9-17點、溫泉設施多為8-21點、自然景觀類戶外景點視為全天開放）或餐廳料理類型（拉麵/咖啡/漢堡等輕食類多為連續營業；定食/鄉土料理/懷石等正式餐廳多為午餐晚餐分開營業、下午公休）推估的概略時段，並非逐店查證過的正確時間；當下超出這個時段時，卡片會顯示「🌙 休息中」並停止顯示人潮百分比與長條（休息中談人潮沒有意義），整張卡片也會變得較灰暗以便一眼分辨。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升⑥景點自身知名度（越知名的景點基數分數越高，讓同縣市同類型的不同景點彼此有差異）。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量、人口排序與知名度評分皆為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
 </footer>
 </div>
 
@@ -1132,6 +1150,73 @@ function hashJitter(id){
 // 該縣觀光客量、該縣人口」這幾個因子來推估人潮。
 // 景點與餐廳用不同的時段曲線：景點在午餐、晚餐時段人潮會下降（遊客去吃飯了），
 // 餐廳則正好相反，在那兩個時段人潮會上升。
+// ===== 營業時間 =====
+// 景點/餐廳大多有開門打烊時間，不是24小時都有人潮，所以打烊時段
+// 直接顯示「休息中」，不再套用人潮公式（避免半夜的神社還顯示"人潮擁擠"這種失真情況）。
+//
+// 沒有針對「每一個」項目逐一查證實際營業時間（景點+餐廳超過100項，
+// 逐一查證需要非常大量時間），改用「類型」的一般通例當預設值，
+// 對少數確定知道正確時間的知名景點用 SPOT_HOURS 個別覆寫。
+// 這是概略估計、不是逐店查證過的正確時間，實際請以官方公告為準。
+
+// 景點類型 → 預設開放時段（24小時制）；allDay 代表戶外/隨時可進入無管制
+const CAT_HOURS_DEFAULT = {
+  "自然景觀": { allDay: true },
+  "溫泉":     { open: 8,  close: 21 },
+  "歷史文化": { open: 9,  close: 17 },
+  "親子樂園": { open: 9,  close: 18 },
+  "城市漫遊": { allDay: true },
+  "花卉庭園": { open: 8,  close: 17 }
+};
+
+// 少數確定營業時間、跟類型預設值不同的知名景點，個別覆寫
+const SPOT_HOURS = {
+  "c1": { open: 6, close: 19 },   // 太宰府天満宮：社殿開放時間較長
+  "c15": { open: 9, close: 21 },  // 豪斯登堡：夜間點燈營業到較晚
+  "c21": { open: 8, close: 18 },  // 熊本城
+  "c28": { allDay: true },        // 金鱗湖：湖邊本身無門禁
+  "c29": { open: 8, close: 17 },  // 別府地獄めぐり
+  "c33": { open: 9, close: 23 },  // 杉乃井溫泉棚湯：飯店設施營業到深夜
+  "c40": { allDay: true },        // 櫻島：活火山島，展望台區域無固定門禁
+  "c42": { open: 8, close: 20 }   // 指宿溫泉砂浴
+};
+
+// 料理類型關鍵字 → 餐廳營業時段判斷。
+// straight：全天連續營業（多為咖啡、速食、拉麵、烏龍麵這類輕食型態）
+// split：午餐＋晚餐分兩段營業、下午公休（多為定食、鄉土料理、懷石這類正式餐廳）
+const CUISINE_HOURS = [
+  { keys: ["拉麵","烏龍麵","蕎麥麵","漢堡","咖哩","咖啡","甜點","霜淇淋","喫茶","唐揚げ","燒咖哩"], mode: "straight", open: 10, close: 21 },
+  { keys: ["懷石","鄉土料理","御膳","定食","洋食","涮涮鍋","燒肉","自助餐"], mode: "split", lunchOpen: 11, lunchClose: 14, dinnerOpen: 17, dinnerClose: 21 }
+];
+const DEFAULT_FOOD_HOURS = { mode: "split", lunchOpen: 11, lunchClose: 14, dinnerOpen: 17, dinnerClose: 21 };
+
+function getHoursProfile(spot){
+  if(spot.cat === "餐廳"){
+    const match = CUISINE_HOURS.find(c => c.keys.some(k => (spot.ticket||"").includes(k)));
+    return match || DEFAULT_FOOD_HOURS;
+  }
+  if(SPOT_HOURS[spot.id]) return SPOT_HOURS[spot.id];
+  return CAT_HOURS_DEFAULT[spot.cat] || { open: 9, close: 18 };
+}
+
+function isOpenNow(spot){
+  const now = new Date();
+  const jstHour = (now.getUTCHours() + 9) % 24;
+  const profile = getHoursProfile(spot);
+  if(profile.allDay) return true;
+  if(profile.mode === "straight") return jstHour >= profile.open && jstHour < profile.close;
+  if(profile.mode === "split") return (jstHour >= profile.lunchOpen && jstHour < profile.lunchClose) || (jstHour >= profile.dinnerOpen && jstHour < profile.dinnerClose);
+  return jstHour >= profile.open && jstHour < profile.close;
+}
+
+function hoursDisplayText(spot){
+  const profile = getHoursProfile(spot);
+  if(profile.allDay) return "全天開放";
+  if(profile.mode === "straight") return `${profile.open}:00 - ${profile.close}:00`;
+  if(profile.mode === "split") return `${profile.lunchOpen}:00-${profile.lunchClose}:00、${profile.dinnerOpen}:00-${profile.dinnerClose}:00`;
+  return `${profile.open}:00 - ${profile.close}:00`;
+}
+
 function estimateCrowd(spot){
   const now = new Date();
   // 轉換成日本時間（Asia/Tokyo, UTC+9）
@@ -1330,9 +1415,12 @@ function buildCard(spot){
     titleBlock.appendChild(title);
     head.appendChild(titleBlock);
 
+const openNow = isOpenNow(spot);
 const crowdData = estimateCrowd(spot);
-  const crowdTag = el('span', 'tag crowd', crowdData.text);
-  crowdTag.style.backgroundColor = crowdData.color;
+  const crowdTag = openNow
+    ? el('span', 'tag crowd', crowdData.text)
+    : el('span', 'tag crowd closed', '🌙 休息中');
+  crowdTag.style.backgroundColor = openNow ? crowdData.color : '#8a8578';
   crowdTag.style.color = '#fff';
 
     // 修正：收藏按鈕的 id 引用
@@ -1346,6 +1434,7 @@ const crowdData = estimateCrowd(spot);
     const tags = el('div','card-tags');
     tags.appendChild(el('span','tag cat',spot.cat));
 tags.appendChild(crowdTag);
+tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(spot)));
 
     if(spot.cat === "餐廳"){
       tags.appendChild(el('span','tag ticket','🍴 ' + spot.ticket));
@@ -1359,13 +1448,17 @@ tags.appendChild(crowdTag);
 
     body.appendChild(tags);
 
-    // 人潮視覺化長條：用長度直接表現差異，不用只靠數字比較
-    const meterWrap = el('div','crowd-meter');
-    const meterFill = el('div','crowd-meter-fill');
-    meterFill.style.width = crowdData.score + '%';
-    meterFill.style.backgroundColor = crowdData.color;
-    meterWrap.appendChild(meterFill);
-    body.appendChild(meterWrap);
+    // 人潮視覺化長條：打烊時不顯示（休息中沒有人潮可言），只有營業中才顯示
+    if(openNow){
+      const meterWrap = el('div','crowd-meter');
+      const meterFill = el('div','crowd-meter-fill');
+      meterFill.style.width = crowdData.score + '%';
+      meterFill.style.backgroundColor = crowdData.color;
+      meterWrap.appendChild(meterFill);
+      body.appendChild(meterWrap);
+    }
+
+    if(!openNow) card.classList.add('card-closed');
 
     body.appendChild(el('p','app-desc',spot.desc));
 
