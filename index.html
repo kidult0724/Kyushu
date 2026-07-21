@@ -25,10 +25,10 @@
 }
 
 body.dark-mode{
-  --paper:#20211D;
-  --paper-2:#2A2B25;
+  --paper:#33342D;
+  --paper-2:#3D3E36;
   --ink:#EDE8D9;
-  --ink-soft:#B9B2A0;
+  --ink-soft:#C2BBA8;
   --clay:#D97A5C;
   --clay-deep:#F0A98A;
   --pine:#6FA085;
@@ -37,8 +37,8 @@ body.dark-mode{
   --steam-deep:#A6C4D8;
   --gold:#D9B168;
   --gold-deep:#E8C888;
-  --line:#3D3E37;
-  --card-bg:#2A2B25;
+  --line:#4E4F45;
+  --card-bg:#3D3E36;
 }
 
 *{box-sizing:border-box;}
@@ -62,7 +62,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 }
 
 .hero{position:relative;padding:56px 20px 40px;overflow:hidden;border-bottom:1px solid var(--line);}
-.hero svg{position:absolute;top:-40px;right:-60px;width:420px;height:420px;opacity:0.55;pointer-events:none;}
+.hero-motif{position:absolute;top:6px;right:-20px;width:380px;height:auto;pointer-events:none;}
 .eyebrow{font-size:13px;letter-spacing:.12em;color:var(--clay-deep);font-weight:700;margin:0 0 10px;}
 .hero h1{font-family:'Shippori Mincho',serif;font-weight:700;font-size:40px;margin:0 0 12px;line-height:1.25;color:var(--ink);position:relative;}
 .hero p{max-width:560px;font-size:15px;line-height:1.8;color:var(--ink-soft);margin:0;position:relative;}
@@ -722,11 +722,11 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
     padding:32px 16px 28px;
   }
 
-  .hero svg{
-    width:300px;
-    height:300px;
-    right:-100px;
-    top:-40px;
+  .hero-motif{
+    width:220px;
+    right:-60px;
+    top:-10px;
+    opacity:0.7;
   }
 
   .hero h1{
@@ -880,12 +880,20 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 <body>
 <button type="button" class="theme-toggle" id="themeToggle" aria-label="切換深色模式">🌙</button>
 <div class="hero">
-  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <circle cx="200" cy="200" r="170" fill="none" stroke="#B5482F" stroke-width="1"/>
-    <circle cx="200" cy="200" r="135" fill="none" stroke="#3F6B54" stroke-width="1"/>
-    <circle cx="200" cy="200" r="100" fill="none" stroke="#C79A44" stroke-width="1"/>
-    <circle cx="200" cy="200" r="65" fill="none" stroke="#5E7C93" stroke-width="1"/>
-    <circle cx="200" cy="200" r="30" fill="none" stroke="#26221B" stroke-width="1.4"/>
+  <svg class="hero-motif" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- 朝陽 -->
+    <circle cx="290" cy="120" r="46" fill="none" stroke="var(--gold)" stroke-width="1.4" opacity="0.6"/>
+    <!-- 遠山 -->
+    <path d="M120 210 L200 110 L250 170 L300 100 L400 210 Z" fill="none" stroke="var(--pine)" stroke-width="1.4" opacity="0.5"/>
+    <path d="M40 230 L140 140 L230 230 Z" fill="none" stroke="var(--steam)" stroke-width="1.2" opacity="0.45"/>
+    <!-- 鳥居 -->
+    <g stroke="var(--clay)" stroke-width="3" fill="none" opacity="0.75" stroke-linecap="round">
+      <path d="M60 90 L340 90"/>
+      <path d="M50 104 L350 104"/>
+      <path d="M100 104 L100 230"/>
+      <path d="M300 104 L300 230"/>
+      <path d="M100 140 L300 140"/>
+    </g>
   </svg>
   <div class="wrap" style="padding:0;">
     <p class="eyebrow">九州七縣 · 景點蒐集誌</p>
@@ -2434,21 +2442,45 @@ async function loadWeather(){
 }
 
 // ===== 深色模式 =====
+// 預設依「日本時間」自動判斷晝夜（18:00-06:00 為夜間），不需要使用者手動切換；
+// 一旦使用者自己點擊切換鈕，就記住那次手動選擇，之後不再自動跟著時間變動
+// （除非使用者之後又手動點回來，或清除瀏覽器資料）。
+function isNightTimeJST(){
+  const now = new Date();
+  const jstHour = (now.getUTCHours() + 9) % 24;
+  return (jstHour >= 18 || jstHour < 6);
+}
+
 function applyTheme(isDark){
   document.body.classList.toggle('dark-mode', isDark);
   document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+}
+
+function applyManualTheme(isDark){
+  applyTheme(isDark);
   try{ localStorage.setItem('kyushu-theme', isDark ? 'dark' : 'light'); }catch(e){}
 }
 
 document.getElementById('themeToggle').addEventListener('click', () => {
-  applyTheme(!document.body.classList.contains('dark-mode'));
+  applyManualTheme(!document.body.classList.contains('dark-mode'));
 });
 
 (async function init(){
   let savedTheme = null;
   try{ savedTheme = localStorage.getItem('kyushu-theme'); }catch(e){}
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
+
+  if(savedTheme){
+    applyTheme(savedTheme === 'dark');
+  } else {
+    applyTheme(isNightTimeJST());
+    // 沒有手動選過的情況下，每 10 分鐘重新依時間檢查一次，
+    // 讓開著頁面跨過日夜交界（例如晚上6點）時能自動換上夜間模式
+    setInterval(() => {
+      let stillNoManualChoice = null;
+      try{ stillNoManualChoice = localStorage.getItem('kyushu-theme'); }catch(e){}
+      if(!stillNoManualChoice) applyTheme(isNightTimeJST());
+    }, 10 * 60 * 1000);
+  }
 
   loadFavorites();
   loadUserSpots();
