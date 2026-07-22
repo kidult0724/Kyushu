@@ -954,6 +954,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
         <button class="addbtn" id="toggleForm">+ 新增景點</button>
         <button class="addbtn" id="toggleFoodForm">+ 新增餐廳</button>
         <button class="addbtn" id="toggleHotelForm">+ 新增住宿</button>
+        <button class="addbtn" id="refreshSharedBtn" title="立即向雲端重新拉取其他人新增的資料">🔄 重新整理</button>
       </div>
     </div>
   </div>
@@ -2404,18 +2405,48 @@ function loadFavorites(){
   }catch(e){ favorites = {}; }
 }
 
-function loadUserSpots(){
-  try{
-    const v = localStorage.getItem('kyushu-user-spots');
-    if(v) userSpots = JSON.parse(v);
-  }catch(e){ userSpots = []; }
+// ===== 共用資料改為雲端讀寫 =====
+// 使用者自己新增的景點/餐廳/住宿現在存在共用的雲端資料庫（Vercel + Neon Postgres），
+// 而不是單一瀏覽器的 localStorage，這樣不同的人打開同一個網址就能看到彼此新增的內容。
+// 收藏（favorites）與行程規劃（itinerary）維持原本的 localStorage，因為那些是「個人」的，
+// 不需要也不應該讓其他人看到。
+
+async function loadUserSpots() {
+  try {
+    const res = await fetch('/api/spots');
+    if (!res.ok) throw new Error('雲端讀取失敗');
+    const data = await res.json();
+    userSpots = Array.isArray(data.items) ? data.items : [];
+    // 順手備份一份在本機，萬一之後離線或雲端暫時連不上，還有東西可以顯示
+    try { localStorage.setItem('kyushu-user-spots-cache', JSON.stringify(userSpots)); } catch(e){}
+  } catch (e) {
+    console.error('讀取雲端共用資料失敗，改用本機備份顯示', e);
+    try {
+      const v = localStorage.getItem('kyushu-user-spots-cache');
+      userSpots = v ? JSON.parse(v) : [];
+    } catch(e2) { userSpots = []; }
+  }
 }
 
-function saveUserSpots(){
+// 新增一筆項目：先樂觀地放進畫面（讓使用者立刻看到），再送到雲端；
+// 若送出失敗會提示使用者，但畫面上還是會保留這筆（重新整理後才會消失）。
+async function addItemToCloud(item){
+  userSpots.push(item);
   try{
-    localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
-  }catch(e){}
+    const res = await fetch('/api/spots', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item })
+    });
+    if(!res.ok) throw new Error('雲端寫入失敗');
+    return true;
+  }catch(e){
+    console.error('新增到雲端失敗', e);
+    alert('已顯示在畫面上，但同步到雲端失敗（可能是網路問題），其他人可能暫時看不到這筆資料，建議稍後重新整理頁面確認。');
+    return false;
+  }
 }
+
 
 function loadItinerary(){
   try{
@@ -2466,7 +2497,7 @@ document.getElementById('cancelSpot').addEventListener('click', () => {
   formEl.classList.remove('open');
 });
 
-document.getElementById('submitSpot').addEventListener('click', () => {
+document.getElementById('submitSpot').addEventListener('click', async () => {
   const name = document.getElementById('f-name').value.trim();
   const desc = document.getElementById('f-desc').value.trim();
   const ticketInput = document.getElementById('f-ticket').value.trim();
@@ -2486,8 +2517,7 @@ document.getElementById('submitSpot').addEventListener('click', () => {
     desc,
     userAdded: true
   };
-  userSpots.push(spot);
-  saveUserSpots();
+  await addItemToCloud(spot);
   document.getElementById('f-name').value = '';
   document.getElementById('f-desc').value = '';
   document.getElementById('f-season').value = '';
@@ -2510,7 +2540,7 @@ document.getElementById('cancelFood').addEventListener('click', () => {
   foodFormEl.classList.remove('open');
 });
 
-document.getElementById('submitFood').addEventListener('click', () => {
+document.getElementById('submitFood').addEventListener('click', async () => {
   const name = document.getElementById('ff-name').value.trim();
   const desc = document.getElementById('ff-desc').value.trim();
   const type = document.getElementById('ff-type').value.trim();
@@ -2534,8 +2564,7 @@ document.getElementById('submitFood').addEventListener('click', () => {
     nearSpotName: near,
     userAdded: true
   };
-  userSpots.push(food);
-  saveUserSpots();
+  await addItemToCloud(food);
   document.getElementById('ff-name').value = '';
   document.getElementById('ff-desc').value = '';
   document.getElementById('ff-type').value = '';
@@ -2559,7 +2588,7 @@ document.getElementById('cancelHotel').addEventListener('click', () => {
   hotelFormEl.classList.remove('open');
 });
 
-document.getElementById('submitHotel').addEventListener('click', () => {
+document.getElementById('submitHotel').addEventListener('click', async () => {
   const name = document.getElementById('hh-name').value.trim();
   const desc = document.getElementById('hh-desc').value.trim();
   const type = document.getElementById('hh-type').value.trim();
@@ -2580,8 +2609,7 @@ document.getElementById('submitHotel').addEventListener('click', () => {
     desc,
     userAdded: true
   };
-  userSpots.push(hotel);
-  saveUserSpots();
+  await addItemToCloud(hotel);
   document.getElementById('hh-name').value = '';
   document.getElementById('hh-desc').value = '';
   document.getElementById('hh-type').value = '';
@@ -2589,6 +2617,17 @@ document.getElementById('submitHotel').addEventListener('click', () => {
   document.getElementById('hh-address').value = '';
   hotelFormEl.classList.remove('open');
   render();
+});
+
+document.getElementById('refreshSharedBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('refreshSharedBtn');
+  const original = btn.textContent;
+  btn.textContent = '🔄 更新中…';
+  btn.disabled = true;
+  await loadUserSpots();
+  render();
+  btn.textContent = original;
+  btn.disabled = false;
 });
 
 async function loadWeather(){
@@ -2675,13 +2714,22 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   }
 
   loadFavorites();
-  loadUserSpots();
+  await loadUserSpots();
   loadItinerary();
   await loadWeather();
   render();
   await loadPrefImages();
   render();
+
+  // 每 60 秒自動向雲端重新拉取一次共用清單，讓其他人剛新增的
+  // 景點/餐廳/住宿能自動顯示出來，不需要手動重新整理整個頁面
+  setInterval(async () => {
+    await loadUserSpots();
+    render();
+  }, 60 * 1000);
 })();
 </script>
+
 </body>
 </html>
+
