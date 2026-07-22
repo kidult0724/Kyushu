@@ -389,6 +389,14 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   color: var(--clay-deep);
 }
 
+.card-hotel{
+  border-left: 4px solid var(--steam);
+}
+
+.card-hotel .app-location{
+  color: var(--steam-deep);
+}
+
 .crowd-meter{
   width: 100%;
   height: 7px;
@@ -928,6 +936,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div style="display:flex;gap:8px;">
       <button class="addbtn" id="toggleForm">+ 新增景點</button>
       <button class="addbtn" id="toggleFoodForm">+ 新增餐廳</button>
+      <button class="addbtn" id="toggleHotelForm">+ 新增住宿</button>
     </div>
   </div>
 
@@ -1017,18 +1026,58 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
     <p class="hint">新增的餐廳會標示「使用者新增」，並保存在這台裝置的瀏覽器裡，之後在同一台裝置、同一個瀏覽器再次打開這個檔案也能看到。</p>
   </div>
 
+  <div class="form" id="addHotelForm">
+    <h3>新增一間住宿</h3>
+    <div class="row">
+      <div>
+        <label for="hh-name">飯店/旅館名稱</label>
+        <input id="hh-name" type="text" placeholder="例如：博多王子智能飯店">
+      </div>
+      <div>
+        <label for="hh-pref">縣市</label>
+        <select id="hh-pref"></select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="hh-type">類型</label>
+        <input id="hh-type" type="text" placeholder="例如：溫泉旅館、商務飯店、景觀飯店">
+      </div>
+      <div>
+        <label for="hh-cost">參考房價（選填）</label>
+        <input id="hh-cost" type="text" placeholder="例如：¥15,000〜20,000／晚">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="hh-address">詳細地址或 Google Maps 連結（選填）</label>
+        <input id="hh-address" type="text" placeholder="貼上地址或 Google Maps 分享連結，定位更準確">
+      </div>
+      <div style="visibility: hidden;"> </div>
+    </div>
+    <div>
+      <label for="hh-desc">簡介</label>
+      <textarea id="hh-desc" placeholder="推薦這間住宿的原因、有什麼特色？"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="submitHotel">加入住宿清單</button>
+      <button class="btn-ghost" id="cancelHotel">取消</button>
+    </div>
+    <p class="hint">新增的住宿會標示「使用者新增」，並保存在這台裝置的瀏覽器裡，之後在同一台裝置、同一個瀏覽器再次打開這個檔案也能看到。房價僅供參考，實際請以訂房平台即時報價為準。</p>
+  </div>
+
 
   <div class="grid" id="grid"></div>
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
 <footer>
-  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」與「+ 新增餐廳」按鈕，兩者欄位不同（餐廳可填鄰近景點與平均消費，也都可填地址或Google Maps連結讓地圖定位更準確）；餐廳卡片左側為橘色色條並標示「鄰近景點」與「💰平均消費」，與景點卡片（綠色色條）做區隔。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。每張卡片標籤列上的「🕐營業時間」為依景點類型（如歷史文化多為9-17點、溫泉設施多為8-21點、自然景觀類戶外景點視為全天開放）或餐廳料理類型（拉麵/咖啡/漢堡等輕食類多為連續營業；定食/鄉土料理/懷石等正式餐廳多為午餐晚餐分開營業、下午公休）推估的概略時段，並非逐店查證過的正確時間；當下超出這個時段時，卡片會顯示「🌙 休息中」並停止顯示人潮百分比與長條（休息中談人潮沒有意義），整張卡片也會變得較灰暗以便一眼分辨。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升⑥景點自身知名度（越知名的景點基數分數越高，讓同縣市同類型的不同景點彼此有差異）。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量、人口排序與知名度評分皆為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
+  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／全部」可切換檢視範圍，收藏的項目資料獨立保存，方便之後快速找回。新增資料時請分別使用「+ 新增景點」「+ 新增餐廳」「+ 新增住宿」按鈕，三者欄位不同（餐廳可填鄰近景點與平均消費、住宿可填類型與參考房價，皆可填地址或Google Maps連結讓地圖定位更準確）；餐廳卡片左側為橘色色條、住宿卡片為藍灰色條，與景點卡片（綠色色條）做區隔。標示「住宿」類型的項目為福岡、佐賀、長崎、熊本、大分五縣精選的真實飯店與旅館，房價僅為概略區間，實際房價會依房型、季節、訂房平台大幅波動，訂房前請務必至官方網站或訂房平台確認即時房價；住宿類項目不套用人潮估算與營業時間邏輯（飯店本身為全天營運）。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。每張景點/餐廳卡片標籤列上的「🕐營業時間」為依類型（如歷史文化多為9-17點、溫泉設施多為8-21點、自然景觀類戶外景點視為全天開放）或料理類型推估的概略時段，並非逐店查證過的正確時間；超出時段會顯示「🌙 休息中」並停止顯示人潮百分比與長條，整張卡片也會變得較灰暗以便一眼分辨。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升⑥景點自身知名度（越知名的景點基數分數越高，讓同縣市同類型的不同景點彼此有差異）。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量、人口排序與知名度評分皆為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。收藏與新增的資料會保存在「這台裝置、這個瀏覽器」裡，重開此檔案仍會保留；但每個人、每台裝置的資料各自獨立，不會互相同步。
 </footer>
 </div>
 
 <script>
 const PREFS = ["福岡","佐賀","長崎","熊本","大分","宮崎","鹿兒島"];
-const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園","餐廳"];
+const CATS = ["自然景觀","溫泉","歷史文化","親子樂園","城市漫遊","花卉庭園","餐廳","住宿"];
 
 const PREF_COORDS = {
   "福岡":[33.5904,130.4017],
@@ -1121,7 +1170,17 @@ const CURATED = [
   {id:"c52",name:"阿蘇神社",pref:"熊本",cat:"歷史文化",season:"全年",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"肥後國一之宮，樓門為日本三大樓門之一，門前町商店街以湧泉聞名，適合散步品嘗在地小吃。"},
   {id:"c53",name:"天草",pref:"熊本",cat:"自然景觀",season:"全年，夏季適合出海賞海豚",ticket:"賞海豚船票約3000日圓起",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"由多座島嶼組成的海島度假區，五和町外海棲息約200頭野生海豚，賞豚率高，也以新鮮海產聞名。"},
   {id:"c54",name:"綾町照葉大吊橋",pref:"宮崎",cat:"自然景觀",season:"3月岩杜鵑、4-5月新綠",ticket:"約320日圓",img:"https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80",desc:"世界最大級的步行專用吊橋之一，橫跨綾南川峽谷，橋上可俯瞰廣闊照葉樹林與遠方瀑布。"},
-  {id:"c55",name:"池田湖",pref:"鹿兒島",cat:"自然景觀",season:"5-6月油菜花、向日葵花海",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1536152470836-b943b246224c?auto=format&fit=crop&w=600&q=80",desc:"九州最大的火山口湖，相傳棲息著謎樣生物「伊西」，湖畔可近距離觀察大鰻魚並眺望開聞岳。"}
+  {id:"c55",name:"池田湖",pref:"鹿兒島",cat:"自然景觀",season:"5-6月油菜花、向日葵花海",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1536152470836-b943b246224c?auto=format&fit=crop&w=600&q=80",desc:"九州最大的火山口湖，相傳棲息著謎樣生物「伊西」，湖畔可近距離觀察大鰻魚並眺望開聞岳。"},
+  {id:"c56",name:"河內藤園",pref:"福岡",cat:"花卉庭園",season:"4月下旬-5月中旬紫藤花期",ticket:"依花況機動收費約500-1500日圓",img:"https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80",desc:"以紫藤花隧道聞名國際的私人庭園，曾獲CNN選為日本最美景點之一，花季限定開放，需事先確認開園日。"},
+  {id:"c57",name:"糸島二見浦",pref:"福岡",cat:"自然景觀",season:"全年，夕陽時分最美",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",desc:"桜井神社的海中夫婦岩與白色鳥居面朝日本海，夕陽西下時鳥居剪影與海天一色相映，是糸島最具代表性的景致。"},
+  {id:"c58",name:"御船山樂園",pref:"佐賀",cat:"花卉庭園",season:"春季杜鵑、秋季紅葉、冬季光雕藝術展",ticket:"約500-1000日圓（依季節）",img:"https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80",desc:"江戶時代大名別墅庭園，巨岩山壁為背景，春季滿山杜鵑花海，近年與teamLab合作推出夜間數位藝術展。"},
+  {id:"c59",name:"島原城",pref:"長崎",cat:"歷史文化",season:"春季賞櫻",ticket:"天守閣需門票 (約550日圓)",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"島原半島地標白色城郭，天守閣展示島原之亂相關史料，城下町保留武家屋敷與湧水街道。"},
+  {id:"c60",name:"大浦天主堂",pref:"長崎",cat:"歷史文化",season:"全年",ticket:"約1000日圓",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"日本現存最古老的木造哥德式教堂，見證潛伏基督徒歷史，已列入世界文化遺產，鄰近哥拉巴園。"},
+  {id:"c61",name:"菊池溪谷",pref:"熊本",cat:"自然景觀",season:"6-7月新綠、10-11月紅葉",ticket:"環境維護費約300日圓（賞楓期間）",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"阿蘇外輪山下的原始溪谷，清澈溪水與大小瀑布交織，入選日本名水百選與日本瀑布百選。"},
+  {id:"c62",name:"押戶石之丘",pref:"熊本",cat:"自然景觀",season:"全年，秋季芒草景致佳",ticket:"約300日圓",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"傳說中古代人祭祀之地，山丘上散落刻有神秘符號的巨岩，360度無遮蔽視野可遠眺阿蘇群山。"},
+  {id:"c63",name:"耶馬溪",pref:"大分",cat:"自然景觀",season:"秋季紅葉為日本三大紅葉名所之一",ticket:"免費參觀",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"奇岩怪石林立的溪谷景勝地，一目八景展望台可一次眺望八座奇峰，賴山陽譽為「耶馬溪天下無雙」。"},
+  {id:"c64",name:"城島高原樂園",pref:"大分",cat:"親子樂園",season:"全年",ticket:"入園免費，遊樂設施套票約4000日圓起",img:"https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80",desc:"位於別府與由布院之間的主題樂園，擁有日本首座木製雲霄飛車「Jupiter」，適合親子共遊。"},
+  {id:"c65",name:"中津城",pref:"大分",cat:"歷史文化",season:"春季賞櫻",ticket:"天守閣需門票 (約400日圓)",img:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",desc:"日本三大水城之一，黑田官兵衛築城，護城河直通海水，也是「中津炸雞」聖地的城下町中心。"}
 ];
 
 // 每個景點對應正確的日文維基百科條目標題。
@@ -1145,7 +1204,11 @@ const SPOT_WIKI_TITLE = {
   "c46": "祐徳稲荷神社", "c47": "大魚神社", "c48": "武雄温泉",
   "c49": "端島 (長崎県)", "c50": "雲仙地獄",
   "c51": "由布院温泉", "c52": "阿蘇神社", "c53": "天草諸島",
-  "c54": "綾の照葉大吊橋", "c55": "池田湖 (鹿児島県)"
+  "c54": "綾の照葉大吊橋", "c55": "池田湖 (鹿児島県)",
+  "c56": "河内藤園", "c57": "二見ヶ浦 (糸島市)", "c58": "御船山楽園",
+  "c59": "島原城", "c60": "大浦天主堂",
+  "c61": "菊池渓谷", "c62": "押戸石",
+  "c63": "耶馬渓", "c64": "城島高原パーク", "c65": "中津城"
 };
 // 每個景點對應 1-3 間「實際查證存在」的真實店家（非隨機產生），並附上平均消費價格區間。
 // 目前共 55 個景點已完成真實餐廳查證。
@@ -1366,6 +1429,40 @@ const REAL_RESTAURANTS = {
   ],
   "c55": [ // 池田湖
     { name: "池田湖パラダイス", type: "黑豚料理・流水素麵", avgCost: "¥900〜1,800", note: "湖畔食事處，可邊眺望池田湖邊用餐，店內設有大水槽免費展示大鰻魚。" }
+  ],
+  "c56": [ // 河內藤園
+    { name: "食事＆喫茶 伽羅", type: "和食輕食", avgCost: "¥900〜1,600", note: "河內藤園步行可達的和食喫茶，花季期間常客滿，提供定食與甜點。" }
+  ],
+  "c57": [ // 糸島二見浦
+    { name: "糸島茶房", type: "海景咖啡輕食", avgCost: "¥900〜1,600", note: "面海的人氣咖啡廳，可邊眺望二見浦海景邊用餐，週末常需排隊。" },
+    { name: "PALM BEACH THE GARDEN", type: "海景餐廳", avgCost: "¥1,500〜2,500", note: "夕陽海景第一排的度假風餐廳，義大利麵與甜點都廣受好評。" }
+  ],
+  "c58": [ // 御船山樂園
+    { name: "御船山樂園ホテル 茶屋バー", type: "茶屋輕食", avgCost: "¥800〜1,500", note: "園內茶屋提供抹茶與輕食，可邊眺望巨岩山壁與庭園景致邊休憩。" },
+    { name: "燒肉どすこい", type: "燒肉", avgCost: "¥1,800〜3,000", note: "武雄當地人氣燒肉店，鄰近御船山樂園，佐賀牛選項豐富。" }
+  ],
+  "c59": [ // 島原城
+    { name: "元祖具雑煮 姫松屋 本店", type: "具雜煮鄉土料理", avgCost: "¥1,200〜1,800", note: "島原之亂相關的鄉土料理老店，招牌具雜煮以多種食材燉煮的年糕湯聞名。" },
+    { name: "銀水", type: "かんざらし甜品", avgCost: "¥400〜800", note: "島原名水製成的Q彈白玉糖水甜點かんざらし專賣店，鄰近湧水庭園。" }
+  ],
+  "c60": [ // 大浦天主堂
+    { name: "松翁軒大浦店", type: "長崎蛋糕", avgCost: "¥600〜1,500", note: "創業百年的長崎蛋糕老舖，大浦天主堂周邊分店，可內用抹茶蛋糕套餐。" },
+    { name: "岩崎本舖 グラバー園店", type: "角煮包", avgCost: "¥400〜700", note: "長崎名物東坡肉刈包專賣店，鄰近哥拉巴園與大浦天主堂，適合邊走邊吃。" }
+  ],
+  "c61": [ // 菊池溪谷
+    { name: "山一食品", type: "阿蘇赤牛丼", avgCost: "¥1,200〜2,000", note: "阿蘇高菜漬物老店直營食事處，招牌阿蘇赤牛丼與赤牛牛排廣受好評。" }
+  ],
+  "c62": [ // 押戶石之丘
+    { name: "カフェ果林", type: "咖啡輕食", avgCost: "¥800〜1,500", note: "與押戶石之丘同在南小國町中原地區的可愛咖啡廳，附設庭園露台座位。" }
+  ],
+  "c63": [ // 耶馬溪
+    { name: "そば処水月", type: "手打蕎麥麵", avgCost: "¥900〜1,600", note: "就位於一目八景展望台旁，可邊眺望溪谷奇峰邊享用石臼手打蕎麥麵。" }
+  ],
+  "c64": [ // 城島高原樂園
+    { name: "城島高原パーク メアリーアーデンス", type: "家庭餐廳", avgCost: "¥1,000〜1,800", note: "樂園內的家庭式餐廳，提供漢堡排、義大利麵等大眾化餐點，方便遊園途中用餐。" }
+  ],
+  "c65": [ // 中津城
+    { name: "からあげ専門店 からいち", type: "中津炸雞", avgCost: "¥600〜1,200", note: "鄰近中津城與中津車站，使用九州產生鮮雞肉現炸的中津炸雞專賣店。" }
   ]
 };
 function generateRestaurants(){
@@ -1391,6 +1488,26 @@ function generateRestaurants(){
 }
 
 const RESTAURANTS = generateRestaurants();
+
+// ===== 真實住宿資料庫 =====
+// 聚焦在福岡、佐賀、長崎、熊本、大分（北九州以北）五縣，各挑選 1-2 間
+// 實際查證存在的真實飯店/旅館，涵蓋不同價位帶（商務飯店／溫泉旅館／景觀飯店）。
+// 平均房價為概略區間（多數為兩人一室、含稅價格），實際房價會依房型、
+// 季節、訂房平台大幅波動，訂房前請務必至官方網站或訂房平台確認即時房價。
+const HOTELS = [
+  { id: "h1", name: "博多王子智能飯店", pref: "福岡", type: "車站商務飯店", avgCost: "¥12,000〜18,000／晚", desc: "距JR博多站筑紫口步行約5分鐘，全館自助入住退房系統，適合重視交通便利的自由行旅客。" },
+  { id: "h2", name: "西鐵Inn福岡（天神）", pref: "福岡", type: "商務飯店", avgCost: "¥13,000〜19,000／晚", desc: "位於天神商圈，步行可達地下鐵天神站與中洲，高樓層客房可眺望博多灣景色。" },
+  { id: "h3", name: "和多屋別莊", pref: "佐賀", type: "溫泉旅館", avgCost: "¥22,000〜40,000／晚（含二食）", desc: "嬉野溫泉代表旅館之一，佔地約9.9萬平方公尺，融合江戶時期鍋島藩別邸建築與現代化湯殿。" },
+  { id: "h4", name: "稻佐山觀光飯店", pref: "長崎", type: "景觀飯店", avgCost: "¥18,000〜30,000／晚（含二食）", desc: "位於稻佐山山腰，客房與展望台可直接眺望被譽為世界新三大夜景之一的長崎港夜景。" },
+  { id: "h5", name: "黑川溫泉 山みず木", pref: "熊本", type: "溫泉旅館", avgCost: "約¥22,000／人／晚（含二食）", desc: "黑川溫泉區內的山間旅館，21間客房各有不同風貌，溪流沿岸露天風呂皆為源泉放流溫泉。" },
+  { id: "h6", name: "由布院 玉の湯", pref: "大分", type: "高級溫泉旅館", avgCost: "¥35,000〜60,000／晚（含二食）", desc: "由布院御三家之一，隱身森林中的靜謐旅館，庭園維護細緻，以款待與料理水準聞名。" },
+  { id: "h7", name: "龜之井別莊", pref: "大分", type: "高級溫泉旅館", avgCost: "¥40,000〜70,000／晚（含二食）", desc: "1921年創建的由布院代表旅館，茅草屋頂建物散落於約3萬平方公尺的森林庭園中，格調沉穩。" }
+];
+
+function findHotelById(id){
+  return HOTELS.find(h => h.id === id);
+}
+
 const FALLBACK_PICS = [
   "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1542640244-7e672d6cef21?auto=format&fit=crop&w=600&q=80",
@@ -1474,7 +1591,9 @@ const SPOT_POPULARITY = {
   "c34": 8, "c35": 5, "c36": 5, "c37": 5, "c38": 4,
   "c39": 7, "c40": 8, "c41": 8, "c42": 6, "c43": 5, "c44": 5, "c45": 6,
   "c46": 6, "c47": 5, "c48": 5, "c49": 7, "c50": 6,
-  "c51": 6, "c52": 5, "c53": 5, "c54": 4, "c55": 4
+  "c51": 6, "c52": 5, "c53": 5, "c54": 4, "c55": 4,
+  "c56": 7, "c57": 6, "c58": 6, "c59": 5, "c60": 6,
+  "c61": 5, "c62": 4, "c63": 6, "c64": 5, "c65": 4
 };
 
 // 針對「沒有專屬知名度資料」的項目（例如餐廳、使用者自行新增的景點），
@@ -1732,7 +1851,8 @@ PREFS.forEach(p => { const o = el('option', null, p); o.value = p; fPref.appendC
 CATS.forEach(c => { const o = el('option', null, c); o.value = c; fCat.appendChild(o); });
 
 function allSpots(){
-  return [...CURATED, ...RESTAURANTS, ...userSpots];
+  const hotelsWithCat = HOTELS.map(h => ({ ...h, cat: "住宿" }));
+  return [...CURATED, ...RESTAURANTS, ...hotelsWithCat, ...userSpots];
 }
 
 // 修改後的搜尋連結（精準鎖定地點）
@@ -1758,7 +1878,8 @@ function mapDirectionsUrl(spot) {
 }
 
 function buildCard(spot){
-    const card = el('div', spot.cat === "餐廳" ? 'card card-food' : 'card card-spot');
+    const cardTypeClass = (spot.cat === "餐廳") ? 'card-food' : ((spot.cat === "住宿") ? 'card-hotel' : 'card-spot');
+    const card = el('div', 'card ' + cardTypeClass);
     const banner = el('div','pref-banner banner-loading');
 
     // 這裡先顯示骨架載入動畫的底色，圖片抓到後會移除 banner-loading 這個 class
@@ -1786,7 +1907,8 @@ function buildCard(spot){
     }
   });
 
-    const bannerLabelText = (spot.cat === "餐廳") ? ('🍴 ' + spot.pref) : ('📍 ' + spot.pref);
+    const isHotel = (spot.cat === "住宿");
+    const bannerLabelText = isHotel ? ('🏨 ' + spot.pref) : ((spot.cat === "餐廳") ? ('🍴 ' + spot.pref) : ('📍 ' + spot.pref));
     const label = el('div', 'pref-banner-label', bannerLabelText);
     banner.appendChild(label);
     card.appendChild(banner);
@@ -1795,19 +1917,21 @@ function buildCard(spot){
     const head = el('div', 'app-card-head');
     const titleBlock = el('div');
     const location = el('div', 'app-location',
-      (spot.cat === "餐廳" && spot.nearSpotName) ? ('🍴 鄰近景點：' + spot.nearSpotName) : ('📍 ' + spot.pref));
+      isHotel ? ('🏨 ' + spot.pref) : ((spot.cat === "餐廳" && spot.nearSpotName) ? ('🍴 鄰近景點：' + spot.nearSpotName) : ('📍 ' + spot.pref)));
     titleBlock.appendChild(location);
     const title = el('h3', 'app-title', spot.name);
     titleBlock.appendChild(title);
     head.appendChild(titleBlock);
 
-const openNow = isOpenNow(spot);
-const closedToday = isClosedToday(spot);
-const crowdData = estimateCrowd(spot);
-  const crowdTag = openNow
-    ? el('span', 'tag crowd', crowdData.text)
-    : el('span', 'tag crowd closed', closedToday ? '🚫 今日公休' : '🌙 休息中');
-  crowdTag.style.backgroundColor = openNow ? crowdData.color : '#8a8578';
+const openNow = isHotel ? true : isOpenNow(spot);
+const closedToday = isHotel ? false : isClosedToday(spot);
+const crowdData = isHotel ? null : estimateCrowd(spot);
+  const crowdTag = isHotel
+    ? el('span', 'tag crowd', '🏨 全天營運')
+    : (openNow
+        ? el('span', 'tag crowd', crowdData.text)
+        : el('span', 'tag crowd closed', closedToday ? '🚫 今日公休' : '🌙 休息中'));
+  crowdTag.style.backgroundColor = isHotel ? 'var(--steam-deep)' : (openNow ? crowdData.color : '#8a8578');
   crowdTag.style.color = '#fff';
 
     // 修正：收藏按鈕的 id 引用
@@ -1821,9 +1945,12 @@ const crowdData = estimateCrowd(spot);
     const tags = el('div','card-tags');
     tags.appendChild(el('span','tag cat',spot.cat));
 tags.appendChild(crowdTag);
-tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(spot)));
+if(!isHotel) tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(spot)));
 
-    if(spot.cat === "餐廳"){
+    if(isHotel){
+      tags.appendChild(el('span','tag ticket','🏨 ' + spot.type));
+      tags.appendChild(el('span','tag season','💰 ' + spot.avgCost));
+    } else if(spot.cat === "餐廳"){
       tags.appendChild(el('span','tag ticket','🍴 ' + spot.ticket));
       tags.appendChild(el('span','tag season','💰 ' + (spot.avgCost || '價格資訊未提供')));
     } else {
@@ -1835,8 +1962,8 @@ tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(spot)));
 
     body.appendChild(tags);
 
-    // 人潮視覺化長條：打烊時不顯示（休息中沒有人潮可言），只有營業中才顯示
-    if(openNow){
+    // 人潮視覺化長條：住宿類與打烊時都不顯示
+    if(openNow && !isHotel){
       const meterWrap = el('div','crowd-meter');
       const meterFill = el('div','crowd-meter-fill');
       meterFill.style.width = crowdData.score + '%';
@@ -2314,6 +2441,7 @@ document.getElementById('searchInput').addEventListener('input', render);
 const formEl = document.getElementById('addForm');
 document.getElementById('toggleForm').addEventListener('click', () => {
   document.getElementById('addFoodForm').classList.remove('open');
+  document.getElementById('addHotelForm').classList.remove('open');
   formEl.classList.toggle('open');
 });
 document.getElementById('cancelSpot').addEventListener('click', () => {
@@ -2357,6 +2485,7 @@ PREFS.forEach(p => { const o = el('option', null, p); o.value = p; ffPref.append
 const foodFormEl = document.getElementById('addFoodForm');
 document.getElementById('toggleFoodForm').addEventListener('click', () => {
   formEl.classList.remove('open');
+  document.getElementById('addHotelForm').classList.remove('open');
   foodFormEl.classList.toggle('open');
 });
 document.getElementById('cancelFood').addEventListener('click', () => {
@@ -2396,6 +2525,51 @@ document.getElementById('submitFood').addEventListener('click', () => {
   document.getElementById('ff-near').value = '';
   document.getElementById('ff-address').value = '';
   foodFormEl.classList.remove('open');
+  render();
+});
+
+const hhPref = document.getElementById('hh-pref');
+PREFS.forEach(p => { const o = el('option', null, p); o.value = p; hhPref.appendChild(o); });
+
+const hotelFormEl = document.getElementById('addHotelForm');
+document.getElementById('toggleHotelForm').addEventListener('click', () => {
+  formEl.classList.remove('open');
+  foodFormEl.classList.remove('open');
+  hotelFormEl.classList.toggle('open');
+});
+document.getElementById('cancelHotel').addEventListener('click', () => {
+  hotelFormEl.classList.remove('open');
+});
+
+document.getElementById('submitHotel').addEventListener('click', () => {
+  const name = document.getElementById('hh-name').value.trim();
+  const desc = document.getElementById('hh-desc').value.trim();
+  const type = document.getElementById('hh-type').value.trim();
+  const cost = document.getElementById('hh-cost').value.trim();
+  const address = document.getElementById('hh-address').value.trim();
+  if(!name || !desc){
+    alert('請至少填寫住宿名稱與簡介');
+    return;
+  }
+  const hotel = {
+    id: 'u' + Date.now(),
+    name,
+    pref: hhPref.value,
+    cat: "住宿",
+    type: type || '類型未提供',
+    avgCost: cost || '房價資訊未提供',
+    address,
+    desc,
+    userAdded: true
+  };
+  userSpots.push(hotel);
+  saveUserSpots();
+  document.getElementById('hh-name').value = '';
+  document.getElementById('hh-desc').value = '';
+  document.getElementById('hh-type').value = '';
+  document.getElementById('hh-cost').value = '';
+  document.getElementById('hh-address').value = '';
+  hotelFormEl.classList.remove('open');
   render();
 });
 
