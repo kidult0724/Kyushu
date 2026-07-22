@@ -2708,32 +2708,46 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   render();
 })();
 <script>
-  // 1. 【最終確認】換回您專屬的完整網址與正確 Token，且完全移除 Bearer 
+  // 1. 金鑰與網址各就各位，且變數名稱與引號完全理乾淨
   const baseUrl = "https://ace-dog-82162.upstash.io"; 
   const token = "gqAAAAAAAAUDYAAiGcdEXzmE1NjQyYzU4YTk0MzA1ODI2MmIzNTM1MWU1MWY3NQ";
 
-  // 2. 這是一個獨立在背景執行的雲端同步核心
+  // 2. 背景執行的雲端同步核心
   async function syncWithCloud() {
     try {
-      // 先從雲端抓取最新的資料（⚠️ 這裡的 Headers 保持直接帶入 token 的修正寫法）
+      // ⚠️【官方標準格式】：這裡的 Bearer 後方有一個英文空格，且直接接上 token！
       const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
-        headers: { 'Authorization': token } 
+        headers: { 'Authorization': `Bearer ${token}` } 
       });
       const result = await response.json();
 
-      if (result.result) {
-        const cloudData = JSON.parse(result.result);
-        
-        // 比較本地資料與雲端資料的長度
-        if (cloudData.length > userSpots.length) {
-          // 如果雲端的景點比本地多，就把雲端資料同步到本地，並重新畫畫面
-          userSpots = cloudData;
-          localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
-          if (typeof render === 'function') render();
-          console.log("🔄 自動從雲端同步了最新景點！");
+      if (result && typeof result.result !== 'undefined') {
+        // 如果雲端有資料
+        if (result.result) {
+          const cloudData = JSON.parse(result.result);
+          
+          // 比較本地資料與雲端資料長度
+          if (cloudData.length > userSpots.length) {
+            userSpots = cloudData;
+            localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
+            if (typeof render === 'function') render();
+            console.log("🔄 自動從雲端同步了最新景點！");
+          } 
+          else if (userSpots.length > cloudData.length) {
+            // 如果本地景點比較多，代表使用者剛剛點了新增，自動同步傳上雲端
+            await fetch(`${baseUrl}/set/kyushu-user-spots`, {
+              method: 'POST',
+              headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/x-www-form-urlencoded' 
+              },
+              body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
+            });
+            console.log("📤 偵測到新景點，已自動同步上傳至雲端！");
+          }
         } 
-        else if (userSpots.length > cloudData.length) {
-          // 如果本地的景點比雲端多（代表當前使用者剛剛點了新增），就自動上傳給雲端
+        // 如果雲端是空的，但是我們本地已經有旅遊景點了，就自動初始化送上雲端
+        else if (userSpots.length > 0) {
           await fetch(`${baseUrl}/set/kyushu-user-spots`, {
             method: 'POST',
             headers: { 
@@ -2742,30 +2756,21 @@ document.getElementById('themeToggle').addEventListener('click', () => {
             },
             body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
           });
-          console.log("📤 偵測到新景點，已自動同步上傳至雲端！");
+          console.log("🚀 雲端保險箱初始化成功！");
         }
-      } else if (userSpots.length > 0) {
-        // 如果雲端是完全空的，但本地有資料，就把本地的第一筆資料初始化送上雲端
-        await fetch(`${baseUrl}/set/kyushu-user-spots`, {
-          method: 'POST',
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/x-www-form-urlencoded' 
-          },
-          body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
-        });
       }
     } catch (e) {
-      console.error("背景同步失敗：", e);
+      console.error("背景同步連線失敗：", e);
     }
   }
 
-  // 3. 網頁開啟 2 秒後，啟動背景守護進程，之後每隔 4 秒自動檢查並同步一次
+  // 3. 網頁開啟 1.5 秒後啟動背景同步，之後每隔 4 秒自動檢查一次
   setTimeout(() => {
     syncWithCloud();
     setInterval(syncWithCloud, 4000);
-  }, 2000);
+  }, 1500);
 </script>
+
 
 </body>
 </html>
