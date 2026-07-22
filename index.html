@@ -2431,25 +2431,16 @@ async function loadUserSpots() {
   }
 }
 
-
-function saveUserSpots(){
-  try{
-    localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
-    if (typeof baseUrl !== 'undefined' && typeof token !== 'undefined') {
-      // ⚠️ 修改：設定正確的通訊協定，並將資料以 value= 的方式包裝傳送
-      fetch(`${baseUrl}/set/kyushu-user-spots`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        },
-        body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
-      }).then(() => {
-        console.log("成功同步至 Vercel 雲端資料庫！");
-      }).catch(err => console.error("雲端同步失敗：", err));
-    }
-catch(e){}
+function loadUserSpots() {
+  try {
+    const v = localStorage.getItem('kyushu-user-spots');
+    if (v) userSpots = JSON.parse(v);
+    else userSpots = [];
+  } catch (e) {
+    userSpots = [];
+  }
 }
+
 
 function loadItinerary(){
   try{
@@ -2732,6 +2723,66 @@ document.getElementById('themeToggle').addEventListener('click', () => {
       render();
     }
   })();
+</script>
+  // 1. 請在此處填入您在 Vercel 看到的真實連線資訊
+  const baseUrl = "https://ace-dog-82162.upstash.io"; 
+  const token = "gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ";
+
+  // 2. 這是一個獨立在背景執行的雲端同步核心
+  async function syncWithCloud() {
+    if (baseUrl.includes("您的_REDIS")) return;
+
+    try {
+      // 先從雲端抓取最新的資料
+      const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
+
+      if (result.result) {
+        const cloudData = JSON.parse(result.result);
+        
+        // 比較本地資料與雲端資料的長度
+        if (cloudData.length > userSpots.length) {
+          // 如果雲端的景點比本地多，就把雲端資料同步到本地，並重新畫畫面
+          userSpots = cloudData;
+          localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
+          if (typeof render === 'function') render();
+          console.log("🔄 自動從雲端同步了最新景點！");
+        } 
+        else if (userSpots.length > cloudData.length) {
+          // 如果本地的景點比雲端多（代表當前使用者剛剛點了新增），就自動上傳給雲端
+          await fetch(`${baseUrl}/set/kyushu-user-spots`, {
+            method: 'POST',
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/x-www-form-urlencoded' 
+            },
+            body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
+          });
+          console.log("📤 偵測到新景點，已自動同步上傳至雲端！");
+        }
+      } else if (userSpots.length > 0) {
+        // 如果雲端是完全空的，但本地有資料，就把本地的第一筆資料初始化送上雲端
+        await fetch(`${baseUrl}/set/kyushu-user-spots`, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/x-www-form-urlencoded' 
+          },
+          body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
+        });
+      }
+    } catch (e) {
+      console.error("背景同步失敗：", e);
+    }
+  }
+
+  // 3. 網頁開啟 2 秒後，啟動背景守護進程，之後每隔 4 秒自動檢查並同步一次
+  setTimeout(() => {
+    syncWithCloud();
+    setInterval(syncWithCloud, 4000);
+  }, 2000);
 </script>
 
 </body>
