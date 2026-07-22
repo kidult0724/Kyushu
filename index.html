@@ -2708,19 +2708,16 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   render();
 })();
 <script>
-  
-  // 1. 請在此處填入您在 Vercel 看到的真實連線資訊
-  const baseUrl = "REDIS_KV_REST_API_TOKEN="gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ""; 
-  const token = "REDIS_KV_REST_API_URL="https://ace-dog-82162.upstash.io"";
+  // 1. 【最終確認】換回您專屬的完整網址與正確 Token，且完全移除 Bearer 
+  const baseUrl = "https://ace-dog-82162.upstash.io"; 
+  const token = "gqAAAAAAAAUDYAAiGcdEXzmE1NjQyYzU4YTk0MzA1ODI2MmIzNTM1MWU1MWY3NQ";
 
   // 2. 這是一個獨立在背景執行的雲端同步核心
   async function syncWithCloud() {
-    if (baseUrl.includes("您的_REDIS")) return;
-
     try {
-      // 先從雲端抓取最新的資料
+      // 先從雲端抓取最新的資料（⚠️ 這裡的 Headers 保持直接帶入 token 的修正寫法）
       const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': token } 
       });
       const result = await response.json();
 
