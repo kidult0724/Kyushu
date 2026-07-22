@@ -2682,75 +2682,31 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   await loadPrefImages();
   render();
 })();
-
-</script>
-
-<!-- 【修正 1】HTML 標籤必須放在 </script> 之外，<body> 裡面 -->
-<!-- 1. 讓大家輸入資料的地方 -->
-<div style="margin: 20px 0;">
-  <input type="text" id="myInput" placeholder="請輸入要同步的內容...">
-  <button id="sendBtn">新增資料</button>
-</div>
-
-<!-- 2. 顯示最新同步結果的地方 -->
-<div id="displayArea" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
-  等待同步中...
-</div>
-
-<!-- 【修正 2】獨立一組新的 <script> 來放資料庫同步功能 -->
 <script>
-  // 1. 設定您的雲端資料庫連線資訊（⚠️請記得替換成您自己的真實網址與金鑰！）
-  const baseUrl = "您的_REDIS_KV_REST_API_URL_網址"; 
-  const token = "您的_REDIS_KV_REST_API_TOKEN_金鑰";
+<script>
+  // 1. 請在此處填入您在 Vercel 看到的真實連線資訊
+  const baseUrl = "https://ace-dog-82162.upstash.io"; 
+  const token = "gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ";
 
-  // 2. 當點擊「新增資料」按鈕時，把文字送到雲端
-  document.getElementById('sendBtn').addEventListener('click', async () => {
-    const inputText = document.getElementById('myInput').value;
-    if (!inputText) return alert('請先輸入文字！');
-
-    // 把資料打包成一串網址傳給 Upstash
-    const url = `${baseUrl}/set/shared_message/${encodeURIComponent(inputText)}`;
-    
-    try {
-      await fetch(url, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      document.getElementById('myInput').value = ''; // 清空輸入框
-      alert('新增成功！');
-      getLatestData(); // 立刻更新畫面
-    } catch (error) {
-      console.error('送出失敗：', error);
-    }
-  });
-
-  // 3. 定時去雲端抓取「最新資料」並顯示在畫面上的功能
+  // 2. 這是未來的雲端讀取函式（先放著，不影響原本網頁運作）
   async function getLatestData() {
-    const url = `${baseUrl}/get/shared_message`;
-
+    if (baseUrl.includes("您的_REDIS")) return; // 如果還沒改金鑰就先跳出
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${baseUrl}/get/shared_message`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const result = await response.json();
-      
-      // 如果雲端有資料，就顯示在網頁畫面上
       if (result.result) {
-        document.getElementById('displayArea').innerText = "最新同步內容：" + result.result;
-      } else {
-        document.getElementById('displayArea').innerText = "目前雲端還沒有任何資料。";
+        console.log("雲端目前的最新資料是：", result.result);
       }
     } catch (error) {
-      console.error('讀取失敗：', error);
+      console.error('讀取雲端失敗：', error);
     }
   }
 
-  // 4. 網頁一打開，立刻抓一次資料
+  // 網頁打開時先靜態執行一次測試連線
   getLatestData();
-
-  // 5. 每隔 5 秒鐘（5000毫秒），自動抓一次新資料，達成多人即時同步
-  setInterval(getLatestData, 5000);
 </script>
 
 </body>
 </html>
-
