@@ -2708,22 +2708,7 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   render();
 })();
 <script>
-  // 每隔 5 秒鐘，自動執行一次您剛剛升級的 loadUserSpots，並重新畫畫面
-  setInterval(async () => {
-    if (typeof loadUserSpots === 'function') {
-      await loadUserSpots(); // 去雲端抓最新景點
-      render();              // 重新渲染畫面
-    }
-  }, 5000);
-
-  // 網頁一打開，立刻先抓一次
-  (async () => {
-    if (typeof loadUserSpots === 'function') {
-      await loadUserSpots();
-      render();
-    }
-  })();
-</script>
+  
   // 1. 請在此處填入您在 Vercel 看到的真實連線資訊
   const baseUrl = "https://ace-dog-82162.upstash.io"; 
   const token = "gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ";
