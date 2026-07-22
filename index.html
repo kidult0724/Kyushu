@@ -2404,43 +2404,18 @@ function loadFavorites(){
   }catch(e){ favorites = {}; }
 }
 
-// ⚠️ 請在 loadUserSpots 函數外面的上方，貼上您的連線資訊（如果還沒貼過的話）
-  const baseUrl = "https://ace-dog-82162.upstash.io"; 
-  const token = "gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ";
-
-async function loadUserSpots() {
-  try {
-    // 1. 改成發送 fetch 請求到 Vercel 雲端資料庫抓資料
-    const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const result = await response.json();
-    
-    // 2. 如果雲端有資料，就解碼並放進 userSpots 變數中
-    if (result.result) {
-      userSpots = JSON.parse(result.result);
-    } else {
-      userSpots = []; // 雲端沒資料就預設空陣列
-    }
-  } catch (e) {
-    console.error("讀取雲端資料失敗，改用本地暫存備份", e);
-    // 如果網路斷線或失敗，保持原本的 localStorage 作為保險備份
+function loadUserSpots(){
+  try{
     const v = localStorage.getItem('kyushu-user-spots');
-    if (v) userSpots = JSON.parse(v);
-    else userSpots = [];
-  }
+    if(v) userSpots = JSON.parse(v);
+  }catch(e){ userSpots = []; }
 }
 
-function loadUserSpots() {
-  try {
-    const v = localStorage.getItem('kyushu-user-spots');
-    if (v) userSpots = JSON.parse(v);
-    else userSpots = [];
-  } catch (e) {
-    userSpots = [];
-  }
+function saveUserSpots(){
+  try{
+    localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
+  }catch(e){}
 }
-
 
 function loadItinerary(){
   try{
@@ -2707,93 +2682,6 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   await loadPrefImages();
   render();
 })();
-  // ...這上方是您原本程式碼的 loadFavorites()、render() 等等...
-  await loadPrefImages();
-  render();
-})(); // ⚠️ 這是您原本大腳本的結尾
 </script>
-
-<!-- 
-  下面這組是完全獨立、不受任何前方程式碼影響的「超級同步器」。
-  我們用 window.onload 確保網頁不論前面有沒有卡住，開機後 2 秒都一定會強制啟動！
--->
-<script>
-(function() {
-  const baseUrl = "https://ace-dog-82162.upstash.io"; 
-  const token = "gqAAAAAAAAUDYAAiGcdEXzmE1NjQyYzU4YTk0MzA1ODI2MmIzNTM1MWU1MWY3NQ";
-
-  async function forceSync() {
-    try {
-      // 1. 使用 Upstash 最標準且絕對不會出錯的 GET 網址格式
-      const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
-        headers: { 'Authorization': `Bearer ${token}` } 
-      });
-      const result = await response.json();
-
-      // 取得本地目前的景點陣列（如果原本沒定義，就從 localStorage 抓）
-      let localSpots = [];
-      try {
-        if (typeof userSpots !== 'undefined') {
-          localSpots = userSpots;
-        } else {
-          const v = localStorage.getItem('kyushu-user-spots');
-          if (v) localSpots = JSON.parse(v);
-        }
-      } catch(e) { localSpots = []; }
-
-      if (result && typeof result.result !== 'undefined') {
-        if (result.result) {
-          const cloudData = JSON.parse(result.result);
-          
-          if (cloudData.length > localSpots.length) {
-            // 雲端比較多，強制蓋掉本地並刷新
-            localStorage.setItem('kyushu-user-spots', JSON.stringify(cloudData));
-            if (typeof userSpots !== 'undefined') userSpots = cloudData;
-            if (typeof render === 'function') render();
-            console.log("🌟【雲端核心】已成功同步最新景點到畫面上！");
-          } 
-          else if (localSpots.length > cloudData.length) {
-            // 本地比較多（剛點了新增），上傳雲端
-            await fetch(`${baseUrl}/set/kyushu-user-spots`, {
-              method: 'POST',
-              headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/x-www-form-urlencoded' 
-              },
-              body: `value=${encodeURIComponent(JSON.stringify(localSpots))}`
-            });
-            console.log("🌟【雲端核心】本地新景點已成功推送至雲端！");
-          }
-        } 
-        else if (localSpots.length > 0) {
-          // 雲端是空的，本地有，進行初始化上傳
-          await fetch(`${baseUrl}/set/kyushu-user-spots`, {
-            method: 'POST',
-            headers: { 
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/x-www-form-urlencoded' 
-            },
-            body: `value=${encodeURIComponent(JSON.stringify(localSpots))}`
-          });
-          console.log("🌟【雲端核心】雲端保險箱初始化完畢！");
-        }
-      }
-    } catch (err) {
-      console.error("🌟【雲端核心】連線失敗：", err);
-    }
-  }
-
-  // 網頁完全載入 2 秒後，強制執行第一次，之後每 4 秒無腦循環檢查
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      console.log("🚀【雲端核心】獨立守護進程已強制啟動！");
-      forceSync();
-      setInterval(forceSync, 4000);
-    }, 2000);
-  });
-})();
-</script>
-
 </body>
 </html>
-
