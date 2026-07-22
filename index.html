@@ -2404,12 +2404,33 @@ function loadFavorites(){
   }catch(e){ favorites = {}; }
 }
 
-function loadUserSpots(){
-  try{
+// ⚠️ 請在 loadUserSpots 函數外面的上方，貼上您的連線資訊（如果還沒貼過的話）
+  const baseUrl = "https://ace-dog-82162.upstash.io"; 
+  const token = "gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ";
+
+async function loadUserSpots() {
+  try {
+    // 1. 改成發送 fetch 請求到 Vercel 雲端資料庫抓資料
+    const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await response.json();
+    
+    // 2. 如果雲端有資料，就解碼並放進 userSpots 變數中
+    if (result.result) {
+      userSpots = JSON.parse(result.result);
+    } else {
+      userSpots = []; // 雲端沒資料就預設空陣列
+    }
+  } catch (e) {
+    console.error("讀取雲端資料失敗，改用本地暫存備份", e);
+    // 如果網路斷線或失敗，保持原本的 localStorage 作為保險備份
     const v = localStorage.getItem('kyushu-user-spots');
-    if(v) userSpots = JSON.parse(v);
-  }catch(e){ userSpots = []; }
+    if (v) userSpots = JSON.parse(v);
+    else userSpots = [];
+  }
 }
+
 
 function saveUserSpots(){
   try{
@@ -2683,30 +2704,5 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   render();
 })();
 <script>
-<script>
-  // 1. 請在此處填入您在 Vercel 看到的真實連線資訊
-  const baseUrl = "https://ace-dog-82162.upstash.io"; 
-  const token = "gQAAAAAAAUDyAAIgcDExZmE1NjQyYzU4YTk0MzA5ODI2MmIzNTM1MWU1MWY3NQ";
-
-  // 2. 這是未來的雲端讀取函式（先放著，不影響原本網頁運作）
-  async function getLatestData() {
-    if (baseUrl.includes("您的_REDIS")) return; // 如果還沒改金鑰就先跳出
-    try {
-      const response = await fetch(`${baseUrl}/get/shared_message`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
-      if (result.result) {
-        console.log("雲端目前的最新資料是：", result.result);
-      }
-    } catch (error) {
-      console.error('讀取雲端失敗：', error);
-    }
-  }
-
-  // 網頁打開時先靜態執行一次測試連線
-  getLatestData();
-</script>
-
 </body>
 </html>
