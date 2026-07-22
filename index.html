@@ -2707,70 +2707,93 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   await loadPrefImages();
   render();
 })();
+  // ...這上方是您原本程式碼的 loadFavorites()、render() 等等...
+  await loadPrefImages();
+  render();
+})(); // ⚠️ 這是您原本大腳本的結尾
+</script>
+
+<!-- 
+  下面這組是完全獨立、不受任何前方程式碼影響的「超級同步器」。
+  我們用 window.onload 確保網頁不論前面有沒有卡住，開機後 2 秒都一定會強制啟動！
+-->
 <script>
-  // 1. 金鑰與網址各就各位，且變數名稱與引號完全理乾淨
+(function() {
   const baseUrl = "https://ace-dog-82162.upstash.io"; 
   const token = "gqAAAAAAAAUDYAAiGcdEXzmE1NjQyYzU4YTk0MzA1ODI2MmIzNTM1MWU1MWY3NQ";
 
-  // 2. 背景執行的雲端同步核心
-  async function syncWithCloud() {
+  async function forceSync() {
     try {
-      // ⚠️【官方標準格式】：這裡的 Bearer 後方有一個英文空格，且直接接上 token！
+      // 1. 使用 Upstash 最標準且絕對不會出錯的 GET 網址格式
       const response = await fetch(`${baseUrl}/get/kyushu-user-spots`, {
         headers: { 'Authorization': `Bearer ${token}` } 
       });
       const result = await response.json();
 
+      // 取得本地目前的景點陣列（如果原本沒定義，就從 localStorage 抓）
+      let localSpots = [];
+      try {
+        if (typeof userSpots !== 'undefined') {
+          localSpots = userSpots;
+        } else {
+          const v = localStorage.getItem('kyushu-user-spots');
+          if (v) localSpots = JSON.parse(v);
+        }
+      } catch(e) { localSpots = []; }
+
       if (result && typeof result.result !== 'undefined') {
-        // 如果雲端有資料
         if (result.result) {
           const cloudData = JSON.parse(result.result);
           
-          // 比較本地資料與雲端資料長度
-          if (cloudData.length > userSpots.length) {
-            userSpots = cloudData;
-            localStorage.setItem('kyushu-user-spots', JSON.stringify(userSpots));
+          if (cloudData.length > localSpots.length) {
+            // 雲端比較多，強制蓋掉本地並刷新
+            localStorage.setItem('kyushu-user-spots', JSON.stringify(cloudData));
+            if (typeof userSpots !== 'undefined') userSpots = cloudData;
             if (typeof render === 'function') render();
-            console.log("🔄 自動從雲端同步了最新景點！");
+            console.log("🌟【雲端核心】已成功同步最新景點到畫面上！");
           } 
-          else if (userSpots.length > cloudData.length) {
-            // 如果本地景點比較多，代表使用者剛剛點了新增，自動同步傳上雲端
+          else if (localSpots.length > cloudData.length) {
+            // 本地比較多（剛點了新增），上傳雲端
             await fetch(`${baseUrl}/set/kyushu-user-spots`, {
               method: 'POST',
               headers: { 
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/x-www-form-urlencoded' 
               },
-              body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
+              body: `value=${encodeURIComponent(JSON.stringify(localSpots))}`
             });
-            console.log("📤 偵測到新景點，已自動同步上傳至雲端！");
+            console.log("🌟【雲端核心】本地新景點已成功推送至雲端！");
           }
         } 
-        // 如果雲端是空的，但是我們本地已經有旅遊景點了，就自動初始化送上雲端
-        else if (userSpots.length > 0) {
+        else if (localSpots.length > 0) {
+          // 雲端是空的，本地有，進行初始化上傳
           await fetch(`${baseUrl}/set/kyushu-user-spots`, {
             method: 'POST',
             headers: { 
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/x-www-form-urlencoded' 
             },
-            body: `value=${encodeURIComponent(JSON.stringify(userSpots))}`
+            body: `value=${encodeURIComponent(JSON.stringify(localSpots))}`
           });
-          console.log("🚀 雲端保險箱初始化成功！");
+          console.log("🌟【雲端核心】雲端保險箱初始化完畢！");
         }
       }
-    } catch (e) {
-      console.error("背景同步連線失敗：", e);
+    } catch (err) {
+      console.error("🌟【雲端核心】連線失敗：", err);
     }
   }
 
-  // 3. 網頁開啟 1.5 秒後啟動背景同步，之後每隔 4 秒自動檢查一次
-  setTimeout(() => {
-    syncWithCloud();
-    setInterval(syncWithCloud, 4000);
-  }, 1500);
+  // 網頁完全載入 2 秒後，強制執行第一次，之後每 4 秒無腦循環檢查
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      console.log("🚀【雲端核心】獨立守護進程已強制啟動！");
+      forceSync();
+      setInterval(forceSync, 4000);
+    }, 2000);
+  });
+})();
 </script>
-
 
 </body>
 </html>
+
