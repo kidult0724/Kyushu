@@ -696,11 +696,17 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
 }
 
 /* 手機：App 單欄卡片 */
-@media screen and (max-width:768px){
+@media screen and (max-width: 768px){
+
+  .sticky-toolbar {
+    position: static !important;
+    top: auto !important;
+  }
 
   .sticky-toolbar .search{
     margin-right: 52px;
   }
+}
 
   .viewmode-row{
     width:100%;
