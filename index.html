@@ -380,6 +380,39 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   background: rgba(63,107,84,0.08);
 }
 
+.card-owner-row{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+  padding-top:8px;
+  border-top: 1px dashed var(--line);
+}
+
+.owner-btn{
+  flex:1;
+  border:1px solid var(--line);
+  background:var(--card-bg);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;
+  color: var(--ink-soft);
+}
+
+.owner-edit:hover{
+  border-color: var(--steam);
+  color: var(--steam-deep);
+  background: rgba(94,124,147,0.08);
+}
+
+.owner-delete:hover{
+  border-color: var(--clay);
+  color: var(--clay-deep);
+  background: rgba(181,72,47,0.08);
+}
+
 /* 平板：一列兩個 */
 @media screen and (max-width:1024px){
 
@@ -523,6 +556,15 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   justify-content:space-between;
   align-items:center;
   margin-bottom:12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.trip-day-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap: wrap;
 }
 
 .trip-day-title{
@@ -530,6 +572,65 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   font-size:20px;
   color: var(--clay-deep);
   margin:0;
+}
+
+.trip-date-input{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:6px 10px;
+  font-size:13px;
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+}
+
+.trip-date-weekday{
+  font-size:13px;
+  color: var(--ink-soft);
+}
+
+.trip-forecast-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.trip-forecast-chip{
+  font-size:12px;
+  background: rgba(94,124,147,0.12);
+  color: var(--steam-deep);
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.trip-forecast-loading{
+  font-size:12px;
+  color: var(--ink-soft);
+}
+
+.trip-forecast-na{
+  background: rgba(90,85,72,0.1);
+  color: var(--ink-soft);
+}
+
+.trip-map-btn{
+  display:block;
+  text-align:center;
+  border:1px solid var(--steam);
+  color: var(--steam-deep);
+  background: var(--card-bg);
+  border-radius:9px;
+  padding:10px;
+  font-size:13px;
+  font-weight:700;
+  text-decoration:none;
+  margin-bottom:12px;
+}
+
+.trip-map-btn:hover{
+  background: rgba(94,124,147,0.08);
 }
 
 .trip-day-del{
@@ -1587,8 +1688,24 @@ let activePref = null;
 let activeCat = null;
 let viewMode = 'all'; // 'spot' | 'food' | 'all' | 'fav' | 'trip'
 
-// 行程規劃：itinerary[dayIndex] = [spotId, spotId, ...]，dayIndex 從 0 開始（顯示為 Day 1, Day 2...）
-let itinerary = [[]];
+// 行程規劃：itinerary[dayIndex] = { date: 'YYYY-MM-DD' | null, items: [spotId, spotId, ...] }，
+// dayIndex 從 0 開始（顯示為 Day 1, Day 2...）。date 是選填的實際日期，用來對應天氣預報。
+let itinerary = [{ date: null, items: [] }];
+
+// 目前正在編輯的項目（null 代表目前是「新增」模式，不是編輯模式）
+let editingItem = null;
+
+
+// 把可能是舊格式（純陣列 [[id,id],[id]]）或新格式的行程資料，統一轉成新格式，
+// 確保之前存過的舊資料重新打開時不會壞掉。
+function normalizeItinerary(raw){
+  if(!Array.isArray(raw) || !raw.length) return [{ date: null, items: [] }];
+  return raw.map(day => {
+    if(Array.isArray(day)) return { date: null, items: day }; // 舊格式：純 id 陣列
+    if(day && typeof day === 'object') return { date: day.date || null, items: Array.isArray(day.items) ? day.items : [] };
+    return { date: null, items: [] };
+  });
+}
 
 // 各縣目前的天氣代碼與氣溫（由 loadWeather 即時寫入），供人潮估算使用
 const PREF_WEATHER = {};
@@ -2068,8 +2185,8 @@ if(!isHotel) tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(s
     addTripBtn.type = 'button';
     addTripBtn.addEventListener('click', () => {
       const dayIdx = parseInt(daySelect.value, 10);
-      if(!itinerary[dayIdx].includes(spot.id)){
-        itinerary[dayIdx].push(spot.id);
+      if(!itinerary[dayIdx].items.includes(spot.id)){
+        itinerary[dayIdx].items.push(spot.id);
         saveItinerary();
         addTripBtn.textContent = '✓ 已加入';
         setTimeout(() => { addTripBtn.textContent = '+ 加入行程'; }, 1200);
@@ -2081,6 +2198,24 @@ if(!isHotel) tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(s
     tripRow.appendChild(daySelect);
     tripRow.appendChild(addTripBtn);
     body.appendChild(tripRow);
+
+    // 編輯/刪除：只有使用者自己新增的項目才能改，內建的精選資料不能透過這裡修改
+    if(spot.userAdded){
+      const ownerRow = el('div','card-owner-row');
+      const editBtn = el('button','owner-btn owner-edit','✏️ 編輯');
+      editBtn.type = 'button';
+      editBtn.addEventListener('click', () => openEditForm(spot));
+      const delBtn = el('button','owner-btn owner-delete','🗑️ 刪除');
+      delBtn.type = 'button';
+      delBtn.addEventListener('click', async () => {
+        if(!confirm(`確定要刪除「${spot.name}」嗎？這會影響所有人看到的共用清單，且無法復原。`)) return;
+        await deleteItemFromCloud(spot.id);
+        render();
+      });
+      ownerRow.appendChild(editBtn);
+      ownerRow.appendChild(delBtn);
+      body.appendChild(ownerRow);
+    }
 
     card.appendChild(body);
     return card;
@@ -2220,18 +2355,95 @@ function estimateTravelTimeText(spotA, spotB){
   return { text, warn: minutes > 90 };
 }
 
+// 建立「本日路線地圖」連結：把當天所有站點依順序串成 Google Maps 多站導航網址，
+// 開啟後可以在地圖上一次看到整天的路線與站點順序，判斷順不順路。
+function buildDayRouteUrl(items){
+  const toQuery = (spot) => {
+    if(spot.address && spot.address.trim()){
+      const addr = spot.address.trim();
+      if(/^https?:\/\//.test(addr)) return null; // 完整連結沒辦法當 waypoint 使用，退回用名稱
+      return addr;
+    }
+    return `${spot.name} ${spot.pref} 日本`;
+  };
+  const points = items.map(toQuery).map(q => q || '');
+  const origin = encodeURIComponent(points[0]);
+  const destination = encodeURIComponent(points[points.length - 1]);
+  const waypoints = points.slice(1, -1).map(p => encodeURIComponent(p)).join('|');
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  if(waypoints) url += `&waypoints=${waypoints}`;
+  return url;
+}
+
+// 依日期查詢該縣的天氣預報（不是「現在」的天氣，是「那一天」的預報）。
+// Open-Meteo 免費額度通常能查到未來約16天內的預報，超出範圍會查不到資料。
+async function getForecastForDate(pref, dateStr){
+  const cacheKey = `forecast:${pref}:${dateStr}`;
+  const cached = cacheGet(cacheKey);
+  if(cached !== null) return cached;
+
+  const [lat, lon] = PREF_COORDS[pref] || [];
+  if(lat === undefined) return null;
+
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&start_date=${dateStr}&end_date=${dateStr}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('forecast fetch failed');
+    const data = await res.json();
+    if(!data.daily || !data.daily.time || !data.daily.time.length){
+      cacheSet(cacheKey, 'NONE');
+      return null;
+    }
+    const result = {
+      code: data.daily.weathercode[0],
+      tmax: Math.round(data.daily.temperature_2m_max[0]),
+      tmin: Math.round(data.daily.temperature_2m_min[0])
+    };
+    cacheSet(cacheKey, result);
+    return result;
+  }catch(e){
+    cacheSet(cacheKey, 'NONE');
+    return null;
+  }
+}
+
+function weekdayLabelFromDate(dateStr){
+  if(!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00+09:00');
+  if(isNaN(d.getTime())) return '';
+  return `（週${WEEKDAY_LABELS[d.getDay()]}）`;
+}
+
 function renderTripPlanner(grid){
   grid.innerHTML = '';
   grid.classList.add('trip-mode');
 
   const wrap = el('div','trip-wrap');
 
-  itinerary.forEach((dayIds, dayIdx) => {
+  itinerary.forEach((day, dayIdx) => {
+    const dayIds = day.items;
     const dayBox = el('div','trip-day');
 
-    // 這一天的標題列：Day N + 刪除此天按鈕（至少保留一天）
+    // 這一天的標題列：Day N + 日期選擇 + 刪除此天按鈕（至少保留一天）
     const dayHead = el('div','trip-day-head');
-    dayHead.appendChild(el('h3','trip-day-title', `Day ${dayIdx + 1}`));
+    const titleWrap = el('div','trip-day-title-wrap');
+    titleWrap.appendChild(el('h3','trip-day-title', `Day ${dayIdx + 1}`));
+
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.className = 'trip-date-input';
+    dateInput.value = day.date || '';
+    dateInput.addEventListener('change', () => {
+      itinerary[dayIdx].date = dateInput.value || null;
+      saveItinerary();
+      render();
+    });
+    titleWrap.appendChild(dateInput);
+    if(day.date){
+      titleWrap.appendChild(el('span','trip-date-weekday', weekdayLabelFromDate(day.date)));
+    }
+    dayHead.appendChild(titleWrap);
+
     if(itinerary.length > 1){
       const delDayBtn = el('button','trip-day-del','刪除此天');
       delDayBtn.type = 'button';
@@ -2246,6 +2458,25 @@ function renderTripPlanner(grid){
 
     const items = dayIds.map(id => findSpotById(id)).filter(Boolean);
 
+    // 該日天氣預報：依當天行程涵蓋的縣市各自顯示（只有設定日期才會查）
+    if(day.date && items.length){
+      const prefsForWeather = [...new Set(items.map(i => i.pref))];
+      const forecastRow = el('div','trip-forecast-row');
+      forecastRow.appendChild(el('span','trip-forecast-loading', '🌤️ 天氣預報載入中…'));
+      dayBox.appendChild(forecastRow);
+      Promise.all(prefsForWeather.map(p => getForecastForDate(p, day.date).then(f => ({ pref: p, f })))).then(results => {
+        forecastRow.innerHTML = '';
+        results.forEach(({ pref, f }) => {
+          if(f){
+            const desc = WEATHER_CODE_MAP[f.code] || '天氣資料';
+            forecastRow.appendChild(el('span','trip-forecast-chip', `🌤️ ${pref} ${desc} ${f.tmin}°/${f.tmax}°`));
+          } else {
+            forecastRow.appendChild(el('span','trip-forecast-chip trip-forecast-na', `🌤️ ${pref} 此日期暫無預報（通常僅提供未來約16天內）`));
+          }
+        });
+      });
+    }
+
     if(!items.length){
       dayBox.appendChild(el('div','trip-empty','這天還沒有安排景點或餐廳，從下方列表點「+ 加入行程」開始安排。'));
     } else {
@@ -2257,6 +2488,17 @@ function renderTripPlanner(grid){
           : `✓ 這天的行程都在${prefsInDay[0]}，安排上比較順路`
       );
       dayBox.appendChild(hint);
+
+      // 本日路線地圖：至少兩站才有意義
+      if(items.length >= 2){
+        const mapBtn = document.createElement('a');
+        mapBtn.className = 'trip-map-btn';
+        mapBtn.href = buildDayRouteUrl(items);
+        mapBtn.target = '_blank';
+        mapBtn.rel = 'noopener';
+        mapBtn.textContent = `🗺️ 查看本日路線地圖（${items.length} 站）`;
+        dayBox.appendChild(mapBtn);
+      }
 
       const list = el('div','trip-item-list');
       items.forEach((item, i) => {
@@ -2273,7 +2515,7 @@ function renderTripPlanner(grid){
           const upBtn = el('button','trip-mini-btn','↑');
           upBtn.type = 'button';
           upBtn.addEventListener('click', () => {
-            [itinerary[dayIdx][i-1], itinerary[dayIdx][i]] = [itinerary[dayIdx][i], itinerary[dayIdx][i-1]];
+            [itinerary[dayIdx].items[i-1], itinerary[dayIdx].items[i]] = [itinerary[dayIdx].items[i], itinerary[dayIdx].items[i-1]];
             saveItinerary(); render();
           });
           btnGroup.appendChild(upBtn);
@@ -2282,7 +2524,7 @@ function renderTripPlanner(grid){
           const downBtn = el('button','trip-mini-btn','↓');
           downBtn.type = 'button';
           downBtn.addEventListener('click', () => {
-            [itinerary[dayIdx][i], itinerary[dayIdx][i+1]] = [itinerary[dayIdx][i+1], itinerary[dayIdx][i]];
+            [itinerary[dayIdx].items[i], itinerary[dayIdx].items[i+1]] = [itinerary[dayIdx].items[i+1], itinerary[dayIdx].items[i]];
             saveItinerary(); render();
           });
           btnGroup.appendChild(downBtn);
@@ -2290,7 +2532,7 @@ function renderTripPlanner(grid){
         const removeBtn = el('button','trip-mini-btn trip-mini-remove','✕');
         removeBtn.type = 'button';
         removeBtn.addEventListener('click', () => {
-          itinerary[dayIdx] = itinerary[dayIdx].filter(id => id !== item.id);
+          itinerary[dayIdx].items = itinerary[dayIdx].items.filter(id => id !== item.id);
           saveItinerary(); render();
         });
         btnGroup.appendChild(removeBtn);
@@ -2330,14 +2572,14 @@ function renderTripPlanner(grid){
   const addDayBtn = el('button','trip-add-day-btn','+ 新增一天');
   addDayBtn.type = 'button';
   addDayBtn.addEventListener('click', () => {
-    itinerary.push([]);
+    itinerary.push({ date: null, items: [] });
     saveItinerary();
     render();
   });
   grid.appendChild(addDayBtn);
 
   // 總計
-  const allItems = itinerary.flat().map(id => findSpotById(id)).filter(Boolean);
+  const allItems = itinerary.flatMap(day => day.items).map(id => findSpotById(id)).filter(Boolean);
   let grandTotal = 0;
   allItems.forEach(item => {
     const price = parsePriceToNumber(item.cat === "餐廳" ? item.avgCost : item.ticket);
@@ -2488,6 +2730,40 @@ async function addItemToCloud(item){
   }
 }
 
+// 編輯既有的共用項目：先在本機直接把新內容蓋掉原本的（讓使用者立刻看到變更），
+// 再送到雲端更新，若失敗會提示但畫面上仍保留這次修改。
+async function updateItemInCloud(item){
+  const idx = userSpots.findIndex(s => s.id === item.id);
+  if(idx !== -1) userSpots[idx] = item;
+  try{
+    const res = await fetch('/api/spots', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item })
+    });
+    if(!res.ok) throw new Error('雲端更新失敗');
+    return true;
+  }catch(e){
+    console.error('更新到雲端失敗', e);
+    alert('已顯示在畫面上，但同步到雲端失敗（可能是網路問題），其他人可能暫時看不到這次修改，建議稍後重新整理頁面確認。');
+    return false;
+  }
+}
+
+// 刪除既有的共用項目
+async function deleteItemFromCloud(id){
+  userSpots = userSpots.filter(s => s.id !== id);
+  try{
+    const res = await fetch(`/api/spots?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if(!res.ok) throw new Error('雲端刪除失敗');
+    return true;
+  }catch(e){
+    console.error('從雲端刪除失敗', e);
+    alert('已從畫面上移除，但同步到雲端失敗（可能是網路問題），其他人重新整理頁面後可能還會看到這筆，建議稍後再確認一次。');
+    return false;
+  }
+}
+
 
 // ===== 行程規劃改為共用雲端 =====
 // 跟收藏不同，行程規劃現在是「同行的人共用同一份」，存在雲端資料庫，
@@ -2497,18 +2773,14 @@ async function loadItinerary(){
     const res = await fetch('/api/itinerary');
     if(!res.ok) throw new Error('雲端讀取失敗');
     const data = await res.json();
-    if(Array.isArray(data.itinerary) && data.itinerary.length){
-      itinerary = data.itinerary;
-    } else {
-      itinerary = [[]];
-    }
+    itinerary = normalizeItinerary(data.itinerary);
     try{ localStorage.setItem('kyushu-itinerary-cache', JSON.stringify(itinerary)); }catch(e){}
   }catch(e){
     console.error('讀取共用行程失敗，改用本機備份顯示', e);
     try{
       const v = localStorage.getItem('kyushu-itinerary-cache');
-      itinerary = v ? JSON.parse(v) : [[]];
-    }catch(e2){ itinerary = [[]]; }
+      itinerary = normalizeItinerary(v ? JSON.parse(v) : null);
+    }catch(e2){ itinerary = [{ date: null, items: [] }]; }
   }
 }
 
@@ -2551,13 +2823,59 @@ function cacheSet(key, value){
 document.getElementById('searchInput').addEventListener('input', render);
 
 const formEl = document.getElementById('addForm');
+// 開啟編輯表單：依項目的類型（景點/餐廳/住宿）打開對應表單，並把現有內容帶進欄位裡
+function openEditForm(spot){
+  document.getElementById('addFoodForm').classList.remove('open');
+  document.getElementById('addHotelForm').classList.remove('open');
+  document.getElementById('addForm').classList.remove('open');
+  editingItem = spot;
+
+  if(spot.cat === "餐廳"){
+    document.getElementById('ff-name').value = spot.name || '';
+    document.getElementById('ff-desc').value = spot.desc || '';
+    document.getElementById('ff-type').value = (spot.ticket || '').replace('料理類型未提供','');
+    document.getElementById('ff-cost').value = (spot.avgCost || '').replace('價格資訊未提供','');
+    document.getElementById('ff-near').value = spot.nearSpotName || '';
+    document.getElementById('ff-address').value = spot.address || '';
+    ffPref.value = spot.pref;
+    document.getElementById('submitFood').textContent = '💾 儲存修改';
+    document.getElementById('addFoodForm').classList.add('open');
+    document.getElementById('addFoodForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if(spot.cat === "住宿"){
+    document.getElementById('hh-name').value = spot.name || '';
+    document.getElementById('hh-desc').value = spot.desc || '';
+    document.getElementById('hh-type').value = (spot.type || '').replace('類型未提供','');
+    document.getElementById('hh-cost').value = (spot.avgCost || '').replace('房價資訊未提供','');
+    document.getElementById('hh-address').value = spot.address || '';
+    hhPref.value = spot.pref;
+    document.getElementById('submitHotel').textContent = '💾 儲存修改';
+    document.getElementById('addHotelForm').classList.add('open');
+    document.getElementById('addHotelForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    document.getElementById('f-name').value = spot.name || '';
+    document.getElementById('f-desc').value = spot.desc || '';
+    document.getElementById('f-season').value = spot.season || '';
+    document.getElementById('f-ticket').value = (spot.ticket || '').replace('免費參觀','');
+    document.getElementById('f-address').value = spot.address || '';
+    fPref.value = spot.pref;
+    fCat.value = spot.cat;
+    document.getElementById('submitSpot').textContent = '💾 儲存修改';
+    document.getElementById('addForm').classList.add('open');
+    document.getElementById('addForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
 document.getElementById('toggleForm').addEventListener('click', () => {
   document.getElementById('addFoodForm').classList.remove('open');
   document.getElementById('addHotelForm').classList.remove('open');
+  editingItem = null;
+  document.getElementById('submitSpot').textContent = '加入景點清單';
   formEl.classList.toggle('open');
 });
 document.getElementById('cancelSpot').addEventListener('click', () => {
   formEl.classList.remove('open');
+  editingItem = null;
+  document.getElementById('submitSpot').textContent = '加入景點清單';
 });
 
 document.getElementById('submitSpot').addEventListener('click', async () => {
@@ -2570,7 +2888,7 @@ document.getElementById('submitSpot').addEventListener('click', async () => {
     return;
   }
   const spot = {
-    id: 'u' + Date.now(),
+    id: editingItem ? editingItem.id : ('u' + Date.now()),
     name,
     pref: fPref.value,
     cat: fCat.value,
@@ -2580,7 +2898,13 @@ document.getElementById('submitSpot').addEventListener('click', async () => {
     desc,
     userAdded: true
   };
-  await addItemToCloud(spot);
+  if(editingItem){
+    await updateItemInCloud(spot);
+    editingItem = null;
+    document.getElementById('submitSpot').textContent = '加入景點清單';
+  } else {
+    await addItemToCloud(spot);
+  }
   document.getElementById('f-name').value = '';
   document.getElementById('f-desc').value = '';
   document.getElementById('f-season').value = '';
@@ -2597,10 +2921,14 @@ const foodFormEl = document.getElementById('addFoodForm');
 document.getElementById('toggleFoodForm').addEventListener('click', () => {
   formEl.classList.remove('open');
   document.getElementById('addHotelForm').classList.remove('open');
+  editingItem = null;
+  document.getElementById('submitFood').textContent = '加入餐廳清單';
   foodFormEl.classList.toggle('open');
 });
 document.getElementById('cancelFood').addEventListener('click', () => {
   foodFormEl.classList.remove('open');
+  editingItem = null;
+  document.getElementById('submitFood').textContent = '加入餐廳清單';
 });
 
 document.getElementById('submitFood').addEventListener('click', async () => {
@@ -2615,7 +2943,7 @@ document.getElementById('submitFood').addEventListener('click', async () => {
     return;
   }
   const food = {
-    id: 'u' + Date.now(),
+    id: editingItem ? editingItem.id : ('u' + Date.now()),
     name,
     pref: ffPref.value,
     cat: "餐廳",
@@ -2627,7 +2955,13 @@ document.getElementById('submitFood').addEventListener('click', async () => {
     nearSpotName: near,
     userAdded: true
   };
-  await addItemToCloud(food);
+  if(editingItem){
+    await updateItemInCloud(food);
+    editingItem = null;
+    document.getElementById('submitFood').textContent = '加入餐廳清單';
+  } else {
+    await addItemToCloud(food);
+  }
   document.getElementById('ff-name').value = '';
   document.getElementById('ff-desc').value = '';
   document.getElementById('ff-type').value = '';
@@ -2645,10 +2979,14 @@ const hotelFormEl = document.getElementById('addHotelForm');
 document.getElementById('toggleHotelForm').addEventListener('click', () => {
   formEl.classList.remove('open');
   foodFormEl.classList.remove('open');
+  editingItem = null;
+  document.getElementById('submitHotel').textContent = '加入住宿清單';
   hotelFormEl.classList.toggle('open');
 });
 document.getElementById('cancelHotel').addEventListener('click', () => {
   hotelFormEl.classList.remove('open');
+  editingItem = null;
+  document.getElementById('submitHotel').textContent = '加入住宿清單';
 });
 
 document.getElementById('submitHotel').addEventListener('click', async () => {
@@ -2662,7 +3000,7 @@ document.getElementById('submitHotel').addEventListener('click', async () => {
     return;
   }
   const hotel = {
-    id: 'u' + Date.now(),
+    id: editingItem ? editingItem.id : ('u' + Date.now()),
     name,
     pref: hhPref.value,
     cat: "住宿",
@@ -2672,7 +3010,13 @@ document.getElementById('submitHotel').addEventListener('click', async () => {
     desc,
     userAdded: true
   };
-  await addItemToCloud(hotel);
+  if(editingItem){
+    await updateItemInCloud(hotel);
+    editingItem = null;
+    document.getElementById('submitHotel').textContent = '加入住宿清單';
+  } else {
+    await addItemToCloud(hotel);
+  }
   document.getElementById('hh-name').value = '';
   document.getElementById('hh-desc').value = '';
   document.getElementById('hh-type').value = '';
