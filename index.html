@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>九州觀景誌｜Kyushu Sight Log</title>
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#B5482F">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="九州觀景誌">
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
 
@@ -116,6 +124,60 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC
 .chip{border:1px solid var(--line);background:var(--card-bg);color:var(--ink-soft);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:background .15s,color .15s,border-color .15s;}
 .chip:hover{border-color:var(--clay);}
 .chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+.sort-loc-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.sort-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+#sortSelect{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:7px 10px;
+  font-size:13px;
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--card-bg);
+  color:var(--ink);
+}
+
+.locbtn{
+  border:1px solid var(--steam);
+  color:var(--steam-deep);
+  background:var(--card-bg);
+  border-radius:8px;
+  padding:7px 14px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+.locbtn:hover{
+  background: rgba(94,124,147,0.08);
+}
+
+.locbtn.located{
+  border-color: var(--pine);
+  color: var(--pine-deep);
+}
+
+.loc-status{
+  font-size:12px;
+  color: var(--ink-soft);
+}
+
+.tag.distance{
+  background: rgba(94,124,147,0.12);
+  color: var(--steam-deep);
+}
 
 .count-row{display:flex;justify-content:space-between;align-items:center;margin:0;}
 .count-row span{font-size:13px;color:var(--ink-soft);}
@@ -1088,6 +1150,21 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="toolbar-secondary">
       <div class="chiprow" id="prefRow"><span class="chiprow-label">縣市</span></div>
       <div class="chiprow" id="catRow"><span class="chiprow-label">類型</span></div>
+      <div class="sort-loc-row">
+        <div class="sort-wrap">
+          <label for="sortSelect" class="chiprow-label" style="width:auto;margin:0;">排序</label>
+          <select id="sortSelect">
+            <option value="default">預設</option>
+            <option value="crowd-asc">人潮由低到高</option>
+            <option value="crowd-desc">人潮由高到低</option>
+            <option value="price-asc">花費由低到高</option>
+            <option value="price-desc">花費由高到低</option>
+            <option value="distance-asc" id="distanceSortOption" disabled>離我最近（需先定位）</option>
+          </select>
+        </div>
+        <button type="button" class="locbtn" id="useLocationBtn">📍 使用目前位置</button>
+        <span id="locStatus" class="loc-status"></span>
+      </div>
 
       <div class="count-row">
         <span id="countLabel">共 0 個景點</span>
@@ -1232,7 +1309,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="empty" id="emptyState" style="display:none;">找不到符合條件的景點，試試其他關鍵字或篩選條件。</div>
 
 <footer>
-  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／🗓️行程規劃／全部」可切換檢視範圍。使用者自行新增的景點／餐廳／住宿，以及「行程規劃」裡排的每日行程，現在都存在共用的雲端資料庫，只要打開同一個網址，同行的人都會看到彼此新增或編輯過的內容（每 60 秒自動同步一次，也可以按「🔄 重新整理」立即拉取最新資料）；「★ 我的收藏」則刻意維持個人、只存在你自己的裝置與瀏覽器裡，不會被其他人看到，也看不到別人的收藏。新增資料時請分別使用「+ 新增景點」「+ 新增餐廳」「+ 新增住宿」按鈕，三者欄位不同（餐廳可填鄰近景點與平均消費、住宿可填類型與參考房價，皆可填地址或Google Maps連結讓地圖定位更準確）；餐廳卡片左側為橘色色條、住宿卡片為藍灰色條，與景點卡片（綠色色條）做區隔。標示「住宿」類型的項目為福岡、佐賀、長崎、熊本、大分五縣精選的真實飯店與旅館，房價僅為概略區間，實際房價會依房型、季節、訂房平台大幅波動，訂房前請務必至官方網站或訂房平台確認即時房價；住宿類項目不套用人潮估算與營業時間邏輯（飯店本身為全天營運）。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。每張景點/餐廳卡片標籤列上的「🕐營業時間」為依類型（如歷史文化多為9-17點、溫泉設施多為8-21點、自然景觀類戶外景點視為全天開放）或料理類型推估的概略時段，並非逐店查證過的正確時間；超出時段會顯示「🌙 休息中」並停止顯示人潮百分比與長條，整張卡片也會變得較灰暗以便一眼分辨。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升⑥景點自身知名度（越知名的景點基數分數越高，讓同縣市同類型的不同景點彼此有差異）。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量、人口排序與知名度評分皆為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。
+  景點資料整理自公開旅遊資訊，僅供行前參考，實際開放時間、交通與設施請以官方公告為準。上方「景點／餐廳／★我的收藏／🗓️行程規劃／全部」可切換檢視範圍。使用者自行新增的景點／餐廳／住宿，以及「行程規劃」裡排的每日行程，現在都存在共用的雲端資料庫，只要打開同一個網址，同行的人都會看到彼此新增或編輯過的內容（每 60 秒自動同步一次，也可以按「🔄 重新整理」立即拉取最新資料）；「★ 我的收藏」則刻意維持個人、只存在你自己的裝置與瀏覽器裡，不會被其他人看到，也看不到別人的收藏。新增資料時請分別使用「+ 新增景點」「+ 新增餐廳」「+ 新增住宿」按鈕，三者欄位不同（餐廳可填鄰近景點與平均消費、住宿可填類型與參考房價，皆可填地址或Google Maps連結讓地圖定位更準確）；餐廳卡片左側為橘色色條、住宿卡片為藍灰色條，與景點卡片（綠色色條）做區隔。標示「住宿」類型的項目為福岡、佐賀、長崎、熊本、大分五縣精選的真實飯店與旅館，房價僅為概略區間，實際房價會依房型、季節、訂房平台大幅波動，訂房前請務必至官方網站或訂房平台確認即時房價；住宿類項目不套用人潮估算與營業時間邏輯（飯店本身為全天營運）。各景點下方標示「餐廳」類型的項目為各地精選店家，營業時間、公休日仍可能異動，正式資訊請以「餐廳地點」按鈕查詢或現場確認為準。每張景點/餐廳卡片標籤列上的「🕐營業時間」為依類型（如歷史文化多為9-17點、溫泉設施多為8-21點、自然景觀類戶外景點視為全天開放）或料理類型推估的概略時段，並非逐店查證過的正確時間；超出時段會顯示「🌙 休息中」並停止顯示人潮百分比與長條，整張卡片也會變得較灰暗以便一眼分辨。「人潮」標籤並非即時人流感測數據（目前沒有公開的景點級即時人流API），而是綜合以下因子推估的參考百分比：①時段曲線（景點在下午較高、午餐晚餐時段較低；餐廳則相反）②星期幾（週日+5、週六+4、週五+3、週四+1、週三+0、週二-1、週一-2）③該縣觀光客量評分（依訪日旅客占比等公開資料排序，福岡+6〜宮崎-6）④該縣人口評分（福岡+3〜佐賀-3）⑤即時天氣與氣溫：晴天+5、多雲+2、陰天+0、雨天-5〜-10（依雨勢）、下雪-8、氣溫過高或過低額外-5，戶外景點受天氣影響加倍，餐廳與室內型景點則在壞天氣時人潮部分回升⑥景點自身知名度（越知名的景點基數分數越高，讓同縣市同類型的不同景點彼此有差異）。數字會隨你打開頁面的當下時間變動，僅供概略參考，觀光客量、人口排序與知名度評分皆為概略推估、非精確統計數據。天氣資訊由 Open-Meteo 免費 API 即時查詢，僅供概略參考，出發前請再次確認正式預報。各縣代表圖片為即時向維基百科抓取的當地景點真實照片，若圖片一時未顯示，代表當次抓取失敗，重新整理即可。地圖與路線連結會開啟 Google 地圖（不需登入），路線會以你目前所在位置為起點。上方新增了「排序」下拉選單，可依人潮或花費由低到高／由高到低排序（無法解析出具體數字的項目一律排在最後）；按下「📍 使用目前位置」授權瀏覽器定位後，會多一個「離我最近」排序選項，並在每張卡片顯示距離——這個距離只能算到「該景點所在縣市的中心點」，不是精確到單一景點門口的距離，僅供概略參考，實際還是請以地圖路線為準。
 </footer>
 </div>
 
@@ -1695,6 +1772,10 @@ let itinerary = [{ date: null, items: [] }];
 // 目前正在編輯的項目（null 代表目前是「新增」模式，不是編輯模式）
 let editingItem = null;
 
+// 排序與定位狀態
+let sortMode = 'default';
+let userLocation = null; // { lat, lon }，使用者按下「使用目前位置」授權後才會有值
+
 
 // 把可能是舊格式（純陣列 [[id,id],[id]]）或新格式的行程資料，統一轉成新格式，
 // 確保之前存過的舊資料重新打開時不會壞掉。
@@ -2137,6 +2218,13 @@ if(!isHotel) tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(s
     if(spot.season) tags.appendChild(el('span','tag season','🌿 ' + spot.season));
     if(spot.userAdded) tags.appendChild(el('span','tag user','使用者新增'));
 
+    if(userLocation){
+      const dist = getDistanceValue(spot);
+      if(dist !== null){
+        tags.appendChild(el('span','tag distance', `📍 距你約 ${dist < 10 ? dist.toFixed(1) : Math.round(dist)} 公里`));
+      }
+    }
+
     body.appendChild(tags);
 
     // 人潮視覺化長條：住宿類與打烊時都不顯示
@@ -2221,6 +2309,46 @@ if(!isHotel) tags.appendChild(el('span','tag hours','🕐 ' + hoursDisplayText(s
     return card;
 }
 
+// ===== 排序輔助函式 =====
+// 依「人潮」排序：住宿沒有人潮概念，一律排在最後（不管升冪降冪）
+function getCrowdValue(spot){
+  if(spot.cat === "住宿") return null;
+  return estimateCrowd(spot).score;
+}
+
+// 依「花費」排序：抓不到明確數字的（例如「價格資訊未提供」）排在最後
+function getPriceValue(spot){
+  const raw = (spot.cat === "餐廳" || spot.cat === "住宿") ? spot.avgCost : spot.ticket;
+  return parsePriceToNumber(raw);
+}
+
+// 依「距離」排序：只能算到「縣市中心點」的距離，不是精確到單一景點門口的距離
+// （因為 65 個景點+117 間餐廳+7 間住宿沒有逐一做精確地理定位，只有縣市層級座標）
+function getDistanceValue(spot){
+  if(!userLocation) return null;
+  const coord = PREF_COORDS[spot.pref];
+  if(!coord) return null;
+  return haversineKm([userLocation.lat, userLocation.lon], coord);
+}
+
+function sortSpotsList(list){
+  if(sortMode === 'default') return list;
+
+  let getValue, ascending;
+  if(sortMode === 'crowd-asc'){ getValue = getCrowdValue; ascending = true; }
+  else if(sortMode === 'crowd-desc'){ getValue = getCrowdValue; ascending = false; }
+  else if(sortMode === 'price-asc'){ getValue = getPriceValue; ascending = true; }
+  else if(sortMode === 'price-desc'){ getValue = getPriceValue; ascending = false; }
+  else if(sortMode === 'distance-asc'){ getValue = getDistanceValue; ascending = true; }
+  else return list;
+
+  const withValue = list.map(s => ({ s, v: getValue(s) }));
+  const known = withValue.filter(x => x.v !== null && x.v !== undefined);
+  const unknown = withValue.filter(x => x.v === null || x.v === undefined);
+  known.sort((a, b) => ascending ? (a.v - b.v) : (b.v - a.v));
+  return [...known, ...unknown].map(x => x.s);
+}
+
 function render(){
   syncChips();
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -2237,7 +2365,7 @@ function render(){
     return;
   }
 
-  const spots = allSpots().filter(s => {
+  let spots = allSpots().filter(s => {
     if(viewMode === 'spot' && s.cat === "餐廳") return false;
     if(viewMode === 'food' && s.cat !== "餐廳") return false;
     if(activePref && s.pref !== activePref) return false;
@@ -2245,6 +2373,7 @@ function render(){
     if(q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.season||'').toLowerCase().includes(q) || (s.ticket||'').toLowerCase().includes(q))) return false;
     return true;
   });
+  spots = sortSpotsList(spots);
   document.getElementById('countLabel').textContent = `共 ${spots.length} 個項目`;
   document.getElementById('emptyState').style.display = spots.length ? 'none' : 'block';
 
@@ -2822,6 +2951,39 @@ function cacheSet(key, value){
 
 document.getElementById('searchInput').addEventListener('input', render);
 
+document.getElementById('sortSelect').addEventListener('change', (e) => {
+  sortMode = e.target.value;
+  render();
+});
+
+document.getElementById('useLocationBtn').addEventListener('click', () => {
+  const btn = document.getElementById('useLocationBtn');
+  const status = document.getElementById('locStatus');
+  if(!navigator.geolocation){
+    status.textContent = '這個瀏覽器不支援定位功能';
+    return;
+  }
+  btn.textContent = '📍 定位中…';
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLocation = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      btn.textContent = '📍 已定位';
+      btn.classList.add('located');
+      status.textContent = '（距離為概略估算，以縣市中心點計算）';
+      const distOpt = document.getElementById('distanceSortOption');
+      distOpt.disabled = false;
+      distOpt.textContent = '離我最近';
+      render();
+    },
+    (err) => {
+      btn.textContent = '📍 使用目前位置';
+      status.textContent = '定位失敗，請確認已允許瀏覽器存取位置權限';
+      console.error('geolocation error', err);
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 5 * 60 * 1000 }
+  );
+});
+
 const formEl = document.getElementById('addForm');
 // 開啟編輯表單：依項目的類型（景點/餐廳/住宿）打開對應表單，並把現有內容帶進欄位裡
 function openEditForm(spot){
@@ -3105,6 +3267,12 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 });
 
 (async function init(){
+  // 註冊 Service Worker（PWA 加入主畫面/可安裝性需要這個），失敗也不影響網站正常使用
+  if('serviceWorker' in navigator){
+    try{ await navigator.serviceWorker.register('/service-worker.js'); }
+    catch(e){ console.error('Service Worker 註冊失敗', e); }
+  }
+
   let savedTheme = null;
   try{ savedTheme = localStorage.getItem('kyushu-theme'); }catch(e){}
 
